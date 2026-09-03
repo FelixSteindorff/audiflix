@@ -1,5 +1,7 @@
 """Tests for player behaviour that does not require a running VLC."""
 
+import pytest
+
 from audiflix.audio.player import Track, VlcPlayer
 
 
@@ -53,7 +55,9 @@ def test_sleep_timer_can_be_set_and_cancelled():
     assert player.sleep_remaining is None
     player.set_sleep_timer(10)
     remaining = player.sleep_remaining
-    assert remaining is not None and 590 < remaining <= 600
+    # A deadline of monotonic() + 600 can read back a hair above 600, so this
+    # compares with a tolerance rather than an exact upper bound.
+    assert remaining == pytest.approx(600, abs=10)
     player.cancel_sleep_timer()
     assert player.sleep_remaining is None
 
