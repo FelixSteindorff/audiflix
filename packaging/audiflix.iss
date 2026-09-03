@@ -6,7 +6,7 @@
 ; uninstall entry, no file associations.
 ;
 ; Compile with:  python build_exe.py --installer
-;            or: iscc /DAppVersion=0.1.0 packaging\audiflix.iss
+;            or: iscc /DAppVersion=0.2.0 packaging\audiflix.iss
 
 #ifndef AppVersion
   #define AppVersion "0.0.0"

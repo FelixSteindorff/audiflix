@@ -1,4 +1,4 @@
-# Pinned dependency set for reproducible Windows release builds of v0.1.0.
+# Pinned dependency set for reproducible Windows release builds of v0.2.0.
 # Update deliberately, then rebuild and record the new SHA-256 in CHANGELOG.md.
 wxPython==4.3.1
 python-vlc==3.0.21203

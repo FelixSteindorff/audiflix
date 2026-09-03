@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-03
+
+Audiflix becomes a self-contained Windows application: install it and nothing
+else. Verified on a GitHub Actions runner with no VLC installed, where the
+packaged self-test decodes audio through the bundled engine.
+
 ### Added
 
 - **The Windows release now contains its own VLC runtime.** Audiflix no longer
@@ -138,5 +144,6 @@ people.
 - See the "Changed" section: token storage, token scoping to the configured
   host, log redaction and the HTTP warning are all part of this release.
 
-[Unreleased]: https://github.com/FelixSteindorff/audiflix/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/FelixSteindorff/audiflix/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/FelixSteindorff/audiflix/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/FelixSteindorff/audiflix/releases/tag/v0.1.0
