@@ -80,10 +80,10 @@ jobs:
             choco install innosetup --no-progress -y
           }
 
-      - name: Build the application and the installer
+      - name: Build the application, the installer and the portable archive
         # The build runs the packaged self-test and fails if the bundled engine
         # cannot decode audio on this machine.
-        run: python build_exe.py --installer --skip-vlc
+        run: python build_exe.py --installer --portable --skip-vlc
 
       - name: Verify the bundled engine on a machine without VLC
         working-directory: dist/Audiflix
@@ -92,14 +92,13 @@ jobs:
       - name: Summarise the artifacts
         shell: pwsh
         run: |
-          $setup = Get-ChildItem dist/Audiflix-*-Setup.exe | Select-Object -First 1
-          $hash = (Get-FileHash $setup.FullName -Algorithm SHA256).Hash.ToLower()
-          @(
-            "| Artifact | Size | SHA-256 |",
-            "|---|---|---|",
-            "| $($setup.Name) | $([math]::Round($setup.Length / 1MB, 1)) MB | ``$hash`` |"
-          ) | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-          Write-Host "$($setup.Name)  $hash"
+          $rows = @("| Artifact | Size | SHA-256 |", "|---|---|---|")
+          foreach ($item in @(Get-ChildItem dist/Audiflix-*-Setup.exe, dist/Audiflix-*-portable-win64.zip)) {
+            $hash = (Get-FileHash $item.FullName -Algorithm SHA256).Hash.ToLower()
+            $rows += "| $($item.Name) | $([math]::Round($item.Length / 1MB, 1)) MB | ``$hash`` |"
+            Write-Host "$($item.Name)  $hash"
+          }
+          $rows | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
 
       - name: Upload the installer
         uses: actions/upload-artifact@v4
@@ -110,9 +109,11 @@ jobs:
             build/vlc-version.json
           if-no-files-found: error
 
-      - name: Upload the unpacked application
+      - name: Upload the portable archive
         uses: actions/upload-artifact@v4
         with:
           name: audiflix-windows-portable
-          path: dist/Audiflix/
+          # Already a zip; uploading it as a single file keeps the released
+          # archive byte-identical to the one built here.
+          path: dist/Audiflix-*-portable-win64.zip
           if-no-files-found: error

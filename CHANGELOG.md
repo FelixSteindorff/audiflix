@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A **portable Windows download** (`Audiflix-<version>-portable-win64.zip`)
+  next to the installer: unpack anywhere, run `audiflix.exe`, nothing is
+  installed or registered. It contains the same application and audio engine as
+  the installer, plus a `PORTABLE.txt` describing what does and does not travel
+  with it. Settings, logs and the sign-in token still belong to the machine it
+  runs on - a token on a removable drive could not be protected. Published as an
+  asset of the 0.2.0 release.
+
 ## [0.2.0] - 2026-09-03
 
 Audiflix becomes a self-contained Windows application: install it and nothing

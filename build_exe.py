@@ -3,6 +3,7 @@
     pip install -r requirements-build.txt
     python build_exe.py                 # dist/Audiflix/ (onedir application)
     python build_exe.py --installer     # additionally dist/Audiflix-<ver>-Setup.exe
+    python build_exe.py --portable      # additionally the portable zip archive
     python build_exe.py --latest-vlc    # use the newest stable VLC, not the pin
 
 Steps, in order:
@@ -14,7 +15,7 @@ Steps, in order:
    build that unpacks on every start),
 4. run the packaged application's ``--selftest`` so a broken bundle is caught
    here rather than by a user,
-5. optionally build the Inno Setup installer.
+5. optionally build the Inno Setup installer and the portable archive.
 
 The SHA-256 of every produced artifact is printed so a release can be verified.
 """
@@ -28,6 +29,7 @@ import os
 import shutil
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -80,6 +82,37 @@ def directory_size(path: Path) -> int:
     return sum(item.stat().st_size for item in path.rglob("*") if item.is_file())
 
 
+def build_portable_zip(version: str, vlc: str) -> Path:
+    """Package the onedir output as a zip that unpacks into one folder.
+
+    Same application as the installer, without installing anything. The
+    accompanying PORTABLE.txt is explicit about what does *not* travel with it -
+    settings and the sign-in token stay on the machine it runs on.
+    """
+    print("\n=== Packaging the portable archive ===")
+    folder_name = f"Audiflix-{version}"
+    target = DIST / f"{folder_name}-portable-win64.zip"
+    target.unlink(missing_ok=True)
+
+    readme = (ROOT / "packaging" / "PORTABLE.txt").read_text(encoding="utf-8")
+    readme = readme.format(version=version, vlc_version=vlc)
+
+    extras = {
+        "PORTABLE.txt": readme,
+        "LICENSE.txt": (ROOT / "LICENSE").read_text(encoding="utf-8"),
+        "THIRD_PARTY_NOTICES.txt": (ROOT / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8"),
+    }
+
+    files = sorted(path for path in APP_DIR.rglob("*") if path.is_file())
+    with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
+        for path in files:
+            archive.write(path, f"{folder_name}/{path.relative_to(APP_DIR).as_posix()}")
+        for name, text in extras.items():
+            archive.writestr(f"{folder_name}/{name}", text)
+    print(f"  {len(files) + len(extras)} entries -> {target.name}")
+    return target
+
+
 def find_iscc() -> Path | None:
     found = shutil.which("iscc") or shutil.which("ISCC")
     if found:
@@ -93,6 +126,7 @@ def find_iscc() -> Path | None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--installer", action="store_true", help="also build the Inno Setup installer")
+    parser.add_argument("--portable", action="store_true", help="also build the portable zip archive")
     parser.add_argument(
         "--latest-vlc", action="store_true",
         help="use the newest stable VLC instead of the version in vlc.lock.json",
@@ -132,6 +166,9 @@ def main(argv: list[str] | None = None) -> int:
             )
 
     artifacts: list[Path] = []
+    if args.portable:
+        artifacts.append(build_portable_zip(version, vlc_version()))
+
     if args.installer:
         iscc = find_iscc()
         if iscc is None:

@@ -74,14 +74,43 @@ copy of the VLC libraries; see [Audio engine](#audio-engine).
 
 ### Windows
 
-Download `Audiflix-<version>-Setup.exe` from the [releases
-page](https://github.com/FelixSteindorff/audiflix/releases) and run it. The
-installer needs no administrator rights, creates a start menu entry and an
-uninstall entry, and brings its own audio engine with it.
+Two downloads on the [releases
+page](https://github.com/FelixSteindorff/audiflix/releases); both contain the
+audio engine, so nothing else has to be installed.
 
-To check that everything works on your machine, run `audiflix-selftest.exe`
-from the installation folder: it loads the bundled engine and decodes a test
-tone, then prints PASS or FAIL.
+**Installer** - `Audiflix-<version>-Setup.exe`. Needs no administrator rights,
+creates a start menu entry and an uninstall entry.
+
+**Portable** - `Audiflix-<version>-portable-win64.zip`. Unpack it anywhere,
+including a USB stick, and run `audiflix.exe`. Nothing is installed or
+registered, and no traces are left in the registry.
+
+To check that everything works on a machine, run `audiflix-selftest.exe` from
+the installation or portable folder: it loads the bundled engine and decodes a
+test tone, then prints PASS or FAIL.
+
+#### What the portable build does not carry
+
+The application travels with you; your data stays on the machine you run it on:
+
+| | Where it lives |
+|---|---|
+| Settings, logs, download registry | `%APPDATA%\audiflix` |
+| Downloaded books | `%USERPROFILE%\Audiflix` (configurable) |
+| Sign-in token | the Windows Credential Manager of that machine |
+
+So a new computer starts with the default settings and asks you to sign in
+again. This is deliberate: putting the token on the stick would mean writing it
+somewhere Audiflix cannot protect it. Nothing secret is ever written into the
+portable folder.
+
+If you do want the settings to travel, point `AUDIFLIX_CONFIG_DIR` at a folder
+inside the portable directory before starting:
+
+```bat
+set AUDIFLIX_CONFIG_DIR=%~dp0data
+audiflix.exe
+```
 
 ### From source
 

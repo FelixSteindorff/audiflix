@@ -1,0 +1,53 @@
+Audiflix {version} - portable build
+===================================
+
+Accessible, keyboard-driven desktop client for Audiobookshelf.
+An independent third-party client, not affiliated with the Audiobookshelf
+project.
+
+Running it
+----------
+No installation is required. Unpack this folder anywhere - a USB stick, a
+network share, any directory you can write to - and start audiflix.exe.
+
+The audio engine (VLC {vlc_version} by VideoLAN) is included in _internal\vlc.
+You do NOT need to install VLC, and this build does not use or modify a VLC
+installation that may already be on the computer.
+
+To check that audio works on a given machine, run audiflix-selftest.exe in this
+folder. It loads the bundled engine, verifies the plugins and decodes a test
+tone, then prints PASS or FAIL.
+
+What is NOT portable
+--------------------
+The application files travel with you, but your data does not:
+
+  Settings and logs      %APPDATA%\audiflix
+  Download registry      %APPDATA%\audiflix\downloads.json
+  Downloaded books       %USERPROFILE%\Audiflix  (configurable in the settings)
+  Sign-in token          the Windows Credential Manager of that machine
+
+So on a new computer you will be asked to sign in again, and your settings start
+from the defaults. This is deliberate: a token stored on a removable drive could
+not be protected. Nothing secret is ever written into this folder.
+
+You can make the settings travel by pointing AUDIFLIX_CONFIG_DIR at a folder
+inside this one before starting, for example with a small start.bat:
+
+    set AUDIFLIX_CONFIG_DIR=%~dp0data
+    start "" "%~dp0audiflix.exe"
+
+Command line
+------------
+    audiflix.exe --version     Audiflix and bundled VLC versions
+    audiflix.exe --help        the available options
+    audiflix-selftest.exe      check the audio engine on this machine
+
+Licensing
+---------
+Audiflix is licensed under the MIT License (LICENSE.txt).
+The bundled VLC libraries are licensed under the GNU General Public License
+version 2 or later; the licence text is in _internal\vlc\licenses\COPYING.txt.
+THIRD_PARTY_NOTICES.txt explains how to obtain the corresponding source code.
+
+https://github.com/FelixSteindorff/audiflix
