@@ -1,0 +1,45 @@
+name: Build Windows executable
+
+# Not triggered by ordinary pushes: building the .exe is only useful when
+# preparing a release, so it runs on demand or for a version tag. The workflow
+# uploads a build artifact and never publishes a release by itself.
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies (pinned for a reproducible build)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-build.txt
+
+      - name: Compile translation catalogs
+        run: python tools/i18n_tool.py compile
+
+      - name: Build the executable
+        run: python build_exe.py
+
+      - name: Show the build result
+        run: |
+          dir dist
+          python -c "import hashlib,pathlib;p=pathlib.Path('dist/audiflix.exe');print(p.name, p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: audiflix-windows
+          path: dist/audiflix.exe
+          if-no-files-found: error

@@ -1,0 +1,106 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "audiflix"
+version = "0.1.0"
+description = "Accessible, screen-reader friendly desktop client for Audiobookshelf"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Felix Steindorff" }]
+license = { text = "MIT" }
+keywords = ["audiobookshelf", "audiobook", "accessibility", "nvda", "screen-reader", "wxpython"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Win32 (MS Windows)",
+    "Environment :: X11 Applications :: GTK",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Natural Language :: German",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Adaptive Technologies",
+    "Topic :: Multimedia :: Sound/Audio :: Players",
+]
+dependencies = [
+    "wxPython>=4.2",
+    "python-vlc>=3.0",
+    "requests>=2.31",
+    "keyring>=24.0",
+    "accessible_output2>=0.17",
+]
+
+[project.urls]
+Homepage = "https://github.com/FelixSteindorff/audiflix"
+Issues = "https://github.com/FelixSteindorff/audiflix/issues"
+Changelog = "https://github.com/FelixSteindorff/audiflix/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+build = ["pyinstaller>=6.0"]
+test = ["pytest>=8.0"]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.gui-scripts]
+audiflix = "audiflix.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+audiflix = [
+    "locale/*.pot",
+    "locale/*/LC_MESSAGES/*.po",
+    "locale/*/LC_MESSAGES/*.mo",
+    "resources/*.ico",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+filterwarnings = ["error::DeprecationWarning:audiflix.*"]
+
+# --- ruff -------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests", "tools"]
+extend-exclude = ["build", "dist"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "W",    # pycodestyle warnings
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "C4",   # comprehensions
+    "UP",   # pyupgrade
+    "SIM",  # flake8-simplify
+    "RUF",  # ruff-specific
+    "BLE",  # blind except
+    "T20",  # no print in application code
+]
+ignore = [
+    "E501",    # long lines are handled by the formatter, not enforced here
+    "SIM105",  # contextlib.suppress hides which exception is intended
+    "B008",    # wx APIs legitimately take calls in defaults
+    "RUF001",  # ambiguous unicode characters appear in German translations
+]
+
+[tool.ruff.lint.per-file-ignores]
+# The i18n `_` helper is a function, not a throwaway variable.
+"src/audiflix/**" = ["A001", "A002"]
+# Command line helpers print by design.
+"tools/*.py" = ["T20"]
+"build_exe.py" = ["T20"]
+# Tests reach into internals on purpose and import after importorskip.
+"tests/*.py" = ["E402", "SLF001", "T20"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["audiflix"]

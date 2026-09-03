@@ -1,0 +1,7 @@
+# Runtime dependencies (minimum supported versions).
+# For a reproducible release build use requirements-build.txt instead.
+wxPython>=4.2
+python-vlc>=3.0
+requests>=2.31
+keyring>=24.0
+accessible_output2>=0.17

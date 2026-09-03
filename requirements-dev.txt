@@ -1,0 +1,6 @@
+# Development and CI tooling.
+-r requirements.txt
+pytest==9.1.1
+ruff==0.16.5
+# Only needed to regenerate the application icon (tools/make_icon.py).
+pillow>=10.0

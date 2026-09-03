@@ -1,0 +1,1080 @@
+# German translation for Audiflix.
+# Copyright (C) 2026 Felix Steindorff
+# This file is distributed under the same MIT license as Audiflix.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: audiflix\n"
+"POT-Creation-Date: 2026-09-03 07:01+0000\n"
+"PO-Revision-Date: 2026-09-03 07:01+0000\n"
+"Last-Translator: Felix Steindorff\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] "%d Stunde"
+msgstr[1] "%d Stunden"
+
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] "%d Minute"
+msgstr[1] "%d Minuten"
+
+msgid "%d second"
+msgid_plural "%d seconds"
+msgstr[0] "%d Sekunde"
+msgstr[1] "%d Sekunden"
+
+msgid " (podcast)"
+msgstr " (Podcast)"
+
+msgid "%(collection)s (%(count)d)"
+msgstr "%(collection)s (%(count)d)"
+
+msgid "%(kind)s (%(count)d) - search '%(term)s'"
+msgstr "%(kind)s (%(count)d) - Suche '%(term)s'"
+
+msgid "%(title)s added to collection %(collection)s."
+msgstr "%(title)s zur Sammlung %(collection)s hinzugefügt."
+
+msgid "%(title)s: %(count)d new episode(s) found - the server is downloading them."
+msgstr "%(title)s: %(count)d neue Episode(n) gefunden - der Server lädt sie herunter."
+
+msgid "%d result(s)."
+msgstr "%d Treffer."
+
+msgid "%s downloaded."
+msgstr "%s heruntergeladen."
+
+msgid "%s has already been downloaded."
+msgstr "%s ist bereits heruntergeladen."
+
+msgid "%s marked as finished."
+msgstr "%s als abgeschlossen markiert."
+
+msgid "%s marked as not finished."
+msgstr "%s als nicht abgeschlossen markiert."
+
+msgid ""
+"%s uses an unencrypted HTTP connection.\n"
+"\n"
+"Your user name, password and access token would be readable by anyone on the network. Use https:// whenever possible.\n"
+"\n"
+"Continue anyway?"
+msgstr ""
+"%s verwendet eine unverschlüsselte HTTP-Verbindung.\n"
+"\n"
+"Benutzername, Passwort und Zugriffstoken wären für alle im Netzwerk lesbar. Verwenden Sie nach Möglichkeit https://.\n"
+"\n"
+"Trotzdem fortfahren?"
+
+msgid "%s: automatic episode download turned off."
+msgstr "%s: Automatischer Episoden-Download ausgeschaltet."
+
+msgid "%s: automatic episode download turned on."
+msgstr "%s: Automatischer Episoden-Download eingeschaltet."
+
+msgid "%s: no new episodes."
+msgstr "%s: keine neuen Episoden."
+
+msgid "%sx"
+msgstr "%s-fach"
+
+msgid "&About Audiflix"
+msgstr "&Über Audiflix"
+
+msgid "&Add"
+msgstr "&Hinzufügen"
+
+msgid "&Announce position after skipping"
+msgstr "Position nach Springen &ansagen"
+
+msgid "&Author:"
+msgstr "&Autor:"
+
+msgid "&Bookmarks (Enter jumps to the position, F2 renames, Delete removes):"
+msgstr "&Lesezeichen (Enter springt zur Stelle, F2 benennt um, Entf löscht):"
+
+msgid "&Cancel"
+msgstr "&Abbrechen"
+
+msgid "&Chapters (%d):"
+msgstr "&Kapitel (%d):"
+
+msgid "&Close"
+msgstr "&Schließen"
+
+msgid "&Collection:"
+msgstr "&Sammlung:"
+
+msgid "&Delete"
+msgstr "&Löschen"
+
+msgid "&Description:"
+msgstr "&Beschreibung:"
+
+msgid "&Details:"
+msgstr "&Details:"
+
+msgid "&Download folder:"
+msgstr "&Download-Ordner:"
+
+msgid "&Edit media details..."
+msgstr "Medieninformationen &bearbeiten..."
+
+msgid "&File"
+msgstr "&Datei"
+
+msgid "&Go to"
+msgstr "&Anspringen"
+
+msgid "&Help"
+msgstr "&Hilfe"
+
+msgid "&Item"
+msgstr "&Titel"
+
+msgid "&Keyboard shortcuts"
+msgstr "&Tastenkürzel"
+
+msgid "&Language:"
+msgstr "&Sprache:"
+
+msgid "&Library:"
+msgstr "&Bibliothek:"
+
+msgid "&Media details"
+msgstr "&Medieninfos"
+
+msgid "&Name of the new collection:"
+msgstr "&Name der neuen Sammlung:"
+
+msgid "&Narrator:"
+msgstr "&Sprecher:"
+
+msgid "&Password:"
+msgstr "&Passwort:"
+
+msgid "&Playback"
+msgstr "&Wiedergabe"
+
+msgid "&Publisher:"
+msgstr "&Verlag:"
+
+msgid "&Refresh"
+msgstr "&Aktualisieren"
+
+msgid "&Search"
+msgstr "&Suchen"
+
+msgid "&Search for a podcast:"
+msgstr "Podcast &suchen:"
+
+msgid "&Server address:"
+msgstr "&Server-Adresse:"
+
+msgid "&Settings..."
+msgstr "&Einstellungen..."
+
+msgid "&Sort:"
+msgstr "&Sortieren:"
+
+msgid "&Subtitle:"
+msgstr "&Untertitel:"
+
+msgid "&Title:"
+msgstr "&Titel:"
+
+msgid "&User name:"
+msgstr "&Benutzername:"
+
+msgid "&View"
+msgstr "&Ansicht"
+
+msgid ""
+"'%(shortcut)s' is not a valid shortcut for %(action)s.\n"
+"\n"
+"Use a form such as Ctrl+Shift+B, F5 or Alt+Right, or leave the field empty to disable it."
+msgstr ""
+"'%(shortcut)s' ist kein gültiges Tastenkürzel für %(action)s.\n"
+"\n"
+"Verwenden Sie eine Schreibweise wie Ctrl+Shift+B, F5 oder Alt+Right, oder lassen Sie das Feld leer, um das Kürzel abzuschalten."
+
+msgid "(unknown)"
+msgstr "(unbekannt)"
+
+msgid "(unnamed)"
+msgstr "(ohne Namen)"
+
+msgid "(untitled)"
+msgstr "(ohne Titel)"
+
+msgid "+ Create a new collection..."
+msgstr "+ Neue Sammlung anlegen..."
+
+msgid "10 minutes"
+msgstr "10 Minuten"
+
+msgid "15 minutes"
+msgstr "15 Minuten"
+
+msgid "30 minutes"
+msgstr "30 Minuten"
+
+msgid "45 minutes"
+msgstr "45 Minuten"
+
+msgid "5 minutes"
+msgstr "5 Minuten"
+
+msgid "60 minutes"
+msgstr "60 Minuten"
+
+msgid "About Audiflix"
+msgstr "Über Audiflix"
+
+msgid "Add book&mark"
+msgstr "&Lesezeichen setzen"
+
+msgid "Add bookmark"
+msgstr "Lesezeichen setzen"
+
+msgid "Add to c&ollection..."
+msgstr "Zu Sammlung &hinzufügen..."
+
+msgid "Add to collection"
+msgstr "Zu Sammlung hinzufügen"
+
+msgid "Add to collection..."
+msgstr "Zu Sammlung hinzufügen..."
+
+msgid "Adding the podcast..."
+msgstr "Podcast wird hinzugefügt..."
+
+msgid "All books"
+msgstr "Alle Bücher"
+
+msgid "All shortcuts reset to their defaults."
+msgstr "Alle Tastenkürzel auf die Standardwerte zurückgesetzt."
+
+msgid "Alphabetical"
+msgstr "Alphabetisch"
+
+msgid "An accessible, keyboard-driven client for Audiobookshelf."
+msgstr "Ein barrierefreier, per Tastatur bedienbarer Client für Audiobookshelf."
+
+msgid "Announce current chapter"
+msgstr "Aktuelles Kapitel ansagen"
+
+msgid "Announce position"
+msgstr "Position ansagen"
+
+msgid "Announce position and time remaining"
+msgstr "Position und Restdauer ansagen"
+
+msgid "Audiflix"
+msgstr "Audiflix"
+
+msgid "Audiflix - Sign in"
+msgstr "Audiflix - Anmeldung"
+
+msgid "Audiflix - insecure connection"
+msgstr "Audiflix - unsichere Verbindung"
+
+msgid "Audiflix - invalid shortcut"
+msgstr "Audiflix - ungültiges Tastenkürzel"
+
+msgid "Audiflix - sign-in not saved"
+msgstr "Audiflix - Anmeldung nicht gespeichert"
+
+msgid "Audiflix is an independent third-party client and is not affiliated with the Audiobookshelf project."
+msgstr "Audiflix ist ein unabhängiger Client von Dritten und steht in keiner Verbindung zum Audiobookshelf-Projekt."
+
+msgid "Author"
+msgstr "Autor"
+
+msgid "Authors"
+msgstr "Autoren"
+
+msgid "Authors (%d)"
+msgstr "Autoren (%d)"
+
+msgid "Automatic (system language)"
+msgstr "Automatisch (Systemsprache)"
+
+msgid "Bookmark %d"
+msgstr "Lesezeichen %d"
+
+msgid "Bookmark deleted."
+msgstr "Lesezeichen gelöscht."
+
+msgid "Bookmark renamed."
+msgstr "Lesezeichen umbenannt."
+
+msgid "Bookmark set at %s."
+msgstr "Lesezeichen bei %s gesetzt."
+
+msgid "Bookmarks"
+msgstr "Lesezeichen"
+
+msgid "Bookmarks - %s"
+msgstr "Lesezeichen - %s"
+
+msgid "Books"
+msgstr "Bücher"
+
+msgid "Books / Podcasts"
+msgstr "Bücher / Podcasts"
+
+msgid "Books by %(author)s (%(count)d)"
+msgstr "Bücher von %(author)s (%(count)d)"
+
+msgid "Books by this author"
+msgstr "Bücher des Autors"
+
+msgid "Books in this collection"
+msgstr "Bücher der Sammlung"
+
+msgid "Books in this series"
+msgstr "Bücher der Reihe"
+
+msgid "C&lear this shortcut"
+msgstr "Kürzel &leeren"
+
+msgid "Cannot reach the server: %s"
+msgstr "Server nicht erreichbar: %s"
+
+msgid "Chapter"
+msgstr "Kapitel"
+
+msgid "Chapter %(index)d of %(total)d: %(title)s"
+msgstr "Kapitel %(index)d von %(total)d: %(title)s"
+
+msgid "Chapter %d"
+msgstr "Kapitel %d"
+
+msgid "Chapter &list..."
+msgstr "Kapite&lliste..."
+
+msgid "Chapter list"
+msgstr "Kapitelliste"
+
+msgid "Chapters"
+msgstr "Kapitel"
+
+msgid "Check for new episodes"
+msgstr "Nach neuen Episoden suchen"
+
+msgid "Checking %s for new episodes..."
+msgstr "Suche neue Episoden von %s..."
+
+msgid "Closing Audiflix."
+msgstr "Audiflix wird beendet."
+
+msgid "Collection"
+msgstr "Sammlung"
+
+msgid "Collection %(collection)s created with %(title)s."
+msgstr "Sammlung %(collection)s mit %(title)s angelegt."
+
+msgid "Collections"
+msgstr "Sammlungen"
+
+msgid "Collections (%d)"
+msgstr "Sammlungen (%d)"
+
+msgid "Connecting..."
+msgstr "Verbinde..."
+
+msgid "Continue listening"
+msgstr "Weiterhören"
+
+msgid "Continue listening (%d)"
+msgstr "Weiterhören (%d)"
+
+msgid "Could not add the podcast: %s"
+msgstr "Podcast konnte nicht hinzugefügt werden: %s"
+
+msgid "Could not write the downloaded file: %s"
+msgstr "Heruntergeladene Datei konnte nicht geschrieben werden: %s"
+
+msgid "Default speed:"
+msgstr "Standard-Tempo:"
+
+msgid "Default volume (percent):"
+msgstr "Standard-Lautstärke (Prozent):"
+
+msgid "Delete the bookmark \"%s\"?"
+msgstr "Lesezeichen \"%s\" löschen?"
+
+msgid "Description:"
+msgstr "Beschreibung:"
+
+msgid "Do&wnload"
+msgstr "Her&unterladen"
+
+msgid "Download"
+msgstr "Herunterladen"
+
+msgid "Download failed (HTTP %d)."
+msgstr "Download fehlgeschlagen (HTTP %d)."
+
+msgid "Download folder"
+msgstr "Download-Ordner"
+
+msgid "Downloaded"
+msgstr "Heruntergeladen"
+
+msgid "Downloading %s..."
+msgstr "Lade %s herunter..."
+
+msgid "Duration"
+msgstr "Dauer"
+
+msgid "E&xit"
+msgstr "&Beenden"
+
+msgid "Edit media details - %s"
+msgstr "Medieninformationen bearbeiten - %s"
+
+msgid "Edit media details..."
+msgstr "Medieninformationen bearbeiten..."
+
+msgid "Enter shortcuts in the form Ctrl+Shift+B. Leave a field empty to disable that shortcut."
+msgstr "Tastenkürzel in der Form Ctrl+Shift+B eingeben. Ein leeres Feld schaltet das Kürzel ab."
+
+msgid "Episode"
+msgstr "Episode"
+
+msgid "Episodes"
+msgstr "Episoden"
+
+msgid "Episodes: %(title)s (%(count)d)"
+msgstr "Episoden: %(title)s (%(count)d)"
+
+msgid "Error: %s"
+msgstr "Fehler: %s"
+
+msgid "Exit"
+msgstr "Beenden"
+
+msgid "Faster"
+msgstr "Schneller"
+
+msgid "Finished"
+msgstr "Abgeschlossen"
+
+msgid "Finished (%d)"
+msgstr "Abgeschlossen (%d)"
+
+msgid "Finished, %s"
+msgstr "Abgeschlossen, %s"
+
+msgid "For example https://abs.example.com"
+msgstr "Zum Beispiel https://abs.example.com"
+
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Genres"
+msgstr "Genres"
+
+msgid "Go to &author"
+msgstr "Zum &Autor"
+
+msgid "Go to author"
+msgstr "Zum Autor"
+
+msgid "In lists: arrow keys navigate, Enter opens, Backspace goes back, and the applications key or Shift+F10 opens the context menu."
+msgstr "In Listen: Pfeiltasten navigieren, Enter öffnet, Backspace geht zurück, die Anwendungstaste oder Shift+F10 öffnet das Kontextmenü."
+
+msgid "Invalid username or password."
+msgstr "Benutzername oder Passwort ist falsch."
+
+msgid "Item &details"
+msgstr "Titel&infos"
+
+msgid "Item details"
+msgstr "Titelinfos"
+
+msgid "Keyboard shortcuts"
+msgstr "Tastenkürzel"
+
+msgid "Keyboard shortcuts:"
+msgstr "Tastenkürzel:"
+
+msgid "Language"
+msgstr "Sprache"
+
+msgid "Library scan started for %d library/libraries. The server re-reads the files in the background - press F5 afterwards to refresh the list."
+msgstr "Bibliotheks-Scan für %d Bibliothek(en) gestartet. Der Server liest die Dateien im Hintergrund neu ein - danach F5 drücken, um die Liste zu aktualisieren."
+
+msgid "Library selection"
+msgstr "Bibliotheksauswahl"
+
+msgid "Library: %s"
+msgstr "Bibliothek: %s"
+
+msgid "Licensed under the MIT License."
+msgstr "Lizenziert unter der MIT-Lizenz."
+
+msgid "List"
+msgstr "Liste"
+
+msgid "Loading %s..."
+msgstr "Lade %s..."
+
+msgid "Loading bookmarks..."
+msgstr "Lade Lesezeichen..."
+
+msgid "Loading episodes of %s..."
+msgstr "Lade Episoden von %s..."
+
+msgid "Looking up the author..."
+msgstr "Suche Autor..."
+
+msgid "Mana&ge bookmarks..."
+msgstr "Lesezeichen ver&walten..."
+
+msgid "Manage bookmarks"
+msgstr "Lesezeichen verwalten"
+
+msgid "Mark as &finished"
+msgstr "Als &abgeschlossen markieren"
+
+msgid "Mark as finished"
+msgstr "Als abgeschlossen markieren"
+
+msgid "Media details"
+msgstr "Medieninfos"
+
+msgid "Media details - %s"
+msgstr "Medieninfos - %s"
+
+msgid "Media details for %s saved."
+msgstr "Medieninformationen zu %s gespeichert."
+
+msgid "Message"
+msgstr "Meldung"
+
+msgid "Name of the new collection"
+msgstr "Name der neuen Sammlung"
+
+msgid "Narrator"
+msgstr "Sprecher"
+
+msgid "Ne&xt chapter"
+msgstr "Nächstes Ka&pitel"
+
+msgid "Network error during download: %s"
+msgstr "Netzwerkfehler beim Download: %s"
+
+msgid "Network error: %s"
+msgstr "Netzwerkfehler: %s"
+
+msgid "New title:"
+msgstr "Neuer Titel:"
+
+msgid "Newest"
+msgstr "Neu"
+
+msgid "Next chapter"
+msgstr "Nächstes Kapitel"
+
+msgid "No author is linked to this item."
+msgstr "Kein Autor verknüpft."
+
+msgid "No bookmark selected."
+msgstr "Kein Lesezeichen ausgewählt."
+
+msgid "No bookmarks for this title yet."
+msgstr "Noch keine Lesezeichen für diesen Titel."
+
+msgid "No chapter."
+msgstr "Kein Kapitel."
+
+msgid "No credential store available - the token is kept for this session only."
+msgstr "Kein Anmeldeinformationsspeicher verfügbar - der Token gilt nur für diese Sitzung."
+
+msgid "No item selected."
+msgstr "Kein Titel ausgewählt."
+
+msgid "No library selected."
+msgstr "Keine Bibliothek ausgewählt."
+
+msgid "No playable audio files were found."
+msgstr "Keine abspielbaren Audiodaten gefunden."
+
+msgid "No system credential store is available, so your sign-in is kept for this session only. Audiflix never writes tokens to disk in plain text, so you will need to sign in again next time."
+msgstr "Es ist kein Anmeldeinformationsspeicher des Systems verfügbar, daher gilt die Anmeldung nur für diese Sitzung. Audiflix speichert Tokens niemals im Klartext auf der Festplatte - beim nächsten Start ist eine erneute Anmeldung nötig."
+
+msgid "No title loaded - bookmarks belong to the title that is playing."
+msgstr "Kein Titel geladen - Lesezeichen beziehen sich auf den laufenden Titel."
+
+msgid "No title loaded."
+msgstr "Kein Titel geladen."
+
+msgid "No title selected."
+msgstr "Kein Titel ausgewählt."
+
+msgid "Not downloaded"
+msgstr "Nicht heruntergeladen"
+
+msgid "Not signed in."
+msgstr "Nicht angemeldet."
+
+msgid "Off"
+msgstr "Aus"
+
+msgid "Open &log folder"
+msgstr "&Log-Ordner öffnen"
+
+msgid "Overview"
+msgstr "Übersicht"
+
+msgid "Paused"
+msgstr "Pausiert"
+
+msgid "Play / &Pause"
+msgstr "Play / &Pause"
+
+msgid "Play / Pause"
+msgstr "Play / Pause"
+
+msgid "Playback failed. The stream may have expired - please try again."
+msgstr "Wiedergabe fehlgeschlagen. Möglicherweise ist der Stream abgelaufen - bitte erneut versuchen."
+
+msgid "Playback reported repeated errors. See the log file."
+msgstr "Die Wiedergabe meldet wiederholt Fehler. Details stehen in der Logdatei."
+
+msgid "Playing"
+msgstr "Wiedergabe"
+
+msgid "Playing: %s"
+msgstr "Wiedergabe: %s"
+
+msgid "Please enter a search term."
+msgstr "Bitte einen Suchbegriff eingeben."
+
+msgid "Please enter the address of your Audiobookshelf server."
+msgstr "Bitte die Adresse des Audiobookshelf-Servers eingeben."
+
+msgid "Please enter the server address without a query string."
+msgstr "Bitte die Server-Adresse ohne Query-String eingeben."
+
+msgid "Please enter your user name."
+msgstr "Bitte den Benutzernamen eingeben."
+
+msgid "Please select a podcast first."
+msgstr "Bitte zuerst einen Podcast auswählen."
+
+msgid "Please wait"
+msgstr "Bitte warten"
+
+msgid "Podcast %s added."
+msgstr "Podcast %s hinzugefügt."
+
+msgid "Podcast details"
+msgstr "Podcast-Infos"
+
+msgid "Podcast results"
+msgstr "Podcast-Ergebnisse"
+
+msgid "Podcast search term"
+msgstr "Podcast-Suchbegriff"
+
+msgid "Podcasts"
+msgstr "Podcasts"
+
+msgid "Position"
+msgstr "Position"
+
+msgid "Position %(position)s, %(remaining)s remaining"
+msgstr "Position %(position)s, noch %(remaining)s verbleibend"
+
+msgid "Press Enter to search"
+msgstr "Zum Suchen Enter drücken"
+
+msgid "Previous &chapter"
+msgstr "Voriges &Kapitel"
+
+msgid "Previous chapter"
+msgstr "Voriges Kapitel"
+
+msgid "Published"
+msgstr "Veröffentlicht"
+
+msgid "Published &year:"
+msgstr "Erscheinungs&jahr:"
+
+msgid "Publisher"
+msgstr "Verlag"
+
+msgid "R&eset this shortcut"
+msgstr "Kürzel zurücks&etzen"
+
+msgid "R&esults:"
+msgstr "&Ergebnisse:"
+
+msgid "Re&name"
+msgstr "Umbe&nennen"
+
+msgid "Re-&scan library (re-read files and tags)"
+msgstr "Bibliothek &neu scannen (Dateien und Tags neu einlesen)"
+
+msgid "Recently added"
+msgstr "Zuletzt hinzugefügt"
+
+msgid "Recently added (%d)"
+msgstr "Zuletzt hinzugefügt (%d)"
+
+msgid "Refresh: F5"
+msgstr "Aktualisieren: F5"
+
+msgid "Refreshed."
+msgstr "Aktualisiert."
+
+msgid "Rename bookmark"
+msgstr "Lesezeichen umbenennen"
+
+msgid "Reset &all shortcuts"
+msgstr "&Alle Kürzel zurücksetzen"
+
+msgid "Reset all keyboard shortcuts to their default values?"
+msgstr "Alle Tastenkürzel auf die Standardwerte zurücksetzen?"
+
+msgid "Reset speed"
+msgstr "Tempo zurücksetzen"
+
+msgid "Scanning %(name)s (%(index)d/%(total)d)..."
+msgstr "Scanne %(name)s (%(index)d/%(total)d)..."
+
+msgid "Sea&rch"
+msgstr "S&uchen"
+
+msgid "Sea&rch:"
+msgstr "S&uche:"
+
+msgid "Search"
+msgstr "Suchen"
+
+msgid "Search and &add podcast..."
+msgstr "Podcast suchen und &hinzufügen..."
+
+msgid "Search and add a podcast"
+msgstr "Podcast suchen und hinzufügen"
+
+msgid "Search authors"
+msgstr "Autor suchen"
+
+msgid "Search failed: %s"
+msgstr "Suche fehlgeschlagen: %s"
+
+msgid "Search podcasts"
+msgstr "Podcast suchen"
+
+msgid "Search series"
+msgstr "Reihe suchen"
+
+msgid "Search titles"
+msgstr "Titel suchen"
+
+msgid "Searching for podcasts..."
+msgstr "Suche Podcasts..."
+
+msgid "Sections"
+msgstr "Bereiche"
+
+msgid "Select &library..."
+msgstr "&Bibliothek wählen..."
+
+msgid "Select library"
+msgstr "Bibliothek wählen"
+
+msgid "Series"
+msgstr "Reihe"
+
+msgid "Series %(name)s (%(count)d)"
+msgstr "Reihe %(name)s (%(count)d)"
+
+msgid "Series (%d)"
+msgstr "Reihen (%d)"
+
+msgid "Server error %(status)d: %(detail)s"
+msgstr "Serverfehler %(status)d: %(detail)s"
+
+msgid "Server error %d."
+msgstr "Serverfehler %d."
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "Settings pages"
+msgstr "Einstellungsseiten"
+
+msgid "Settings saved."
+msgstr "Einstellungen gespeichert."
+
+msgid "Shortcut for %(action)s reset to %(shortcut)s."
+msgstr "Kürzel für %(action)s auf %(shortcut)s zurückgesetzt."
+
+msgid "Shortcut for %s"
+msgstr "Tastenkürzel %s"
+
+msgid "Shortcut for %s cleared."
+msgstr "Kürzel für %s geleert."
+
+msgid "Show books"
+msgstr "Bücher anzeigen"
+
+msgid "Sign &in"
+msgstr "&Anmelden"
+
+msgid "Sign &out"
+msgstr "Ab&melden"
+
+msgid "Sign out of Audiflix?"
+msgstr "Wirklich von Audiflix abmelden?"
+
+msgid "Sign-in failed: %s"
+msgstr "Anmeldung fehlgeschlagen: %s"
+
+msgid "Sign-in failed: the server did not return a token."
+msgstr "Anmeldung fehlgeschlagen: Der Server hat keinen Token geliefert."
+
+msgid "Signed in successfully."
+msgstr "Anmeldung erfolgreich."
+
+msgid "Signing in to %s..."
+msgstr "Melde bei %s an..."
+
+msgid "Signing in..."
+msgstr "Anmeldung läuft..."
+
+msgid "Signing out..."
+msgstr "Abmeldung läuft..."
+
+msgid "Skip &back"
+msgstr "&Zurück springen"
+
+msgid "Skip &forward"
+msgstr "&Vor springen"
+
+msgid "Skip back"
+msgstr "Zurück springen"
+
+msgid "Skip back (seconds):"
+msgstr "Zurück springen (Sekunden):"
+
+msgid "Skip forward"
+msgstr "Vor springen"
+
+msgid "Skip forward (seconds):"
+msgstr "Vor springen (Sekunden):"
+
+msgid "Sleep &timer..."
+msgstr "&Sleeptimer..."
+
+msgid "Sleep timer"
+msgstr "Sleeptimer"
+
+msgid "Sleep timer &length:"
+msgstr "&Länge des Sleeptimers:"
+
+msgid "Sleep timer default (minutes):"
+msgstr "Sleeptimer-Standard (Minuten):"
+
+msgid "Sleep timer elapsed - playback paused."
+msgstr "Sleeptimer abgelaufen - Wiedergabe pausiert."
+
+msgid "Sleep timer length"
+msgstr "Sleeptimer-Länge"
+
+msgid "Sleep timer off"
+msgstr "Sleeptimer ausgeschaltet"
+
+msgid "Sleep timer: %d minutes"
+msgstr "Sleeptimer: %d Minuten"
+
+msgid "Sleep timer: until the end of the chapter"
+msgstr "Sleeptimer: bis Kapitelende"
+
+msgid "Slower"
+msgstr "Langsamer"
+
+msgid "Sort authors"
+msgstr "Sortierung Autoren"
+
+msgid "Sort order"
+msgstr "Sortierung"
+
+msgid "Sort series"
+msgstr "Sortierung Reihen"
+
+msgid "Speed %s"
+msgstr "Tempo %s"
+
+msgid "Start"
+msgstr "Beginn"
+
+msgid "Starting a scan of %d library/libraries..."
+msgstr "Starte Scan für %d Bibliothek(en)..."
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Stay signed &in"
+msgstr "Angemeldet &bleiben"
+
+msgid "Stay signed in"
+msgstr "Angemeldet bleiben"
+
+msgid "Subtitle"
+msgstr "Untertitel"
+
+msgid "Sync progress every (seconds):"
+msgstr "Fortschritt synchronisieren alle (Sekunden):"
+
+msgid "Tab 1: &Overview"
+msgstr "Tab 1: &Übersicht"
+
+msgid "Tab 2: &Books / Podcasts"
+msgstr "Tab 2: &Bücher / Podcasts"
+
+msgid "Tab 3: &Authors"
+msgstr "Tab 3: &Autoren"
+
+msgid "Tab 4: Se&ries"
+msgstr "Tab 4: &Reihen"
+
+msgid "Tab 5: &Collections"
+msgstr "Tab 5: &Sammlungen"
+
+msgid "Tabs 1 to 5: Ctrl+1 ... Ctrl+5"
+msgstr "Tabs 1 bis 5: Ctrl+1 ... Ctrl+5"
+
+msgid "The library folder returned by the server has no id."
+msgstr "Der vom Server gelieferte Bibliotheksordner hat keine ID."
+
+msgid "The library has no folder to store the podcast in."
+msgstr "Die Bibliothek hat keinen Ordner, in dem der Podcast abgelegt werden kann."
+
+msgid ""
+"The log files are stored in:\n"
+"%s"
+msgstr ""
+"Die Logdateien liegen unter:\n"
+"%s"
+
+msgid "The new language will be used the next time Audiflix starts."
+msgstr "Die neue Sprache wird beim nächsten Start von Audiflix verwendet."
+
+msgid "The server address contains an invalid port number."
+msgstr "Die Server-Adresse enthält eine ungültige Portnummer."
+
+msgid "The server address does not contain a host name."
+msgstr "Die Server-Adresse enthält keinen Hostnamen."
+
+msgid "The server address must start with http:// or https://."
+msgstr "Die Server-Adresse muss mit http:// oder https:// beginnen."
+
+msgid "The server did not respond in time."
+msgstr "Der Server hat nicht rechtzeitig geantwortet."
+
+msgid "The server does not know this address (404)."
+msgstr "Der Server kennt diese Adresse nicht (404)."
+
+msgid "The shortcut %(shortcut)s is assigned to several actions: %(actions)s."
+msgstr "Das Kürzel %(shortcut)s ist mehreren Aktionen zugewiesen: %(actions)s."
+
+msgid "The token is stored in your system credential store."
+msgstr "Der Token wird im Anmeldeinformationsspeicher des Systems abgelegt."
+
+msgid "This search result has no feed URL."
+msgstr "Zu diesem Treffer gibt es keine Feed-URL."
+
+msgid "This server has no libraries."
+msgstr "Dieser Server hat keine Bibliotheken."
+
+msgid "This tab has no search field."
+msgstr "Dieser Tab hat kein Suchfeld."
+
+msgid "This title has no chapters."
+msgstr "Dieser Titel hat keine Kapitel."
+
+msgid "This title has no playable audio files."
+msgstr "Dieser Titel hat keine abspielbaren Audiodateien."
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Title finished."
+msgstr "Titel beendet."
+
+msgid "Toggle automatic episode download"
+msgstr "Automatischen Episoden-Download umschalten"
+
+msgid "Total duration: %s"
+msgstr "Gesamtdauer: %s"
+
+msgid "Until the end of the chapter"
+msgstr "Bis Kapitelende"
+
+msgid "Updating the setting for %s..."
+msgstr "Aktualisiere Einstellung für %s..."
+
+msgid "VLC could not be started. Please reinstall the VLC media player."
+msgstr "VLC konnte nicht gestartet werden. Bitte den VLC Media Player neu installieren."
+
+msgid "VLC could not be started: %s"
+msgstr "VLC konnte nicht gestartet werden: %s"
+
+msgid "VLC is not available. Please install the VLC media player (https://www.videolan.org)."
+msgstr "VLC ist nicht verfügbar. Bitte den VLC Media Player installieren (https://www.videolan.org)."
+
+msgid "Volume %d percent"
+msgstr "Lautstärke %d Prozent"
+
+msgid "Volume down"
+msgstr "Leiser"
+
+msgid "Volume step (percent):"
+msgstr "Lautstärke-Schritt (Prozent):"
+
+msgid "Volume up"
+msgstr "Lauter"
+
+msgid "Your account is not allowed to perform this action."
+msgstr "Ihr Konto darf diese Aktion nicht ausführen."
+
+msgid ""
+"Your session has expired and could not be renewed.\n"
+"\n"
+"Please restart Audiflix and sign in again."
+msgstr ""
+"Ihre Sitzung ist abgelaufen und konnte nicht erneuert werden.\n"
+"\n"
+"Bitte Audiflix neu starten und erneut anmelden."
+
+msgid "Your session has expired. Please sign in again."
+msgstr "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an."
+
+msgid "by %s"
+msgstr "von %s"
+
+msgid "finished"
+msgstr "abgeschlossen"
+
+msgid "narrated by %s"
+msgstr "gelesen von %s"
+
+msgid "not set"
+msgstr "nicht belegt"
+
+msgid "series %s"
+msgstr "Reihe %s"
