@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-03
+
+A book you downloaded now really is yours to listen to: it plays from disk and
+keeps working when the server does not answer. Alongside that, this release
+fixes several things that went wrong while listening - a sleep timer that never
+stopped at a chapter, a window that froze on pause, and a player that gave up on
+the first hiccup in the connection.
+
 ### Added
 
 - A **portable Windows download** (`Audiflix-<version>-portable-win64.zip`)
@@ -230,6 +238,7 @@ people.
 - See the "Changed" section: token storage, token scoping to the configured
   host, log redaction and the HTTP warning are all part of this release.
 
-[Unreleased]: https://github.com/FelixSteindorff/audiflix/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/FelixSteindorff/audiflix/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/FelixSteindorff/audiflix/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/FelixSteindorff/audiflix/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/FelixSteindorff/audiflix/releases/tag/v0.1.0
