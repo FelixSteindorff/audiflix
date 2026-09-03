@@ -1,9 +1,10 @@
 # Audiflix
 
-A lightweight, **fully keyboard-operable and screen-reader friendly** desktop
-client for [Audiobookshelf](https://www.audiobookshelf.org/), built with
-wxPython and VLC. The Windows release is self-contained: it brings its own
-audio engine, so there is nothing else to install.
+**Accessible, keyboard-driven desktop player for Audiobookshelf.**
+
+I started this project because I wanted a straightforward, accessible Audiobookshelf client for desktop. The Windows version is built with wxPython and uses libVLC for playback.
+
+The Windows release is self-contained and brings its own audio engine, so VLC does not have to be installed separately.
 
 > Audiflix is an **independent third-party client**. It is not affiliated with,
 > endorsed by, or supported by the Audiobookshelf project. "Audiobookshelf" is
@@ -337,6 +338,12 @@ tools/              VLC fetcher, i18n, icon and version-resource tooling
 - Only tested on Windows with NVDA. It should run on Linux and macOS, but the
   accessibility behaviour there is unverified.
 - Changing the interface language takes effect after a restart.
+
+## AI-assisted development
+
+Most of the code in Audiflix was created with the help of AI coding agents. I use them heavily for implementation, refactoring and tests, while I decide what the app should do, review the changes and test the application in actual use, especially with NVDA and keyboard-only workflows.
+
+I'm mentioning this simply to be transparent about how the project is developed.
 
 ## Contributing
 
