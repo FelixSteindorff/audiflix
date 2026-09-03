@@ -29,6 +29,9 @@ SHORTCUT_LABELS: list[tuple[str, str]] = [
     ("prev_chapter", N_("Previous chapter")),
     ("next_chapter", N_("Next chapter")),
     ("chapter_list", N_("Chapter list")),
+    ("prev_track", N_("Previous audio file")),
+    ("next_track", N_("Next audio file")),
+    ("jump_to_time", N_("Jump to position")),
     ("speed_down", N_("Slower")),
     ("speed_up", N_("Faster")),
     ("speed_reset", N_("Reset speed")),
@@ -36,6 +39,7 @@ SHORTCUT_LABELS: list[tuple[str, str]] = [
     ("volume_down", N_("Volume down")),
     ("announce_time", N_("Announce position")),
     ("sleep_timer", N_("Sleep timer")),
+    ("announce_sleep", N_("Announce sleep timer")),
     ("add_bookmark", N_("Add bookmark")),
     ("manage_bookmarks", N_("Manage bookmarks")),
     ("media_info", N_("Media details")),
@@ -118,6 +122,10 @@ class _GeneralPage(wx.Panel):
             grid, _("Sleep timer default (minutes):"),
             settings.get("sleep_timer_default_minutes", 15), 1, 240,
         )
+        self.sleep_fade = self._spin(
+            grid, _("Fade out before the sleep timer (seconds, 0 = off):"),
+            settings.get("sleep_fade_seconds", 20), 0, 120,
+        )
         self.sync = self._spin(
             grid, _("Sync progress every (seconds):"),
             settings.get("progress_sync_seconds", 15), 5, 120,
@@ -143,10 +151,59 @@ class _GeneralPage(wx.Panel):
         self.announce = wx.CheckBox(self, label=_("&Announce position after skipping"))
         self.announce.SetValue(bool(settings.get("announce_on_seek", True)))
 
+        self.announce_chapter = wx.CheckBox(
+            self, label=_("Announce a new &chapter while listening")
+        )
+        self.announce_chapter.SetValue(bool(settings.get("announce_chapter_change", True)))
+
+        self.remember_speed = wx.CheckBox(
+            self, label=_("Remember the speed &per title")
+        )
+        self.remember_speed.SetValue(bool(settings.get("remember_speed_per_title", True)))
+
+        self.media_keys = wx.CheckBox(
+            self, label=_("Use the &media keys even when Audiflix is in the background")
+        )
+        self.media_keys.SetValue(bool(settings.get("global_media_keys", True)))
+
+        self.forget_speeds = wx.Button(self, label=_("&Forget all saved title speeds"))
+        self.forget_speeds.Bind(wx.EVT_BUTTON, self._on_forget_speeds)
+        self._update_forget_button()
+
         outer = wx.BoxSizer(wx.VERTICAL)
         outer.Add(grid, 0, wx.EXPAND | wx.ALL, 12)
-        outer.Add(self.announce, 0, wx.ALL, 12)
+        outer.Add(self.announce, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
+        outer.Add(self.announce_chapter, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
+        outer.Add(self.remember_speed, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
+        outer.Add(self.media_keys, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
+        outer.Add(self.forget_speeds, 0, wx.ALL, 12)
         self.SetSizer(outer)
+
+    def _saved_speed_count(self) -> int:
+        return len(self.settings.get("book_speeds") or {})
+
+    def _update_forget_button(self) -> None:
+        count = self._saved_speed_count()
+        self.forget_speeds.Enable(count > 0)
+        self.forget_speeds.SetLabel(
+            _("&Forget all saved title speeds (%d)") % count if count
+            else _("&Forget all saved title speeds")
+        )
+
+    def _on_forget_speeds(self, event) -> None:
+        count = self._saved_speed_count()
+        if not count:
+            return
+        answer = wx.MessageBox(
+            _("Forget the speed saved for %d title(s)?") % count,
+            _("Audiflix"), wx.YES_NO | wx.ICON_QUESTION, self,
+        )
+        if answer != wx.YES:
+            return
+        self.settings["book_speeds"] = {}
+        self.settings.save()
+        self._update_forget_button()
+        speech.announce(_("Saved title speeds cleared."), interrupt=True)
 
     @staticmethod
     def _language_name(code: str) -> str:
@@ -179,9 +236,13 @@ class _GeneralPage(wx.Panel):
         settings["default_volume"] = self.volume.GetValue()
         settings["volume_step"] = self.volume_step.GetValue()
         settings["sleep_timer_default_minutes"] = self.sleep_default.GetValue()
+        settings["sleep_fade_seconds"] = self.sleep_fade.GetValue()
         settings["progress_sync_seconds"] = self.sync.GetValue()
         settings["download_dir"] = self.download_dir.GetPath()
         settings["announce_on_seek"] = self.announce.GetValue()
+        settings["announce_chapter_change"] = self.announce_chapter.GetValue()
+        settings["remember_speed_per_title"] = self.remember_speed.GetValue()
+        settings["global_media_keys"] = self.media_keys.GetValue()
         index = self.language.GetSelection()
         if 0 <= index < len(self._languages):
             settings["language"] = self._languages[index]

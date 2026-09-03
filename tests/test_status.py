@@ -45,3 +45,19 @@ def test_progress_index():
     assert idx.is_finished("1") is False
     assert idx.is_finished("2") is True
     assert idx.progress_for("unknown") == 0.0
+
+
+def test_progress_index_keeps_podcast_episodes_apart():
+    """Every episode of a podcast carries the same libraryItemId."""
+    user = {
+        "mediaProgress": [
+            {"libraryItemId": "p", "episodeId": "e1", "progress": 1.0, "isFinished": True},
+            {"libraryItemId": "p", "episodeId": "e2", "progress": 0.25, "isFinished": False},
+        ]
+    }
+    idx = status.ProgressIndex(user)
+    assert idx.is_finished("p", "e1") is True
+    assert idx.progress_for("p", "e2") == 0.25
+    assert idx.is_finished("p", "e2") is False
+    # The podcast itself has no progress of its own.
+    assert idx.progress_for("p") == 0.0

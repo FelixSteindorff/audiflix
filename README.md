@@ -19,20 +19,26 @@ The Windows builds include the audio engine, so you do not need to install VLC s
 - Podcast search and adding new podcasts
 - Check podcast feeds for new episodes
 - Automatic podcast episode downloads on the server
-- Playback speed control
+- Filter books by listening state: not started, in progress, finished, downloaded
+- Playback speed control, remembered per title
 - Skip forward and backward
 - Chapter navigation and chapter list
-- Sleep timer
+- Navigation by audio file, and jumping to any position
+- Sleep timer that can be extended and fades the volume out
 - Bookmarks
 - Playback progress sync with Audiobookshelf
+- Progress shown in every list, including the remaining time
+- Download books for offline listening
+- Media keys that work while Audiflix is in the background
 - Mark items as finished
 - Edit media information
-- Download items
 - Spoken feedback for status, playback position and remaining time
 - Configurable keyboard shortcuts
 - English and German interface
 
 Most item actions are also available from the context menu.
+
+If a stream breaks - a laptop leaving the flat's Wi-Fi, a server restarting - Audiflix reopens it at the position it left off instead of stopping.
 
 ## Accessibility
 
@@ -162,10 +168,13 @@ These are the defaults. They can be changed under **Settings → Keyboard shortc
 | Skip back / forward | `Ctrl+Left` / `Ctrl+Right` |
 | Previous / next chapter | `Ctrl+Shift+Left` / `Ctrl+Shift+Right` |
 | Chapter list | `Ctrl+Shift+C` |
+| Previous / next audio file | `Ctrl+Alt+Left` / `Ctrl+Alt+Right` |
+| Jump to position | `Ctrl+G` |
 | Slower / faster / normal speed | `Ctrl+-` / `Ctrl++` / `Ctrl+0` |
 | Volume up / down | `Ctrl+Up` / `Ctrl+Down` |
 | Announce position and remaining time | `Ctrl+T` |
 | Sleep timer | `Ctrl+L` |
+| Announce sleep timer | `Ctrl+Alt+L` |
 | Add bookmark | `Ctrl+B` |
 | Manage bookmarks | `Ctrl+Shift+B` |
 | Media details | `Ctrl+I` |
@@ -185,6 +194,32 @@ Inside lists:
 - Applications key or `Shift+F10` opens the context menu
 
 The shortcut editor checks for invalid or conflicting shortcuts. Shortcuts can also be cleared or reset.
+
+The media keys on a keyboard or headset also work while Audiflix is in the background: play/pause, and next/previous chapter. If another player has already claimed a key, Audiflix leaves it alone. The whole thing can be switched off in Settings.
+
+## Offline listening
+
+**Download for offline listening** in the item menu or the context menu fetches every audio file of a book into a folder of its own, together with a small `audiflix.json` holding the track order and the chapter marks.
+
+After that the book plays from those files. Audiflix still asks the server for a playback session, because that is where the resume position comes from. If the server does not answer, playback starts anyway and the position is written into the manifest instead. It is sent on the next time the server is reachable, at the latest when Audiflix starts.
+
+A few details worth knowing:
+
+- Lists show **Available offline** for such a book.
+- **Remove download** deletes the files again and asks first.
+- Playing a downloaded book while online still syncs progress normally, so the same book continues correctly in the web player or on a phone.
+- Only books can be downloaded. Podcast episodes are always streamed.
+- A `.zip` archive downloaded by Audiflix 0.2 still counts as downloaded but cannot be played. Downloading such a book again replaces it with a playable folder.
+
+## Playback speed
+
+Settings hold one default speed for everything.
+
+While a book is playing, `Ctrl++` and `Ctrl+-` change the speed **and remember it for that book**, so a fast reader and a slow one keep their own pace. `Ctrl+0` drops a book's own speed and goes back to the default.
+
+**Playback → Set speed for this title** does the same with an exact value and can also make it the new default.
+
+The remembered speeds are kept in `settings.json`. They can be cleared all at once in Settings, and remembering them can be turned off there as well.
 
 ## Libraries
 
@@ -206,6 +241,10 @@ Log files automatically redact authentication tokens and sensitive headers.
 
 Access tokens are refreshed before they expire and once automatically after a `401` response.
 
+Audiflix talks to your own server and to nothing else on its own. The update check under **Help → Check for updates** is the only request to a third party, and it only happens when you choose that menu entry.
+
+Downloaded books carry no secrets either: the download folder holds audio files and a manifest, never a token or a user name.
+
 Security issues should be reported as described in [SECURITY.md](SECURITY.md).
 
 ## Data locations
@@ -220,7 +259,7 @@ On Windows:
 | Authentication tokens | Windows Credential Manager |
 | Downloaded books | `%USERPROFILE%\Audiflix` by default |
 
-The download folder can be changed in Settings.
+The download folder can be changed in Settings. Each downloaded book gets its own folder there, named after the book, containing its audio files and `audiflix.json`.
 
 On Linux and macOS the configuration directory is `$XDG_CONFIG_HOME/audiflix` or `~/.config/audiflix`.
 
@@ -231,6 +270,8 @@ AUDIFLIX_CONFIG_DIR
 ```
 
 The log directory can also be opened from **Help → Open log folder**.
+
+For a bug report, **Help → Copy diagnostics** puts the version, the system, the audio engine, the credential store and whether a screen reader was found on the clipboard. It contains no server address and no user name.
 
 ## Building the Windows version
 
@@ -326,6 +367,7 @@ src/audiflix/
   i18n.py           translations
   logging_setup.py  logging and token redaction
   selftest.py       audio-engine self test
+  updates.py        update check and diagnostics report
   vlc_runtime.py    bundled VLC handling
 
 packaging/          Windows installer
@@ -339,7 +381,7 @@ Audiflix is still a young project, so there are a few things to be aware of:
 - The Windows downloads are fairly large because VLC is included.
 - Playback currently uses direct play. Audiflix does not request transcoding from the server.
 - Linux and macOS builds do not currently bundle VLC.
-- Downloads are currently mainly used as a downloaded-state marker; normal playback still streams from the server.
+- Only books can be downloaded for offline listening. Podcast episodes are always streamed.
 - Podcast libraries cannot yet be combined into one "all podcasts" view.
 - Changing the interface language currently requires a restart.
 - Windows with NVDA is the main tested platform. Linux and macOS support is less tested.

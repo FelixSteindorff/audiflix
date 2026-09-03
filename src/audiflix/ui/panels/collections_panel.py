@@ -65,7 +65,7 @@ class CollectionsPanel(wx.Panel):
     def _open_collection(self, collection):
         ctx = self.ctx
         books = collection.books
-        self.books_list.set_items(books, ctx.is_downloaded, ctx.is_finished)
+        self.books_list.set_items(books, ctx.item_progress, ctx.item_status)
         self.books_list.set_label(
             _("%(collection)s (%(count)d)")
             % {"collection": collection.name, "count": len(books)}

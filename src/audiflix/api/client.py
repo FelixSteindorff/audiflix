@@ -25,6 +25,7 @@ from __future__ import annotations
 import base64
 import binascii
 import json as jsonlib
+import os
 import threading
 import time
 from collections.abc import Callable, Iterable
@@ -45,6 +46,7 @@ log = get_logger(__name__)
 # Filter value for "finished" titles: ABS expects progress.<base64>
 FINISHED_FILTER = "progress." + base64.b64encode(b"finished").decode("ascii")
 IN_PROGRESS_FILTER = "progress." + base64.b64encode(b"in-progress").decode("ascii")
+NOT_STARTED_FILTER = "progress." + base64.b64encode(b"not-started").decode("ascii")
 
 DEFAULT_TIMEOUT = 30
 #: Refresh the access token this many seconds before it actually expires.
@@ -90,6 +92,14 @@ def decode_jwt_expiry(token: str) -> float | None:
         return float(exp) if exp is not None else None
     except (TypeError, ValueError):
         return None
+
+
+def _remove_quietly(path: str) -> None:
+    """Delete a leftover partial download; failing to do so is not an error."""
+    try:
+        os.unlink(path)
+    except OSError:
+        pass
 
 
 class AudiobookshelfClient:
@@ -284,11 +294,14 @@ class AudiobookshelfClient:
         sort: str = "addedAt",
         desc: bool = True,
         limit: int = 0,
+        filter_: str | None = None,
     ) -> list[LibraryItem]:
         """Merge items of several libraries and sort them consistently."""
         merged: list[LibraryItem] = []
         for lib_id in library_ids:
-            merged.extend(self.library_items(lib_id, sort=sort, desc=desc, limit=limit))
+            merged.extend(
+                self.library_items(lib_id, sort=sort, desc=desc, limit=limit, filter_=filter_)
+            )
         if sort == "addedAt":
             merged.sort(key=lambda it: it.added_at, reverse=desc)
         else:
@@ -484,12 +497,26 @@ class AudiobookshelfClient:
         }
         self._request("PATCH", self._progress_path(item_id, episode_id), json=payload)
 
-    def sync_session(self, session_id: str, current_time: float, time_listened: float = 0.0) -> None:
-        """Report progress for an open playback session (keeps ABS sessions alive)."""
+    def sync_session(
+        self,
+        session_id: str,
+        current_time: float,
+        time_listened: float = 0.0,
+        duration: float = 0.0,
+    ) -> None:
+        """Report progress for an open playback session.
+
+        This is what feeds the listening statistics on the server;
+        ``time_listened`` is the wall-clock time played since the last report.
+        """
         self._request(
             "POST",
             f"/api/session/{session_id}/sync",
-            json={"currentTime": current_time, "timeListened": time_listened, "duration": 0},
+            json={
+                "currentTime": current_time,
+                "timeListened": time_listened,
+                "duration": duration,
+            },
         )
 
     def mark_finished(
@@ -592,8 +619,31 @@ class AudiobookshelfClient:
         Uses the session's Authorization header rather than a token in the URL,
         so the token never ends up in a proxy or server access log.
         """
+        return self._download(f"/api/items/{item_id}/download", dest_path, progress_cb)
+
+    def download_audio_file(
+        self, item_id: str, ino: str, dest_path: str, progress_cb=None
+    ) -> str:
+        """Download one audio file of an item, addressed by its inode.
+
+        This is what offline playback is built on: the single files can be
+        handed to the player as they are, while the ``/download`` endpoint
+        returns a zip archive that nothing can play.
+        """
+        return self._download(
+            f"/api/items/{item_id}/file/{ino}/download", dest_path, progress_cb
+        )
+
+    def _download(self, path: str, dest_path: str, progress_cb=None) -> str:
+        """Stream a download to ``dest_path``.
+
+        The data goes to a ``.part`` file that is renamed only once the
+        download is complete, so an interrupted download can never be mistaken
+        for a usable file.
+        """
         self.ensure_fresh_token()
-        url = urlhelp.join_base(self.server_url, f"/api/items/{item_id}/download")
+        url = urlhelp.join_base(self.server_url, path)
+        partial = f"{dest_path}.part"
         for attempt in (1, 2):
             try:
                 with self._session.get(url, stream=True, timeout=DEFAULT_TIMEOUT) as resp:
@@ -606,18 +656,24 @@ class AudiobookshelfClient:
                         )
                     total = int(resp.headers.get("Content-Length") or 0)
                     done = 0
-                    with open(dest_path, "wb") as fh:
+                    with open(partial, "wb") as fh:
                         for chunk in resp.iter_content(chunk_size=1 << 16):
                             if chunk:
                                 fh.write(chunk)
                                 done += len(chunk)
                                 if progress_cb and total:
                                     progress_cb(done, total)
+                    os.replace(partial, dest_path)
                     return dest_path
             except requests.RequestException as exc:
+                _remove_quietly(partial)
                 raise ApiError(_("Network error during download: %s") % exc) from exc
             except OSError as exc:
+                _remove_quietly(partial)
                 raise ApiError(_("Could not write the downloaded file: %s") % exc) from exc
+            except BaseException:
+                _remove_quietly(partial)
+                raise
         raise AuthExpiredError()
 
     # --- internal request helper ------------------------------------------

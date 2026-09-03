@@ -59,9 +59,9 @@ class OverviewPanel(wx.Panel):
             }
 
         def show(data):
-            self.continue_list.set_items(data["continue"], ctx.is_downloaded, ctx.is_finished)
-            self.recent_list.set_items(data["recent"], ctx.is_downloaded, ctx.is_finished)
-            self.finished_list.set_items(data["finished"], ctx.is_downloaded, ctx.is_finished)
+            self.continue_list.set_items(data["continue"], ctx.item_progress, ctx.item_status)
+            self.recent_list.set_items(data["recent"], ctx.item_progress, ctx.item_status)
+            self.finished_list.set_items(data["finished"], ctx.item_progress, ctx.item_status)
             self.continue_list.set_label(
                 _("Continue listening (%d)") % len(data["continue"])
             )

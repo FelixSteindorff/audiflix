@@ -11,6 +11,13 @@ One row corresponds to exactly one :class:`LibraryItem`. The displayed columns
 come exclusively from :mod:`audiflix.helpers.formatting`, and the visible
 heading is also set as the list's accessible name so a screen reader announces
 which list has the focus.
+
+The control is a **virtual** list: it keeps the row values in a Python list and
+hands single cells to Windows on demand. Filling a library of several thousand
+titles used to insert every row and every cell one by one, which took seconds
+and froze the window; the virtual list only has to be told how many rows there
+are. To the operating system - and therefore to a screen reader - it is the
+same kind of list view as before.
 """
 
 from __future__ import annotations
@@ -25,6 +32,29 @@ from audiflix.i18n import _
 from audiflix.logging_setup import get_logger
 
 log = get_logger(__name__)
+
+
+class VirtualListCtrl(wx.ListCtrl):
+    """List control that reads its cells from ``rows`` instead of storing them."""
+
+    def __init__(self, parent: wx.Window, columns: int):
+        super().__init__(
+            parent,
+            style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VIRTUAL | wx.BORDER_SUNKEN,
+        )
+        self._rows: list[list[str]] = []
+        self._column_count = columns
+
+    def set_rows(self, rows: list[list[str]]) -> None:
+        self._rows = rows
+        self.SetItemCount(len(rows))
+        self.Refresh()
+
+    def OnGetItemText(self, row: int, column: int) -> str:  # wx calls this name
+        if not 0 <= row < len(self._rows):
+            return ""
+        values = self._rows[row]
+        return values[column] if column < len(values) else ""
 
 
 class BaseListPanel(wx.Panel):
@@ -52,9 +82,7 @@ class BaseListPanel(wx.Panel):
         else:
             self.heading = None
 
-        self.list_ctrl = wx.ListCtrl(
-            self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SUNKEN
-        )
+        self.list_ctrl = VirtualListCtrl(self, len(self._columns))
         self.list_ctrl.SetName(label or _("List"))
         for index, column in enumerate(self._columns):
             self.list_ctrl.InsertColumn(index, column, width=wx.LIST_AUTOSIZE_USEHEADER)
@@ -80,32 +108,29 @@ class BaseListPanel(wx.Panel):
     def set_items(
         self,
         items: list[LibraryItem],
-        downloaded_fn: Callable[[LibraryItem], bool] | None = None,
-        finished_fn: Callable[[LibraryItem], bool] | None = None,
+        progress_fn: Callable[[LibraryItem], str] | None = None,
+        status_fn: Callable[[LibraryItem], str] | None = None,
     ) -> None:
-        """Fill the list with items. The optional callables supply the
-        download/finished state per item."""
-        rows = []
-        for item in items:
-            downloaded = downloaded_fn(item) if downloaded_fn else False
-            finished = finished_fn(item) if finished_fn else False
-            rows.append(item_row(item, downloaded, finished))
+        """Fill the list with items.
+
+        The optional callables supply the progress and status text of a row;
+        they come from the controller, which is what knows about progress and
+        downloads.
+        """
+        rows = [
+            item_row(
+                item,
+                progress_fn(item) if progress_fn else "",
+                status_fn(item) if status_fn else "",
+            )
+            for item in items
+        ]
         self.set_rows(rows, list(items))
 
     def set_rows(self, rows: list[list[str]], payloads: list) -> None:
         """Generic variant with arbitrary column values (authors, series, ...)."""
         self._items = payloads
-        self.list_ctrl.Freeze()
-        try:
-            self.list_ctrl.DeleteAllItems()
-            for row, values in enumerate(rows):
-                self.list_ctrl.InsertItem(row, values[0] if values else "")
-                for column in range(1, len(self._columns)):
-                    self.list_ctrl.SetItem(
-                        row, column, values[column] if column < len(values) else ""
-                    )
-        finally:
-            self.list_ctrl.Thaw()
+        self.list_ctrl.set_rows(rows)
         if rows:
             self.list_ctrl.Select(0)
             self.list_ctrl.Focus(0)

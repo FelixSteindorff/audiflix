@@ -15,6 +15,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid " (podcast)"
+msgstr " (Podcast)"
+
+msgid "%(collection)s (%(count)d)"
+msgstr "%(collection)s (%(count)d)"
+
+msgid "%(kind)s (%(count)d) - search '%(term)s'"
+msgstr "%(kind)s (%(count)d) - Suche '%(term)s'"
+
+msgid "%(progress)s, %(remaining)s left"
+msgstr "%(progress)s, %(remaining)s übrig"
+
+msgid "%(title)s added to collection %(collection)s."
+msgstr "%(title)s zur Sammlung %(collection)s hinzugefügt."
+
+msgid "%(title)s downloaded (%(count)d file)."
+msgid_plural "%(title)s downloaded (%(count)d files)."
+msgstr[0] "%(title)s heruntergeladen (%(count)d Datei)."
+msgstr[1] "%(title)s heruntergeladen (%(count)d Dateien)."
+
+msgid "%(title)s: %(count)d new episode(s) found - the server is downloading them."
+msgstr "%(title)s: %(count)d neue Episode(n) gefunden - der Server lädt sie herunter."
+
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d Stunde"
@@ -25,34 +48,28 @@ msgid_plural "%d minutes"
 msgstr[0] "%d Minute"
 msgstr[1] "%d Minuten"
 
+msgid "%d result(s)."
+msgstr "%d Treffer."
+
 msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] "%d Sekunde"
 msgstr[1] "%d Sekunden"
 
-msgid " (podcast)"
-msgstr " (Podcast)"
-
-msgid "%(collection)s (%(count)d)"
-msgstr "%(collection)s (%(count)d)"
-
-msgid "%(kind)s (%(count)d) - search '%(term)s'"
-msgstr "%(kind)s (%(count)d) - Suche '%(term)s'"
-
-msgid "%(title)s added to collection %(collection)s."
-msgstr "%(title)s zur Sammlung %(collection)s hinzugefügt."
-
-msgid "%(title)s: %(count)d new episode(s) found - the server is downloading them."
-msgstr "%(title)s: %(count)d neue Episode(n) gefunden - der Server lädt sie herunter."
-
-msgid "%d result(s)."
-msgstr "%d Treffer."
+msgid "%d%% played"
+msgstr "%d %% gehört"
 
 msgid "%s downloaded."
 msgstr "%s heruntergeladen."
 
 msgid "%s has already been downloaded."
 msgstr "%s ist bereits heruntergeladen."
+
+msgid "%s has no audio files to download."
+msgstr "Für %s gibt es keine Audiodateien zum Herunterladen."
+
+msgid "%s is not downloaded."
+msgstr "%s ist nicht heruntergeladen."
 
 msgid "%s marked as finished."
 msgstr "%s als abgeschlossen markiert."
@@ -130,6 +147,15 @@ msgstr "Medieninformationen &bearbeiten..."
 msgid "&File"
 msgstr "&Datei"
 
+msgid "&Filter:"
+msgstr "&Filter:"
+
+msgid "&Forget all saved title speeds"
+msgstr "Alle gespeicherten Titelgeschwindigkeiten &verwerfen"
+
+msgid "&Forget all saved title speeds (%d)"
+msgstr "Alle gespeicherten Titelgeschwindigkeiten &verwerfen (%d)"
+
 msgid "&Go to"
 msgstr "&Anspringen"
 
@@ -138,6 +164,9 @@ msgstr "&Hilfe"
 
 msgid "&Item"
 msgstr "&Titel"
+
+msgid "&Jump to position..."
+msgstr "Zu &Position springen..."
 
 msgid "&Keyboard shortcuts"
 msgstr "&Tastenkürzel"
@@ -169,6 +198,12 @@ msgstr "&Verlag:"
 msgid "&Refresh"
 msgstr "&Aktualisieren"
 
+msgid "&Remember this speed for this title"
+msgstr "Geschwindigkeit für diesen Titel &merken"
+
+msgid "&Remove download"
+msgstr "Download &entfernen"
+
 msgid "&Search"
 msgstr "&Suchen"
 
@@ -183,6 +218,9 @@ msgstr "&Einstellungen..."
 
 msgid "&Sort:"
 msgstr "&Sortieren:"
+
+msgid "&Speed:"
+msgstr "&Geschwindigkeit:"
 
 msgid "&Subtitle:"
 msgstr "&Untertitel:"
@@ -204,6 +242,9 @@ msgstr ""
 "'%(shortcut)s' ist kein gültiges Tastenkürzel für %(action)s.\n"
 "\n"
 "Verwenden Sie eine Schreibweise wie Ctrl+Shift+B, F5 oder Alt+Right, oder lassen Sie das Feld leer, um das Kürzel abzuschalten."
+
+msgid "'%s' is not a position Audiflix understands.\n\nUse 1:23:45, 23:45, 90m or 45%%."
+msgstr "'%s' ist keine Position, die Audiflix versteht.\n\nMöglich sind 1:23:45, 23:45, 90m oder 45%%."
 
 msgid "(unknown)"
 msgstr "(unbekannt)"
@@ -262,11 +303,17 @@ msgstr "Alle Bücher"
 msgid "All shortcuts reset to their defaults."
 msgstr "Alle Tastenkürzel auf die Standardwerte zurückgesetzt."
 
+msgid "All titles"
+msgstr "Alle Titel"
+
 msgid "Alphabetical"
 msgstr "Alphabetisch"
 
 msgid "An accessible, keyboard-driven client for Audiobookshelf."
 msgstr "Ein barrierefreier, per Tastatur bedienbarer Client für Audiobookshelf."
+
+msgid "Announce a new &chapter while listening"
+msgstr "Neues &Kapitel während der Wiedergabe ansagen"
 
 msgid "Announce current chapter"
 msgstr "Aktuelles Kapitel ansagen"
@@ -277,8 +324,17 @@ msgstr "Position ansagen"
 msgid "Announce position and time remaining"
 msgstr "Position und Restdauer ansagen"
 
+msgid "Announce sleep timer"
+msgstr "Schlaftimer ansagen"
+
 msgid "Audiflix"
 msgstr "Audiflix"
+
+msgid "Audiflix %(new)s is available; you are running %(current)s.\n\nOpen the download page in your browser?"
+msgstr "Audiflix %(new)s ist verfügbar, installiert ist %(current)s.\n\nDie Downloadseite im Browser öffnen?"
+
+msgid "Audiflix %s is up to date."
+msgstr "Audiflix %s ist aktuell."
 
 msgid "Audiflix - Sign in"
 msgstr "Audiflix - Anmeldung"
@@ -312,6 +368,9 @@ msgstr "Autoren (%d)"
 
 msgid "Automatic (system language)"
 msgstr "Automatisch (Systemsprache)"
+
+msgid "Available offline"
+msgstr "Offline verfügbar"
 
 msgid "Bookmark %d"
 msgstr "Lesezeichen %d"
@@ -370,14 +429,23 @@ msgstr "Kapite&lliste..."
 msgid "Chapter list"
 msgstr "Kapitelliste"
 
+msgid "Chapter: %s"
+msgstr "Kapitel: %s"
+
 msgid "Chapters"
 msgstr "Kapitel"
+
+msgid "Check for &updates..."
+msgstr "Nach &Updates suchen..."
 
 msgid "Check for new episodes"
 msgstr "Nach neuen Episoden suchen"
 
 msgid "Checking %s for new episodes..."
 msgstr "Suche neue Episoden von %s..."
+
+msgid "Checking for updates..."
+msgstr "Suche nach Updates..."
 
 msgid "Closing Audiflix."
 msgstr "Audiflix wird beendet."
@@ -397,17 +465,26 @@ msgstr "Sammlungen (%d)"
 msgid "Connecting..."
 msgstr "Verbinde..."
 
+msgid "Connection lost - trying again (%(attempt)d of %(total)d)..."
+msgstr "Verbindung verloren - neuer Versuch (%(attempt)d von %(total)d)..."
+
 msgid "Continue listening"
 msgstr "Weiterhören"
 
 msgid "Continue listening (%d)"
 msgstr "Weiterhören (%d)"
 
+msgid "Copy &diagnostics"
+msgstr "&Diagnose kopieren"
+
 msgid "Could not add the podcast: %s"
 msgstr "Podcast konnte nicht hinzugefügt werden: %s"
 
 msgid "Could not write the downloaded file: %s"
 msgstr "Heruntergeladene Datei konnte nicht geschrieben werden: %s"
+
+msgid "Current position: %s"
+msgstr "Aktuelle Position: %s"
 
 msgid "Default speed:"
 msgstr "Standard-Tempo:"
@@ -418,11 +495,23 @@ msgstr "Standard-Lautstärke (Prozent):"
 msgid "Delete the bookmark \"%s\"?"
 msgstr "Lesezeichen \"%s\" löschen?"
 
+msgid "Delete the downloaded files of %s from this computer?"
+msgstr "Die heruntergeladenen Dateien von %s von diesem Computer löschen?"
+
 msgid "Description:"
 msgstr "Beschreibung:"
 
+msgid "Diagnostics"
+msgstr "Diagnose"
+
+msgid "Diagnostics copied to the clipboard."
+msgstr "Diagnose in die Zwischenablage kopiert."
+
 msgid "Do&wnload"
 msgstr "Her&unterladen"
+
+msgid "Do&wnload for offline listening"
+msgstr "Für offline &herunterladen"
 
 msgid "Download"
 msgstr "Herunterladen"
@@ -433,8 +522,20 @@ msgstr "Download fehlgeschlagen (HTTP %d)."
 msgid "Download folder"
 msgstr "Download-Ordner"
 
+msgid "Download for offline listening"
+msgstr "Für offline herunterladen"
+
+msgid "Download of %s deleted."
+msgstr "Download von %s gelöscht."
+
 msgid "Downloaded"
 msgstr "Heruntergeladen"
+
+msgid "Downloaded (archive)"
+msgstr "Heruntergeladen (Archiv)"
+
+msgid "Downloading %(title)s: %(percent)d%%"
+msgstr "%(title)s wird heruntergeladen: %(percent)d%%"
 
 msgid "Downloading %s..."
 msgstr "Lade %s herunter..."
@@ -445,11 +546,17 @@ msgstr "Dauer"
 msgid "E&xit"
 msgstr "&Beenden"
 
+msgid "E&xtend the running timer by:"
+msgstr "Laufenden Timer ver&längern um:"
+
 msgid "Edit media details - %s"
 msgstr "Medieninformationen bearbeiten - %s"
 
 msgid "Edit media details..."
 msgstr "Medieninformationen bearbeiten..."
+
+msgid "Enter a time as hours:minutes:seconds or minutes:seconds, or a percentage of the whole title."
+msgstr "Zeit als Stunden:Minuten:Sekunden oder Minuten:Sekunden eingeben, oder einen Prozentwert des ganzen Titels."
 
 msgid "Enter shortcuts in the form Ctrl+Shift+B. Leave a field empty to disable that shortcut."
 msgstr "Tastenkürzel in der Form Ctrl+Shift+B eingeben. Ein leeres Feld schaltet das Kürzel ab."
@@ -469,8 +576,20 @@ msgstr "Fehler: %s"
 msgid "Exit"
 msgstr "Beenden"
 
+msgid "Extend the sleep timer by"
+msgstr "Schlaftimer verlängern um"
+
+msgid "Fade out before the sleep timer (seconds, 0 = off):"
+msgstr "Ausblenden vor dem Schlaftimer (Sekunden, 0 = aus):"
+
 msgid "Faster"
 msgstr "Schneller"
+
+msgid "File %(number)d of %(total)d"
+msgstr "Datei %(number)d von %(total)d"
+
+msgid "Filter by listening state"
+msgstr "Nach Hörzustand filtern"
 
 msgid "Finished"
 msgstr "Abgeschlossen"
@@ -484,11 +603,26 @@ msgstr "Abgeschlossen, %s"
 msgid "For example https://abs.example.com"
 msgstr "Zum Beispiel https://abs.example.com"
 
+msgid "Forget the speed saved for %d title(s)?"
+msgstr "Die für %d Titel gespeicherte Geschwindigkeit verwerfen?"
+
 msgid "General"
 msgstr "Allgemein"
 
 msgid "Genres"
 msgstr "Genres"
+
+msgid "GitHub answered with HTTP %d."
+msgstr "GitHub hat mit HTTP %d geantwortet."
+
+msgid "GitHub could not be reached: %s"
+msgstr "GitHub ist nicht erreichbar: %s"
+
+msgid "GitHub did not report a version."
+msgstr "GitHub hat keine Version gemeldet."
+
+msgid "GitHub sent an answer Audiflix cannot read."
+msgstr "GitHub hat eine Antwort gesendet, die Audiflix nicht lesen kann."
 
 msgid "Go to &author"
 msgstr "Zum &Autor"
@@ -499,6 +633,9 @@ msgstr "Zum Autor"
 msgid "In lists: arrow keys navigate, Enter opens, Backspace goes back, and the applications key or Shift+F10 opens the context menu."
 msgstr "In Listen: Pfeiltasten navigieren, Enter öffnet, Backspace geht zurück, die Anwendungstaste oder Shift+F10 öffnet das Kontextmenü."
 
+msgid "In progress"
+msgstr "Angefangen"
+
 msgid "Invalid username or password."
 msgstr "Benutzername oder Passwort ist falsch."
 
@@ -507,6 +644,12 @@ msgstr "Titel&infos"
 
 msgid "Item details"
 msgstr "Titelinfos"
+
+msgid "Jump &to:"
+msgstr "Springen &zu:"
+
+msgid "Jump to position"
+msgstr "Zu Position springen"
 
 msgid "Keyboard shortcuts"
 msgstr "Tastenkürzel"
@@ -589,6 +732,9 @@ msgstr "Neuer Titel:"
 msgid "Newest"
 msgstr "Neu"
 
+msgid "Next audio file"
+msgstr "Nächste Audiodatei"
+
 msgid "Next chapter"
 msgstr "Nächstes Kapitel"
 
@@ -607,6 +753,9 @@ msgstr "Kein Kapitel."
 msgid "No credential store available - the token is kept for this session only."
 msgstr "Kein Anmeldeinformationsspeicher verfügbar - der Token gilt nur für diese Sitzung."
 
+msgid "No further audio file."
+msgstr "Keine weitere Audiodatei."
+
 msgid "No item selected."
 msgstr "Kein Titel ausgewählt."
 
@@ -615,6 +764,9 @@ msgstr "Keine Bibliothek ausgewählt."
 
 msgid "No playable audio files were found."
 msgstr "Keine abspielbaren Audiodaten gefunden."
+
+msgid "No sleep timer is running."
+msgstr "Es läuft kein Schlaftimer."
 
 msgid "No system credential store is available, so your sign-in is kept for this session only. Audiflix never writes tokens to disk in plain text, so you will need to sign in again next time."
 msgstr "Es ist kein Anmeldeinformationsspeicher des Systems verfügbar, daher gilt die Anmeldung nur für diese Sitzung. Audiflix speichert Tokens niemals im Klartext auf der Festplatte - beim nächsten Start ist eine erneute Anmeldung nötig."
@@ -634,8 +786,16 @@ msgstr "Nicht heruntergeladen"
 msgid "Not signed in."
 msgstr "Nicht angemeldet."
 
+msgid "Not started"
+msgstr "Nicht begonnen"
+
 msgid "Off"
 msgstr "Aus"
+
+msgid "Offline progress for %d title sent to the server."
+msgid_plural "Offline progress for %d titles sent to the server."
+msgstr[0] "Offline-Fortschritt für %d Titel an den Server gesendet."
+msgstr[1] "Offline-Fortschritt für %d Titel an den Server gesendet."
 
 msgid "Open &log folder"
 msgstr "&Log-Ordner öffnen"
@@ -652,14 +812,29 @@ msgstr "Play / &Pause"
 msgid "Play / Pause"
 msgstr "Play / Pause"
 
+msgid "Playback failed. Press play again to continue from %s."
+msgstr "Wiedergabe fehlgeschlagen. Erneut Wiedergabe drücken, um bei %s fortzusetzen."
+
 msgid "Playback failed. The stream may have expired - please try again."
 msgstr "Wiedergabe fehlgeschlagen. Möglicherweise ist der Stream abgelaufen - bitte erneut versuchen."
 
 msgid "Playback reported repeated errors. See the log file."
 msgstr "Die Wiedergabe meldet wiederholt Fehler. Details stehen in der Logdatei."
 
+msgid "Playback resumed."
+msgstr "Wiedergabe fortgesetzt."
+
+msgid "Playback speed"
+msgstr "Wiedergabegeschwindigkeit"
+
 msgid "Playing"
 msgstr "Wiedergabe"
+
+msgid "Playing from the download: %s"
+msgstr "Wiedergabe aus dem Download: %s"
+
+msgid "Playing offline: %s"
+msgstr "Offline-Wiedergabe: %s"
 
 msgid "Playing: %s"
 msgstr "Wiedergabe: %s"
@@ -678,6 +853,9 @@ msgstr "Bitte den Benutzernamen eingeben."
 
 msgid "Please select a podcast first."
 msgstr "Bitte zuerst einen Podcast auswählen."
+
+msgid "Please stop playback before deleting the files."
+msgstr "Bitte die Wiedergabe beenden, bevor die Dateien gelöscht werden."
 
 msgid "Please wait"
 msgstr "Bitte warten"
@@ -703,14 +881,23 @@ msgstr "Position"
 msgid "Position %(position)s, %(remaining)s remaining"
 msgstr "Position %(position)s, noch %(remaining)s verbleibend"
 
+msgid "Position to jump to"
+msgstr "Zielposition"
+
 msgid "Press Enter to search"
 msgstr "Zum Suchen Enter drücken"
 
 msgid "Previous &chapter"
 msgstr "Voriges &Kapitel"
 
+msgid "Previous audio file"
+msgstr "Vorherige Audiodatei"
+
 msgid "Previous chapter"
 msgstr "Voriges Kapitel"
+
+msgid "Progress"
+msgstr "Fortschritt"
 
 msgid "Published"
 msgstr "Veröffentlicht"
@@ -745,6 +932,12 @@ msgstr "Aktualisieren: F5"
 msgid "Refreshed."
 msgstr "Aktualisiert."
 
+msgid "Remember the speed &per title"
+msgstr "Geschwindigkeit &je Titel merken"
+
+msgid "Remove download"
+msgstr "Download entfernen"
+
 msgid "Rename bookmark"
 msgstr "Lesezeichen umbenennen"
 
@@ -756,6 +949,9 @@ msgstr "Alle Tastenkürzel auf die Standardwerte zurücksetzen?"
 
 msgid "Reset speed"
 msgstr "Tempo zurücksetzen"
+
+msgid "Saved title speeds cleared."
+msgstr "Gespeicherte Titelgeschwindigkeiten verworfen."
 
 msgid "Scanning %(name)s (%(index)d/%(total)d)..."
 msgstr "Scanne %(name)s (%(index)d/%(total)d)..."
@@ -816,6 +1012,12 @@ msgstr "Serverfehler %(status)d: %(detail)s"
 
 msgid "Server error %d."
 msgstr "Serverfehler %d."
+
+msgid "Set a new sleep timer &length:"
+msgstr "Neue Schlaftimer-&Dauer:"
+
+msgid "Set speed for this title..."
+msgstr "Geschwindigkeit für diesen Titel festlegen..."
 
 msgid "Settings"
 msgstr "Einstellungen"
@@ -898,14 +1100,23 @@ msgstr "Sleeptimer-Standard (Minuten):"
 msgid "Sleep timer elapsed - playback paused."
 msgstr "Sleeptimer abgelaufen - Wiedergabe pausiert."
 
+msgid "Sleep timer extended, %s remaining"
+msgstr "Schlaftimer verlängert, %s verbleibend"
+
 msgid "Sleep timer length"
 msgstr "Sleeptimer-Länge"
 
 msgid "Sleep timer off"
 msgstr "Sleeptimer ausgeschaltet"
 
+msgid "Sleep timer running, %s remaining."
+msgstr "Schlaftimer läuft, %s verbleibend."
+
 msgid "Sleep timer: %d minutes"
 msgstr "Sleeptimer: %d Minuten"
+
+msgid "Sleep timer: %s remaining"
+msgstr "Schlaftimer: %s verbleibend"
 
 msgid "Sleep timer: until the end of the chapter"
 msgstr "Sleeptimer: bis Kapitelende"
@@ -922,8 +1133,14 @@ msgstr "Sortierung"
 msgid "Sort series"
 msgstr "Sortierung Reihen"
 
+msgid "Speed %(speed)s, saved for %(title)s"
+msgstr "Geschwindigkeit %(speed)s, gespeichert für %(title)s"
+
 msgid "Speed %s"
 msgstr "Tempo %s"
+
+msgid "Speed %s (default)"
+msgstr "Geschwindigkeit %s (Standard)"
 
 msgid "Start"
 msgstr "Beginn"
@@ -973,6 +1190,15 @@ msgstr "Die Audio-Engine konnte nicht gestartet werden: %s"
 msgid "The bundled audio engine could not be loaded. Please reinstall Audiflix."
 msgstr "Die mitgelieferte Audio-Engine konnte nicht geladen werden. Bitte Audiflix neu installieren."
 
+msgid "The default speed is %s."
+msgstr "Die Standardgeschwindigkeit ist %s."
+
+msgid "The downloaded files of %s could not be deleted."
+msgstr "Die heruntergeladenen Dateien von %s konnten nicht gelöscht werden."
+
+msgid "The length of this title is unknown."
+msgstr "Die Länge dieses Titels ist unbekannt."
+
 msgid "The library folder returned by the server has no id."
 msgstr "Der vom Server gelieferte Bibliotheksordner hat keine ID."
 
@@ -1010,6 +1236,9 @@ msgstr "Das Kürzel %(shortcut)s ist mehreren Aktionen zugewiesen: %(actions)s."
 msgid "The token is stored in your system credential store."
 msgstr "Der Token wird im Anmeldeinformationsspeicher des Systems abgelegt."
 
+msgid "The update check failed: %s"
+msgstr "Die Updateprüfung ist fehlgeschlagen: %s"
+
 msgid "This search result has no feed URL."
 msgstr "Zu diesem Treffer gibt es keine Feed-URL."
 
@@ -1019,11 +1248,17 @@ msgstr "Dieser Server hat keine Bibliotheken."
 msgid "This tab has no search field."
 msgstr "Dieser Tab hat kein Suchfeld."
 
+msgid "This title has its own speed. The default is %s."
+msgstr "Dieser Titel hat eine eigene Geschwindigkeit. Der Standard ist %s."
+
 msgid "This title has no chapters."
 msgstr "Dieser Titel hat keine Kapitel."
 
 msgid "This title has no playable audio files."
 msgstr "Dieser Titel hat keine abspielbaren Audiodateien."
+
+msgid "This title is a single audio file."
+msgstr "Dieser Titel besteht aus einer einzigen Audiodatei."
 
 msgid "Title"
 msgstr "Titel"
@@ -1042,6 +1277,12 @@ msgstr "Bis Kapitelende"
 
 msgid "Updating the setting for %s..."
 msgstr "Aktualisiere Einstellung für %s..."
+
+msgid "Use as the &default speed for all titles"
+msgstr "Als &Standardgeschwindigkeit für alle Titel verwenden"
+
+msgid "Use the &media keys even when Audiflix is in the background"
+msgstr "&Medientasten auch verwenden, wenn Audiflix im Hintergrund ist"
 
 msgid "VLC could not be started. Please reinstall the VLC media player."
 msgstr "VLC konnte nicht gestartet werden. Bitte den VLC Media Player neu installieren."
@@ -1088,6 +1329,9 @@ msgstr "von %s"
 msgid "finished"
 msgstr "abgeschlossen"
 
+msgid "for example 1:23:45 or 45%"
+msgstr "zum Beispiel 1:23:45 oder 45%"
+
 msgid "narrated by %s"
 msgstr "gelesen von %s"
 
@@ -1096,3 +1340,7 @@ msgstr "nicht belegt"
 
 msgid "series %s"
 msgstr "Reihe %s"
+
+
+msgid "this title"
+msgstr "diesen Titel"

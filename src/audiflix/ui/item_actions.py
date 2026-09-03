@@ -27,14 +27,20 @@ def context_actions(frame, item: LibraryItem) -> list[tuple[str, Callable[[], No
     """List of (label, callback) for the context menu and the Item menu."""
     if item.is_podcast:
         return podcast_context_actions(frame, item)
-    return [
+    entries = [
         (_("Add to collection..."), lambda: add_to_collection(frame, item)),
         (_("Mark as finished"), lambda: mark_finished(frame, item)),
         (_("Item details"), lambda: show_info(frame, item)),
         (_("Go to author"), lambda: go_to_author(frame, item)),
         (_("Edit media details..."), lambda: edit_metadata(frame, item)),
-        (_("Download"), lambda: download(frame, item)),
     ]
+    if frame.ctx.registry.is_downloaded(item.id):
+        entries.append((_("Remove download"), lambda: remove_download(frame, item)))
+    else:
+        entries.append(
+            (_("Download for offline listening"), lambda: download(frame, item))
+        )
+    return entries
 
 
 def podcast_context_actions(frame, item: LibraryItem) -> list[tuple[str, Callable[[], None]]]:
@@ -236,10 +242,46 @@ def download(frame, item: LibraryItem) -> None:
         return
     ctx.notify(_("Downloading %s...") % item.title)
     download_dir = ctx.settings.get("download_dir", "")
+
+    def report(done: int, total: int) -> None:
+        # Every ten percent is enough: a status bar update per chunk would
+        # flood the screen reader with numbers.
+        if total and done % 10 == 0:
+            wx.CallAfter(
+                ctx.notify,
+                _("Downloading %(title)s: %(percent)d%%")
+                % {"title": item.title, "percent": done},
+                speak=False,
+            )
+
     ctx.run_async(
-        lambda: actions.download(ctx.client, item, ctx.registry, download_dir),
+        lambda: actions.download(ctx.client, item, ctx.registry, download_dir, report),
         on_done=lambda msg: _notify_and_refresh(frame, msg),
         description="download-item",
+    )
+
+
+def remove_download(frame, item: LibraryItem) -> None:
+    """Delete the local files of a title after asking."""
+    ctx = frame.ctx
+    if not ctx.registry.path_for(item.id):
+        ctx.notify(_("%s is not downloaded.") % item.title)
+        return
+    answer = wx.MessageBox(
+        _("Delete the downloaded files of %s from this computer?") % item.title,
+        _("Audiflix"), wx.YES_NO | wx.ICON_QUESTION, frame,
+    )
+    if answer != wx.YES:
+        return
+    if ctx.current_item and ctx.current_item.id == item.id:
+        # A loaded title still holds its files open, paused or not, and Windows
+        # refuses to delete a file that is in use.
+        ctx.notify(_("Please stop playback before deleting the files."))
+        return
+    ctx.run_async(
+        lambda: actions.remove_download(item, ctx.registry),
+        on_done=lambda msg: _notify_and_refresh(frame, msg),
+        description="remove-download",
     )
 
 

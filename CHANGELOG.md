@@ -16,6 +16,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with it. Settings, logs and the sign-in token still belong to the machine it
   runs on - a token on a removable drive could not be protected. Published as an
   asset of the 0.2.0 release.
+- Audiflix now reports its playback to the **server's listening statistics**.
+  Only the resume position was sent so far, so time spent listening in Audiflix
+  never appeared in the statistics Audiobookshelf keeps.
+- **Offline listening.** A download now fetches the single audio files of a
+  title into a folder of its own, together with a manifest holding the track
+  order and the chapter marks, and playback uses those files. When the server
+  cannot be reached the title plays anyway; the position is kept in the manifest
+  and sent on as soon as the server answers again. Previously a download was a
+  zip archive that served as a marker and nothing else.
+- **Remove download** deletes the local files of a title again.
+- **Playback speed per title.** The default speed from the settings still
+  applies to everything, but changing the speed while a title is playing saves
+  it for that title. `Ctrl+0` drops it again, **Playback → Set speed for this
+  title...** sets an exact value and can make it the new default, and the
+  settings can forget all saved speeds at once.
+- **A dropped connection no longer stops the book.** A failed stream is reopened
+  at the last position, up to three times with a growing pause, and the attempt
+  is announced. Giving up now says where playback stopped.
+- **Media keys work in the background** (Windows): play/pause and next/previous
+  chapter, without bringing the window to the front. Can be turned off, and keys
+  another player has already claimed are simply left alone.
+- **Jump to a position** (`Ctrl+G`), as a time (`1:23:45`, `90m`) or a share of
+  the title (`45%`).
+- **Navigation by audio file** (`Ctrl+Alt+Left` / `Ctrl+Alt+Right`), which is
+  the only structure a book without chapter marks has.
+- **The sleep timer can be extended** instead of set anew - the dialog opens on
+  "extend" while a timer is running and states the remaining time. `Ctrl+Alt+L`
+  announces it, and the volume now fades out over the last seconds (adjustable,
+  0 turns it off).
+- **A new chapter is announced while listening** (can be turned off).
+- **The lists show the progress of every title**: how far in, and how much is
+  left. A new column keeps that apart from the download status, which now says
+  whether a title is available offline.
+- **A filter in the Books tab**: all, not started, in progress, finished, or
+  downloaded.
+- **Help → Check for updates** compares the installed version with the newest
+  release on GitHub. It only ever runs when that entry is chosen; Audiflix
+  contacts nothing but your own server on its own.
+- **Help → Copy diagnostics** puts version, system, audio engine, credential
+  store and screen-reader information on the clipboard for a bug report -
+  without server address or user name.
+
+### Changed
+
+- **The lists are virtual now.** The row values are handed to Windows on demand
+  instead of being inserted one cell at a time, so a library of several thousand
+  titles fills instantly rather than freezing the window for seconds.
+
+### Fixed
+
+- **The sleep timer now really stops at the end of the chapter.** It waited for
+  an audio *file* to end, which for a book in a single file - the usual M4B -
+  meant it never stopped before the end of the book. The position is now
+  compared against the end of the chapter that was playing when the timer was
+  set. Books split into files without chapter marks keep stopping at the end of
+  the file, which for them is the same thing.
+- **Play/pause and closing the window no longer freeze the application** when
+  the server is slow to answer. Both reported the position over the network
+  while the user interface waited for the reply - up to the full 30 second
+  request timeout, with a window that a screen reader could not read. Progress
+  is now reported from a thread of its own; when closing, Audiflix waits at most
+  three seconds for the last report.
+- The same report no longer holds up the player's background thread, which
+  delayed the sleep timer and the switch to the next track by as long as the
+  request took.
+- **A jump that was still waiting for the audio to open is now discarded** when
+  a different track has started in the meantime. Two jumps in quick succession,
+  or a jump just before a track ended, could apply the old position to the new
+  track.
+- **The episode list shows the listening state of each episode** ("not started",
+  "42% played", "finished") instead of always claiming the episode was not
+  downloaded. Episodes are streamed, so the download state never said anything
+  about them in the first place.
+- Progress is now stored per episode. All episodes of a podcast share one
+  library item id, so the progress of a podcast episode overwrote the episode
+  read before it.
 
 ## [0.2.0] - 2026-09-03
 

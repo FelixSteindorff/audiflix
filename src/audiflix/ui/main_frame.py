@@ -9,20 +9,23 @@ from __future__ import annotations
 
 import wx
 
-from audiflix import APP_DISPLAY_NAME, __version__, speech, vlc_runtime
+from audiflix import APP_DISPLAY_NAME, __version__, speech, updates, vlc_runtime
 from audiflix.api.client import AudiobookshelfClient
-from audiflix.config import Settings, clear_tokens
+from audiflix.config import Settings, clear_tokens, keyring_backend_name
+from audiflix.helpers import formatting
 from audiflix.i18n import _
 from audiflix.logging_setup import get_logger, log_dir
 from audiflix.resources import app_icon_path
-from audiflix.ui import item_actions, menus
+from audiflix.ui import item_actions, media_keys, menus
 from audiflix.ui.controller import AppContext
 from audiflix.ui.dialogs.bookmarks_dialog import BookmarksDialog
 from audiflix.ui.dialogs.busy_dialog import BusyDialog
 from audiflix.ui.dialogs.chapter_list_dialog import ChapterListDialog
+from audiflix.ui.dialogs.jump_to_time_dialog import JumpToTimeDialog
 from audiflix.ui.dialogs.library_select_dialog import LibrarySelectDialog
 from audiflix.ui.dialogs.settings_dialog import SettingsDialog
 from audiflix.ui.dialogs.sleep_timer_dialog import SleepTimerDialog
+from audiflix.ui.dialogs.speed_dialog import SpeedDialog
 from audiflix.ui.panels.authors_panel import AuthorsPanel
 from audiflix.ui.panels.base_list_panel import BaseListPanel
 from audiflix.ui.panels.collections_panel import CollectionsPanel
@@ -72,10 +75,31 @@ class MainFrame(wx.Frame):
         self.notebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self._on_tab_changed)
         self.Bind(wx.EVT_CLOSE, self._on_close)
 
+        # The next/previous keys move by chapter: in an audiobook that is what
+        # "the next piece" means, not the next of several files it happens to
+        # be split into.
+        self._media_keys = media_keys.MediaKeys(
+            self,
+            {
+                "play_pause": self.ctx.toggle_play,
+                "next_track": self.ctx.next_chapter,
+                "prev_track": self.ctx.prev_chapter,
+                "stop": self.ctx.toggle_play,
+            },
+        )
+        self._apply_media_keys()
+
         self._load_libraries()
         # Give the keyboard focus to the first tab's list, so a screen reader
         # user lands somewhere useful instead of on the frame itself.
         wx.CallAfter(self.overview.focus_default)
+
+    def _apply_media_keys(self) -> None:
+        """Claim or release the media keys according to the settings."""
+        if self.settings.get("global_media_keys", True):
+            self._media_keys.register()
+        else:
+            self._media_keys.unregister()
 
     def _apply_icon(self) -> None:
         """Set the window/taskbar icon when it is bundled with the package."""
@@ -103,13 +127,18 @@ class MainFrame(wx.Frame):
             "next_chapter": self.ctx.next_chapter,
             "chapter_list": self.open_chapter_list,
             "announce_chapter": self.ctx.announce_chapter,
+            "prev_track": self.ctx.prev_track,
+            "next_track": self.ctx.next_track,
+            "jump_to_time": self.open_jump_to_time,
             "speed_up": self.ctx.speed_up,
             "speed_down": self.ctx.speed_down,
             "speed_reset": self.ctx.speed_reset,
+            "set_speed": self.open_speed_dialog,
             "volume_up": self.ctx.volume_up,
             "volume_down": self.ctx.volume_down,
             "announce_time": self.ctx.announce_time,
             "sleep_timer": self.open_sleep_timer,
+            "announce_sleep": self.ctx.announce_sleep_timer,
             "add_bookmark": self.ctx.add_bookmark,
             "manage_bookmarks": self.open_bookmarks,
             "tab_overview": lambda: self._goto_tab(TAB_OVERVIEW),
@@ -125,8 +154,11 @@ class MainFrame(wx.Frame):
             "ctx_author": lambda: self._item_action(item_actions.go_to_author),
             "ctx_edit": lambda: self._item_action(item_actions.edit_metadata),
             "ctx_download": lambda: self._item_action(item_actions.download),
+            "ctx_remove_download": lambda: self._item_action(item_actions.remove_download),
             "shortcuts": self.show_shortcuts,
             "log_folder": self.open_log_folder,
+            "check_updates": self.check_for_updates,
+            "diagnostics": self.copy_diagnostics,
             "about": self.show_about,
         }
 
@@ -151,6 +183,9 @@ class MainFrame(wx.Frame):
                 else:
                     self._set_status(_("This server has no libraries."))
                     return
+            # The server is answering, so anything played offline can be
+            # reported now.
+            self.ctx.flush_offline_progress()
             self._on_library_changed()
 
         self.ctx.run_async(fetch, on_done=done, description="load-libraries")
@@ -253,6 +288,8 @@ class MainFrame(wx.Frame):
             dlg.Destroy()
         self.ctx.player.sync_interval = float(self.settings.get("progress_sync_seconds", 15))
         self.ctx.player.set_volume(int(self.settings.get("default_volume", 100)))
+        self.ctx.player.fade_seconds = float(self.settings.get("sleep_fade_seconds", 0))
+        self._apply_media_keys()
         self._rebuild_menubar()
         self.ctx.notify(_("Settings saved."))
         if language_changed:
@@ -266,14 +303,62 @@ class MainFrame(wx.Frame):
         self.SetMenuBar(menubar)
 
     def open_sleep_timer(self):
-        dlg = SleepTimerDialog(self, int(self.settings.get("sleep_timer_default_minutes", 15)))
+        dlg = SleepTimerDialog(
+            self,
+            int(self.settings.get("sleep_timer_default_minutes", 15)),
+            remaining=self.ctx.player.sleep_remaining,
+        )
         try:
             if dlg.ShowModal() != wx.ID_OK:
                 return
+            extension = dlg.get_extension()
             minutes, until_chapter = dlg.get_selection()
         finally:
             dlg.Destroy()
+        if extension is not None:
+            self.ctx.extend_sleep_timer(extension)
+            return
         self.ctx.set_sleep_timer(minutes, until_chapter)
+
+    def open_jump_to_time(self):
+        if not self.ctx.player.has_media:
+            self.ctx.notify(_("No title loaded."))
+            return
+        dlg = JumpToTimeDialog(self, self.ctx.player.position, self.ctx.player.duration)
+        try:
+            if dlg.ShowModal() != wx.ID_OK:
+                return
+            target = dlg.target
+        finally:
+            dlg.Destroy()
+        if target is not None:
+            self.ctx.jump_to_time(target)
+
+    def open_speed_dialog(self):
+        """Set an exact speed, for this title or as the new default."""
+        item = self.ctx.current_item
+        dlg = SpeedDialog(
+            self,
+            current=self.ctx.player.rate,
+            default=self.ctx.default_speed,
+            title=item.title if item else "",
+            has_own_speed=self.ctx.has_own_speed(item),
+        )
+        try:
+            if dlg.ShowModal() != wx.ID_OK:
+                return
+            speed, remember, as_default = dlg.result()
+        finally:
+            dlg.Destroy()
+        if as_default:
+            self.settings["default_speed"] = speed
+            self.settings.save()
+        if remember:
+            self.ctx.set_speed(speed)
+        else:
+            self.ctx.forget_speed(item)
+            self.ctx.player.set_rate(speed)
+            self.ctx.notify(_("Speed %s") % formatting.format_speed(speed))
 
     def open_bookmarks(self):
         item = self.ctx.current_item
@@ -413,6 +498,52 @@ class MainFrame(wx.Frame):
             ),
         ]
         self._show_text_dialog(_("Keyboard shortcuts"), "\n".join(lines))
+
+    def check_for_updates(self):
+        """Ask GitHub for the newest release - only when the user asks for it."""
+        self.ctx.notify(_("Checking for updates..."))
+        ok, result, error = BusyDialog.run(
+            self, _("Checking for updates..."), updates.check
+        )
+        if not ok:
+            return  # cancelled
+        if error is not None:
+            log.info("Update check failed: %s", error)
+            self.ctx.notify(_("The update check failed: %s") % error)
+            return
+        newer, release = result
+        if not newer:
+            self.ctx.notify(
+                _("Audiflix %s is up to date.") % __version__
+            )
+            return
+        answer = wx.MessageBox(
+            _(
+                "Audiflix %(new)s is available; you are running %(current)s.\n\n"
+                "Open the download page in your browser?"
+            ) % {"new": release["version"], "current": __version__},
+            APP_DISPLAY_NAME, wx.YES_NO | wx.ICON_INFORMATION, self,
+        )
+        if answer == wx.YES:
+            wx.LaunchDefaultBrowser(release["url"])
+
+    def copy_diagnostics(self):
+        """Put a short report on the clipboard for a bug report."""
+        report = updates.diagnostics(
+            server_url=self.settings.get("server_url", ""),
+            server_version=self.ctx.client.server_version,
+            vlc_version=vlc_runtime.bundled_version(),
+            keyring_backend=keyring_backend_name(),
+            speech_available=speech.is_available(),
+            language=str(self.settings.get("language", "auto")),
+        )
+        if wx.TheClipboard.Open():
+            try:
+                wx.TheClipboard.SetData(wx.TextDataObject(report))
+            finally:
+                wx.TheClipboard.Close()
+            self.ctx.notify(_("Diagnostics copied to the clipboard."))
+        self._show_text_dialog(_("Diagnostics"), report)
 
     def open_log_folder(self):
         """Open the folder containing the log files in the file manager."""

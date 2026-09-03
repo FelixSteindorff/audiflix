@@ -19,7 +19,9 @@ from audiflix.i18n import _, ngettext
 
 def item_columns() -> list[str]:
     """Column headers of the item lists (NVDA reads them per cell)."""
-    return [_("Title"), _("Author"), _("Narrator"), _("Series"), _("Status")]
+    return [
+        _("Title"), _("Author"), _("Narrator"), _("Series"), _("Progress"), _("Status")
+    ]
 
 
 def episode_columns() -> list[str]:
@@ -34,6 +36,16 @@ def not_downloaded_label() -> str:
     return _("Not downloaded")
 
 
+def progress_label(progress: float, finished: bool = False) -> str:
+    """Listening state as a short status text, e.g. '42% played'."""
+    if finished:
+        return _("Finished")
+    percent = round(max(0.0, min(progress, 1.0)) * 100)
+    if percent <= 0:
+        return _("Not started")
+    return _("%d%% played") % percent
+
+
 def status_label(downloaded: bool, finished: bool = False) -> str:
     """Combined download/finished status for a list row."""
     base = downloaded_label() if downloaded else not_downloaded_label()
@@ -42,18 +54,49 @@ def status_label(downloaded: bool, finished: bool = False) -> str:
     return base
 
 
-def item_row(item: LibraryItem, downloaded: bool, finished: bool = False) -> list[str]:
+def download_label(downloaded: bool, playable_offline: bool = False) -> str:
+    """Status column of a book row: is the title available without a server?"""
+    if downloaded and playable_offline:
+        return _("Available offline")
+    if downloaded:
+        # An archive downloaded by an older version: on disk, but not playable.
+        return _("Downloaded (archive)")
+    return not_downloaded_label()
+
+
+def progress_column(
+    progress: float, finished: bool, duration: float = 0.0, current_time: float = 0.0
+) -> str:
+    """Progress column of a list row: how far in, and how much is left.
+
+    The remaining time is what a listener actually plans with ("do I still fit
+    this in tonight?"), so it is spelled out whenever the length is known.
+    """
+    label = progress_label(progress, finished)
+    if finished or duration <= 0:
+        return label
+    remaining = duration - (current_time or duration * progress)
+    if remaining < 60:
+        return label
+    return _("%(progress)s, %(remaining)s left") % {
+        "progress": label,
+        "remaining": format_duration(remaining),
+    }
+
+
+def item_row(item: LibraryItem, progress: str = "", status: str = "") -> list[str]:
     """Values for one list row, matching :func:`item_columns`."""
     return [
         item.title,
         item.author or "-",
         item.narrator or "-",
         item.series or "-",
-        status_label(downloaded, finished),
+        progress or progress_label(0.0),
+        status or not_downloaded_label(),
     ]
 
 
-def item_announce(item: LibraryItem, downloaded: bool, finished: bool = False) -> str:
+def item_announce(item: LibraryItem, progress: str = "", status: str = "") -> str:
     """One-sentence description of a row for the speech output."""
     parts = [item.title]
     if item.author:
@@ -62,10 +105,10 @@ def item_announce(item: LibraryItem, downloaded: bool, finished: bool = False) -
         parts.append(_("narrated by %s") % item.narrator)
     if item.series:
         parts.append(_("series %s") % item.series)
-    parts.append(
-        _("finished") if finished
-        else (downloaded_label().lower() if downloaded else not_downloaded_label().lower())
-    )
+    if progress:
+        parts.append(progress.lower())
+    if status:
+        parts.append(status.lower())
     return ", ".join(parts)
 
 
@@ -82,13 +125,18 @@ def format_date(published_at_ms: int, fallback: str = "") -> str:
     return fallback
 
 
-def episode_row(episode: Episode, downloaded: bool = False) -> list[str]:
-    """Values for one episode row, matching :func:`episode_columns`."""
+def episode_row(episode: Episode, status: str = "") -> list[str]:
+    """Values for one episode row, matching :func:`episode_columns`.
+
+    ``status`` is the listening state of this episode, which is what the column
+    is about: episodes are streamed from the server, so "downloaded" - the
+    status a book row shows - says nothing useful about them.
+    """
     return [
         episode.title,
         format_date(episode.published_at, episode.pub_date),
         format_clock(episode.duration) if episode.duration else "-",
-        status_label(downloaded),
+        status or progress_label(0.0),
     ]
 
 
@@ -129,6 +177,48 @@ def announce_position(position: float, duration: float) -> str:
         "position": format_duration(position),
         "remaining": format_duration(remaining),
     }
+
+
+def parse_position(text: str, duration: float = 0.0) -> float | None:
+    """Read a position a listener typed, in seconds. ``None`` when unusable.
+
+    Understands ``1:23:45``, ``23:45``, ``90`` and ``90m`` as times and ``45%``
+    as a share of ``duration``. Both a dot and a comma work as the decimal mark,
+    because a German keyboard produces the comma.
+    """
+    text = (text or "").strip().replace(",", ".")
+    if not text:
+        return None
+
+    if text.endswith("%"):
+        if duration <= 0:
+            return None
+        try:
+            percent = float(text[:-1].strip())
+        except ValueError:
+            return None
+        return duration * max(0.0, min(percent, 100.0)) / 100.0
+
+    unit = 60.0 if text[-1:].lower() == "m" else (3600.0 if text[-1:].lower() == "h" else None)
+    if unit is not None:
+        try:
+            return max(0.0, float(text[:-1].strip()) * unit)
+        except ValueError:
+            return None
+
+    parts = text.split(":")
+    if len(parts) > 3:
+        return None
+    try:
+        values = [float(part) for part in parts]
+    except ValueError:
+        return None
+    if any(value < 0 for value in values):
+        return None
+    seconds = 0.0
+    for value in values:  # h:m:s, m:s or plain seconds
+        seconds = seconds * 60 + value
+    return seconds
 
 
 def format_speed(rate: float) -> str:

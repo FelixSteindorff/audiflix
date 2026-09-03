@@ -33,10 +33,26 @@ def test_recent_episode_none_when_absent():
 
 def test_episode_row_columns():
     ep = Episode({"id": "e", "title": "Test", "publishedAt": 0, "pubDate": "2024", "duration": 95})
-    row = formatting.episode_row(ep, downloaded=False)
+    row = formatting.episode_row(ep)
     assert row[0] == "Test"
     assert row[2] == formatting.format_clock(95)
-    assert row[3] == formatting.not_downloaded_label()
+    # Without a status the row says "not started", not "not downloaded":
+    # episodes are streamed, so the download state says nothing about them.
+    assert row[3] == formatting.progress_label(0.0)
+
+
+def test_episode_row_shows_the_listening_state():
+    ep = Episode({"id": "e", "title": "Test", "duration": 95})
+    row = formatting.episode_row(ep, formatting.progress_label(0.42))
+    assert row[3] == formatting.progress_label(0.42)
+
+
+def test_progress_label():
+    assert formatting.progress_label(0.0) == "Not started"
+    assert formatting.progress_label(0.416) == "42% played"
+    assert formatting.progress_label(0.5, finished=True) == "Finished"
+    # A finished item can report a progress slightly above 1.0.
+    assert formatting.progress_label(1.2) == "100% played"
 
 
 def test_format_date_fallback():

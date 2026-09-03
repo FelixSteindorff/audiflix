@@ -124,6 +124,20 @@ class LibraryItem:
         return [Chapter(c) for c in (self._media.get("chapters") or [])]
 
     @property
+    def audio_files(self) -> list[AudioFile]:
+        """The audio files of a book, in playback order.
+
+        Only an item loaded with ``expanded=1`` carries them; this is what a
+        download needs, because every file is fetched on its own.
+        """
+        files = [
+            AudioFile(f)
+            for f in (self._media.get("audioFiles") or [])
+            if isinstance(f, dict)
+        ]
+        return sorted(files, key=lambda f: f.index)
+
+    @property
     def episodes(self) -> list[Episode]:
         return [Episode(e, self.id) for e in (self._media.get("episodes") or [])]
 
@@ -209,6 +223,43 @@ class Episode:
     @property
     def episode_number(self) -> str:
         return str(self.raw.get("episode") or "")
+
+
+class AudioFile:
+    """One audio file of a book (inside ``media.audioFiles``).
+
+    ``ino`` is the file's inode on the server and the only handle the download
+    endpoint accepts.
+    """
+
+    def __init__(self, raw: dict[str, Any]):
+        self.raw = raw or {}
+
+    @property
+    def ino(self) -> str:
+        return str(self.raw.get("ino") or "")
+
+    @property
+    def index(self) -> int:
+        return int(self.raw.get("index") or 0)
+
+    @property
+    def duration(self) -> float:
+        return float(self.raw.get("duration") or 0.0)
+
+    @property
+    def filename(self) -> str:
+        metadata = self.raw.get("metadata") or {}
+        return str(metadata.get("filename") or self.raw.get("filename") or "")
+
+    @property
+    def extension(self) -> str:
+        metadata = self.raw.get("metadata") or {}
+        ext = str(metadata.get("ext") or "")
+        if ext:
+            return ext if ext.startswith(".") else f".{ext}"
+        _stem, _dot, suffix = self.filename.rpartition(".")
+        return f".{suffix}" if suffix else ".mp3"
 
 
 class Chapter:

@@ -108,7 +108,7 @@ class AuthorsPanel(wx.Panel):
         ctx = self.ctx
 
         def show(items):
-            self.books_list.set_items(items, ctx.is_downloaded, ctx.is_finished)
+            self.books_list.set_items(items, ctx.item_progress, ctx.item_status)
             self.books_list.set_label(
                 _("Books by %(author)s (%(count)d)")
                 % {"author": author_name, "count": len(items)}

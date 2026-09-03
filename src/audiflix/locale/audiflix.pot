@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: audiflix\n"
-"POT-Creation-Date: 2026-09-03 08:18+0000\n"
+"POT-Creation-Date: 2026-09-03 12:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,25 +23,35 @@ msgstr ""
 msgid "%(collection)s (%(count)d)"
 msgstr ""
 
-#: src/audiflix/ui/panels/library_panel.py:187
+#: src/audiflix/ui/panels/library_panel.py:224
 msgid "%(kind)s (%(count)d) - search '%(term)s'"
+msgstr ""
+
+#: src/audiflix/helpers/formatting.py:81
+msgid "%(progress)s, %(remaining)s left"
 msgstr ""
 
 #: src/audiflix/helpers/actions.py:47
 msgid "%(title)s added to collection %(collection)s."
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:66
+#: src/audiflix/helpers/actions.py:120
+msgid "%(title)s downloaded (%(count)d file)."
+msgid_plural "%(title)s downloaded (%(count)d files)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/audiflix/ui/item_actions.py:72
 msgid "%(title)s: %(count)d new episode(s) found - the server is downloading them."
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:102
+#: src/audiflix/helpers/formatting.py:150
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/audiflix/helpers/formatting.py:104
+#: src/audiflix/helpers/formatting.py:152
 msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] ""
@@ -51,18 +61,27 @@ msgstr[1] ""
 msgid "%d result(s)."
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:106
+#: src/audiflix/helpers/formatting.py:154
 msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/audiflix/helpers/actions.py:76
-msgid "%s downloaded."
+#: src/audiflix/helpers/formatting.py:46
+msgid "%d%% played"
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:235
+#: src/audiflix/ui/item_actions.py:241
 msgid "%s has already been downloaded."
+msgstr ""
+
+#: src/audiflix/helpers/actions.py:80
+msgid "%s has no audio files to download."
+msgstr ""
+
+#: src/audiflix/helpers/actions.py:148
+#: src/audiflix/ui/item_actions.py:268
+msgid "%s is not downloaded."
 msgstr ""
 
 #: src/audiflix/helpers/actions.py:25
@@ -82,23 +101,23 @@ msgid ""
 "Continue anyway?"
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:95
+#: src/audiflix/ui/item_actions.py:101
 msgid "%s: automatic episode download turned off."
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:93
+#: src/audiflix/ui/item_actions.py:99
 msgid "%s: automatic episode download turned on."
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:70
+#: src/audiflix/ui/item_actions.py:76
 msgid "%s: no new episodes."
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:137
+#: src/audiflix/helpers/formatting.py:227
 msgid "%sx"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:79
+#: src/audiflix/ui/menus.py:88
 msgid "&About Audiflix"
 msgstr ""
 
@@ -106,7 +125,7 @@ msgstr ""
 msgid "&Add"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:143
+#: src/audiflix/ui/dialogs/settings_dialog.py:151
 msgid "&Announce position after skipping"
 msgstr ""
 
@@ -146,11 +165,11 @@ msgstr ""
 msgid "&Details:"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:137
+#: src/audiflix/ui/dialogs/settings_dialog.py:145
 msgid "&Download folder:"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:73
+#: src/audiflix/ui/menus.py:79
 msgid "&Edit media details..."
 msgstr ""
 
@@ -158,23 +177,40 @@ msgstr ""
 msgid "&File"
 msgstr ""
 
+#: src/audiflix/ui/panels/library_panel.py:58
+msgid "&Filter:"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:169
+#: src/audiflix/ui/dialogs/settings_dialog.py:190
+msgid "&Forget all saved title speeds"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:189
+msgid "&Forget all saved title speeds (%d)"
+msgstr ""
+
 #: src/audiflix/ui/dialogs/bookmarks_dialog.py:48
 msgid "&Go to"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:76
+#: src/audiflix/ui/menus.py:83
 msgid "&Help"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:68
+#: src/audiflix/ui/menus.py:74
 msgid "&Item"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:77
+#: src/audiflix/ui/menus.py:48
+msgid "&Jump to position..."
+msgstr ""
+
+#: src/audiflix/ui/menus.py:84
 msgid "&Keyboard shortcuts"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:127
+#: src/audiflix/ui/dialogs/settings_dialog.py:135
 msgid "&Language:"
 msgstr ""
 
@@ -182,7 +218,7 @@ msgstr ""
 msgid "&Library:"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:66
+#: src/audiflix/ui/menus.py:72
 msgid "&Media details"
 msgstr ""
 
@@ -210,7 +246,15 @@ msgstr ""
 msgid "&Refresh"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:65
+#: src/audiflix/ui/dialogs/speed_dialog.py:43
+msgid "&Remember this speed for this title"
+msgstr ""
+
+#: src/audiflix/ui/menus.py:81
+msgid "&Remove download"
+msgstr ""
+
+#: src/audiflix/ui/menus.py:71
 msgid "&Search"
 msgstr ""
 
@@ -227,9 +271,13 @@ msgid "&Settings..."
 msgstr ""
 
 #: src/audiflix/ui/panels/authors_panel.py:31
-#: src/audiflix/ui/panels/library_panel.py:37
+#: src/audiflix/ui/panels/library_panel.py:50
 #: src/audiflix/ui/panels/series_panel.py:32
 msgid "&Sort:"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/speed_dialog.py:34
+msgid "&Speed:"
 msgstr ""
 
 #: src/audiflix/ui/dialogs/edit_metadata_dialog.py:18
@@ -244,28 +292,35 @@ msgstr ""
 msgid "&User name:"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:58
+#: src/audiflix/ui/menus.py:64
 msgid "&View"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:300
+#: src/audiflix/ui/dialogs/settings_dialog.py:361
 msgid ""
 "'%(shortcut)s' is not a valid shortcut for %(action)s.\n"
 "\n"
 "Use a form such as Ctrl+Shift+B, F5 or Alt+Right, or leave the field empty to disable it."
 msgstr ""
 
-#: src/audiflix/api/models.py:273
+#: src/audiflix/ui/dialogs/jump_to_time_dialog.py:62
+msgid ""
+"'%s' is not a position Audiflix understands.\n"
+"\n"
+"Use 1:23:45, 23:45, 90m or 45%%."
+msgstr ""
+
+#: src/audiflix/api/models.py:324
 msgid "(unknown)"
 msgstr ""
 
-#: src/audiflix/api/models.py:296
-#: src/audiflix/api/models.py:321
+#: src/audiflix/api/models.py:347
+#: src/audiflix/api/models.py:372
 msgid "(unnamed)"
 msgstr ""
 
-#: src/audiflix/api/models.py:186
-#: src/audiflix/api/models.py:229
+#: src/audiflix/api/models.py:200
+#: src/audiflix/api/models.py:280
 #: src/audiflix/api/models.py:53
 #: src/audiflix/ui/dialogs/add_podcast_dialog.py:97
 msgid "(untitled)"
@@ -275,43 +330,47 @@ msgstr ""
 msgid "+ Create a new collection..."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:12
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:18
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:29
 msgid "10 minutes"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:13
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:19
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:30
 msgid "15 minutes"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:14
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:20
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:31
 msgid "30 minutes"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:15
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:21
 msgid "45 minutes"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:11
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:17
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:28
 msgid "5 minutes"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:16
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:22
 msgid "60 minutes"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:452
+#: src/audiflix/ui/main_frame.py:583
 msgid "About Audiflix"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:55
+#: src/audiflix/ui/menus.py:61
 msgid "Add book&mark"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:39
+#: src/audiflix/ui/dialogs/settings_dialog.py:43
 msgid "Add bookmark"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:69
+#: src/audiflix/ui/menus.py:75
 msgid "Add to c&ollection..."
 msgstr ""
 
@@ -320,7 +379,7 @@ msgid "Add to collection"
 msgstr ""
 
 #: src/audiflix/ui/item_actions.py:31
-#: src/audiflix/ui/item_actions.py:46
+#: src/audiflix/ui/item_actions.py:52
 msgid "Add to collection..."
 msgstr ""
 
@@ -328,41 +387,68 @@ msgstr ""
 msgid "Adding the podcast..."
 msgstr ""
 
-#: src/audiflix/ui/controller.py:127
+#: src/audiflix/ui/controller.py:130
 #: src/audiflix/ui/dialogs/library_select_dialog.py:30
 msgid "All books"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:288
+#: src/audiflix/ui/dialogs/settings_dialog.py:349
 msgid "All shortcuts reset to their defaults."
 msgstr ""
 
+#: src/audiflix/ui/panels/library_panel.py:31
+msgid "All titles"
+msgstr ""
+
 #: src/audiflix/ui/panels/authors_panel.py:18
-#: src/audiflix/ui/panels/library_panel.py:22
+#: src/audiflix/ui/panels/library_panel.py:24
 #: src/audiflix/ui/panels/series_panel.py:19
 msgid "Alphabetical"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:429
+#: src/audiflix/ui/main_frame.py:560
 msgid "An accessible, keyboard-driven client for Audiobookshelf."
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:155
+msgid "Announce a new &chapter while listening"
 msgstr ""
 
 #: src/audiflix/ui/menus.py:44
 msgid "Announce current chapter"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:37
+#: src/audiflix/ui/dialogs/settings_dialog.py:40
 msgid "Announce position"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:53
+#: src/audiflix/ui/menus.py:58
 msgid "Announce position and time remaining"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:42
+#: src/audiflix/ui/menus.py:60
+msgid "Announce sleep timer"
 msgstr ""
 
 #: src/audiflix/ui/dialogs/add_podcast_dialog.py:164
 #: src/audiflix/ui/dialogs/bookmarks_dialog.py:141
-#: src/audiflix/ui/dialogs/settings_dialog.py:280
+#: src/audiflix/ui/dialogs/jump_to_time_dialog.py:66
+#: src/audiflix/ui/dialogs/settings_dialog.py:199
+#: src/audiflix/ui/dialogs/settings_dialog.py:341
+#: src/audiflix/ui/item_actions.py:272
 msgid "Audiflix"
+msgstr ""
+
+#: src/audiflix/ui/main_frame.py:521
+msgid ""
+"Audiflix %(new)s is available; you are running %(current)s.\n"
+"\n"
+"Open the download page in your browser?"
+msgstr ""
+
+#: src/audiflix/ui/main_frame.py:517
+msgid "Audiflix %s is up to date."
 msgstr ""
 
 #: src/audiflix/ui/dialogs/login_dialog.py:52
@@ -373,7 +459,7 @@ msgstr ""
 msgid "Audiflix - insecure connection"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:82
+#: src/audiflix/ui/dialogs/settings_dialog.py:86
 msgid "Audiflix - invalid shortcut"
 msgstr ""
 
@@ -381,25 +467,25 @@ msgstr ""
 msgid "Audiflix - sign-in not saved"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:431
+#: src/audiflix/ui/main_frame.py:562
 msgid "Audiflix is an independent third-party client and is not affiliated with the Audiobookshelf project."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:451
+#: src/audiflix/ui/main_frame.py:582
 msgid "Audio engine: VLC installed on this system (VideoLAN)"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:442
+#: src/audiflix/ui/main_frame.py:573
 msgid "Audio engine: bundled VLC %s (VideoLAN)"
 msgstr ""
 
-#: src/audiflix/api/models.py:162
-#: src/audiflix/helpers/formatting.py:22
+#: src/audiflix/api/models.py:176
+#: src/audiflix/helpers/formatting.py:23
 #: src/audiflix/ui/panels/authors_panel.py:49
 msgid "Author"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:61
+#: src/audiflix/ui/main_frame.py:64
 #: src/audiflix/ui/panels/authors_panel.py:49
 msgid "Authors"
 msgstr ""
@@ -408,8 +494,12 @@ msgstr ""
 msgid "Authors (%d)"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:154
+#: src/audiflix/ui/dialogs/settings_dialog.py:211
 msgid "Automatic (system language)"
+msgstr ""
+
+#: src/audiflix/helpers/formatting.py:60
+msgid "Available offline"
 msgstr ""
 
 #: src/audiflix/ui/dialogs/bookmarks_dialog.py:85
@@ -425,7 +515,7 @@ msgid "Bookmark renamed."
 msgstr ""
 
 #: src/audiflix/helpers/actions.py:37
-#: src/audiflix/ui/controller.py:336
+#: src/audiflix/ui/controller.py:502
 msgid "Bookmark set at %s."
 msgstr ""
 
@@ -439,14 +529,14 @@ msgstr ""
 
 #: src/audiflix/ui/panels/authors_panel.py:49
 #: src/audiflix/ui/panels/collections_panel.py:25
-#: src/audiflix/ui/panels/library_panel.py:161
-#: src/audiflix/ui/panels/library_panel.py:184
-#: src/audiflix/ui/panels/library_panel.py:62
+#: src/audiflix/ui/panels/library_panel.py:189
+#: src/audiflix/ui/panels/library_panel.py:219
+#: src/audiflix/ui/panels/library_panel.py:83
 #: src/audiflix/ui/panels/series_panel.py:50
 msgid "Books"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:60
+#: src/audiflix/ui/main_frame.py:63
 msgid "Books / Podcasts"
 msgstr ""
 
@@ -466,11 +556,11 @@ msgstr ""
 msgid "Books in this series"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:219
+#: src/audiflix/ui/dialogs/settings_dialog.py:280
 msgid "C&lear this shortcut"
 msgstr ""
 
-#: src/audiflix/api/client.py:651
+#: src/audiflix/api/client.py:707
 msgid "Cannot reach the server: %s"
 msgstr ""
 
@@ -478,11 +568,12 @@ msgstr ""
 msgid "Chapter"
 msgstr ""
 
-#: src/audiflix/ui/controller.py:281
+#: src/audiflix/ui/controller.py:367
 msgid "Chapter %(index)d of %(total)d: %(title)s"
 msgstr ""
 
-#: src/audiflix/ui/controller.py:279
+#: src/audiflix/ui/controller.py:365
+#: src/audiflix/ui/controller.py:639
 #: src/audiflix/ui/dialogs/chapter_list_dialog.py:34
 msgid "Chapter %d"
 msgstr ""
@@ -496,19 +587,32 @@ msgstr ""
 msgid "Chapter list"
 msgstr ""
 
+#: src/audiflix/ui/controller.py:640
+msgid "Chapter: %s"
+msgstr ""
+
 #: src/audiflix/ui/dialogs/chapter_list_dialog.py:20
 msgid "Chapters"
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:43
+#: src/audiflix/ui/menus.py:86
+msgid "Check for &updates..."
+msgstr ""
+
+#: src/audiflix/ui/item_actions.py:49
 msgid "Check for new episodes"
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:60
+#: src/audiflix/ui/item_actions.py:66
 msgid "Checking %s for new episodes..."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:484
+#: src/audiflix/ui/main_frame.py:504
+#: src/audiflix/ui/main_frame.py:506
+msgid "Checking for updates..."
+msgstr ""
+
+#: src/audiflix/ui/main_frame.py:615
 msgid "Closing Audiflix."
 msgstr ""
 
@@ -521,7 +625,7 @@ msgstr ""
 msgid "Collection %(collection)s created with %(title)s."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:63
+#: src/audiflix/ui/main_frame.py:66
 #: src/audiflix/ui/panels/collections_panel.py:25
 msgid "Collections"
 msgstr ""
@@ -530,8 +634,12 @@ msgstr ""
 msgid "Collections (%d)"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:50
+#: src/audiflix/ui/main_frame.py:53
 msgid "Connecting..."
+msgstr ""
+
+#: src/audiflix/audio/player.py:801
+msgid "Connection lost - trying again (%(attempt)d of %(total)d)..."
 msgstr ""
 
 #: src/audiflix/ui/panels/overview_panel.py:24
@@ -542,19 +650,27 @@ msgstr ""
 msgid "Continue listening (%d)"
 msgstr ""
 
+#: src/audiflix/ui/menus.py:87
+msgid "Copy &diagnostics"
+msgstr ""
+
 #: src/audiflix/ui/dialogs/add_podcast_dialog.py:131
 msgid "Could not add the podcast: %s"
 msgstr ""
 
-#: src/audiflix/api/client.py:620
+#: src/audiflix/api/client.py:673
 msgid "Could not write the downloaded file: %s"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:109
+#: src/audiflix/ui/dialogs/jump_to_time_dialog.py:27
+msgid "Current position: %s"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:113
 msgid "Default speed:"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:112
+#: src/audiflix/ui/dialogs/settings_dialog.py:116
 msgid "Default volume (percent):"
 msgstr ""
 
@@ -562,40 +678,69 @@ msgstr ""
 msgid "Delete the bookmark \"%s\"?"
 msgstr ""
 
+#: src/audiflix/ui/item_actions.py:271
+msgid "Delete the downloaded files of %s from this computer?"
+msgstr ""
+
 #: src/audiflix/ui/dialogs/media_info_dialog.py:43
 msgid "Description:"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:74
-msgid "Do&wnload"
+#: src/audiflix/ui/main_frame.py:546
+msgid "Diagnostics"
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:36
-msgid "Download"
+#: src/audiflix/ui/main_frame.py:545
+msgid "Diagnostics copied to the clipboard."
 msgstr ""
 
-#: src/audiflix/api/client.py:604
+#: src/audiflix/ui/menus.py:80
+msgid "Do&wnload for offline listening"
+msgstr ""
+
+#: src/audiflix/api/client.py:654
 msgid "Download failed (HTTP %d)."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:139
+#: src/audiflix/ui/dialogs/settings_dialog.py:147
 msgid "Download folder"
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:30
+#: src/audiflix/ui/item_actions.py:41
+msgid "Download for offline listening"
+msgstr ""
+
+#: src/audiflix/helpers/actions.py:150
+msgid "Download of %s deleted."
+msgstr ""
+
+#: src/audiflix/helpers/formatting.py:32
+#: src/audiflix/ui/panels/library_panel.py:35
 msgid "Downloaded"
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:237
+#: src/audiflix/helpers/formatting.py:63
+msgid "Downloaded (archive)"
+msgstr ""
+
+#: src/audiflix/ui/item_actions.py:252
+msgid "Downloading %(title)s: %(percent)d%%"
+msgstr ""
+
+#: src/audiflix/ui/item_actions.py:243
 msgid "Downloading %s..."
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:26
+#: src/audiflix/helpers/formatting.py:28
 msgid "Duration"
 msgstr ""
 
 #: src/audiflix/ui/menus.py:34
 msgid "E&xit"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:51
+msgid "E&xtend the running timer by:"
 msgstr ""
 
 #: src/audiflix/ui/dialogs/edit_metadata_dialog.py:31
@@ -606,35 +751,57 @@ msgstr ""
 msgid "Edit media details..."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:202
+#: src/audiflix/ui/dialogs/jump_to_time_dialog.py:35
+msgid "Enter a time as hours:minutes:seconds or minutes:seconds, or a percentage of the whole title."
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:263
 msgid "Enter shortcuts in the form Ctrl+Shift+B. Leave a field empty to disable that shortcut."
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:26
+#: src/audiflix/helpers/formatting.py:28
 msgid "Episode"
 msgstr ""
 
-#: src/audiflix/ui/panels/library_panel.py:70
+#: src/audiflix/ui/panels/library_panel.py:91
 msgid "Episodes"
 msgstr ""
 
-#: src/audiflix/ui/panels/library_panel.py:117
+#: src/audiflix/ui/panels/library_panel.py:145
 msgid "Episodes: %(title)s (%(count)d)"
 msgstr ""
 
-#: src/audiflix/ui/controller.py:113
+#: src/audiflix/ui/controller.py:116
 msgid "Error: %s"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:45
+#: src/audiflix/ui/dialogs/settings_dialog.py:49
 msgid "Exit"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:33
-#: src/audiflix/ui/menus.py:46
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:56
+msgid "Extend the sleep timer by"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:126
+msgid "Fade out before the sleep timer (seconds, 0 = off):"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:36
+#: src/audiflix/ui/menus.py:50
 msgid "Faster"
 msgstr ""
 
+#: src/audiflix/ui/controller.py:553
+msgid "File %(number)d of %(total)d"
+msgstr ""
+
+#: src/audiflix/ui/panels/library_panel.py:62
+msgid "Filter by listening state"
+msgstr ""
+
+#: src/audiflix/helpers/formatting.py:42
+#: src/audiflix/ui/panels/library_panel.py:34
 #: src/audiflix/ui/panels/overview_panel.py:26
 msgid "Finished"
 msgstr ""
@@ -643,7 +810,7 @@ msgstr ""
 msgid "Finished (%d)"
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:41
+#: src/audiflix/helpers/formatting.py:53
 msgid "Finished, %s"
 msgstr ""
 
@@ -651,15 +818,35 @@ msgstr ""
 msgid "For example https://abs.example.com"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:63
+#: src/audiflix/ui/dialogs/settings_dialog.py:198
+msgid "Forget the speed saved for %d title(s)?"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:67
 msgid "General"
 msgstr ""
 
-#: src/audiflix/api/models.py:168
+#: src/audiflix/api/models.py:182
 msgid "Genres"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:72
+#: src/audiflix/updates.py:62
+msgid "GitHub answered with HTTP %d."
+msgstr ""
+
+#: src/audiflix/updates.py:59
+msgid "GitHub could not be reached: %s"
+msgstr ""
+
+#: src/audiflix/updates.py:70
+msgid "GitHub did not report a version."
+msgstr ""
+
+#: src/audiflix/updates.py:67
+msgid "GitHub sent an answer Audiflix cannot read."
+msgstr ""
+
+#: src/audiflix/ui/menus.py:78
 msgid "Go to &author"
 msgstr ""
 
@@ -667,15 +854,19 @@ msgstr ""
 msgid "Go to author"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:410
+#: src/audiflix/ui/main_frame.py:495
 msgid "In lists: arrow keys navigate, Enter opens, Backspace goes back, and the applications key or Shift+F10 opens the context menu."
 msgstr ""
 
-#: src/audiflix/api/client.py:661
+#: src/audiflix/ui/panels/library_panel.py:33
+msgid "In progress"
+msgstr ""
+
+#: src/audiflix/api/client.py:717
 msgid "Invalid username or password."
 msgstr ""
 
-#: src/audiflix/ui/menus.py:71
+#: src/audiflix/ui/menus.py:77
 msgid "Item &details"
 msgstr ""
 
@@ -683,21 +874,30 @@ msgstr ""
 msgid "Item details"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:64
-#: src/audiflix/ui/main_frame.py:415
+#: src/audiflix/ui/dialogs/jump_to_time_dialog.py:29
+msgid "Jump &to:"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/jump_to_time_dialog.py:18
+#: src/audiflix/ui/dialogs/settings_dialog.py:34
+msgid "Jump to position"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:68
+#: src/audiflix/ui/main_frame.py:500
 msgid "Keyboard shortcuts"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:402
+#: src/audiflix/ui/main_frame.py:487
 msgid "Keyboard shortcuts:"
 msgstr ""
 
-#: src/audiflix/api/models.py:167
-#: src/audiflix/ui/dialogs/settings_dialog.py:129
+#: src/audiflix/api/models.py:181
+#: src/audiflix/ui/dialogs/settings_dialog.py:137
 msgid "Language"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:237
+#: src/audiflix/ui/main_frame.py:272
 msgid "Library scan started for %d library/libraries. The server re-reads the files in the background - press F5 afterwards to refresh the list."
 msgstr ""
 
@@ -705,43 +905,43 @@ msgstr ""
 msgid "Library selection"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:161
+#: src/audiflix/ui/main_frame.py:196
 msgid "Library: %s"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:435
+#: src/audiflix/ui/main_frame.py:566
 msgid "Licensed under the MIT License."
 msgstr ""
 
-#: src/audiflix/ui/panels/base_list_panel.py:58
+#: src/audiflix/ui/panels/base_list_panel.py:86
 msgid "List"
 msgstr ""
 
-#: src/audiflix/ui/controller.py:174
+#: src/audiflix/ui/controller.py:207
 msgid "Loading %s..."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:285
+#: src/audiflix/ui/main_frame.py:370
 msgid "Loading bookmarks..."
 msgstr ""
 
-#: src/audiflix/ui/panels/library_panel.py:103
+#: src/audiflix/ui/panels/library_panel.py:125
 msgid "Loading episodes of %s..."
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:154
+#: src/audiflix/ui/item_actions.py:160
 msgid "Looking up the author..."
 msgstr ""
 
-#: src/audiflix/ui/menus.py:56
+#: src/audiflix/ui/menus.py:62
 msgid "Mana&ge bookmarks..."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:40
+#: src/audiflix/ui/dialogs/settings_dialog.py:44
 msgid "Manage bookmarks"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:70
+#: src/audiflix/ui/menus.py:76
 msgid "Mark as &finished"
 msgstr ""
 
@@ -750,7 +950,7 @@ msgid "Mark as finished"
 msgstr ""
 
 #: src/audiflix/ui/dialogs/media_info_dialog.py:51
-#: src/audiflix/ui/dialogs/settings_dialog.py:41
+#: src/audiflix/ui/dialogs/settings_dialog.py:45
 msgid "Media details"
 msgstr ""
 
@@ -758,7 +958,7 @@ msgstr ""
 msgid "Media details - %s"
 msgstr ""
 
-#: src/audiflix/helpers/actions.py:83
+#: src/audiflix/helpers/actions.py:158
 msgid "Media details for %s saved."
 msgstr ""
 
@@ -770,8 +970,8 @@ msgstr ""
 msgid "Name of the new collection"
 msgstr ""
 
-#: src/audiflix/api/models.py:163
-#: src/audiflix/helpers/formatting.py:22
+#: src/audiflix/api/models.py:177
+#: src/audiflix/helpers/formatting.py:23
 msgid "Narrator"
 msgstr ""
 
@@ -779,11 +979,11 @@ msgstr ""
 msgid "Ne&xt chapter"
 msgstr ""
 
-#: src/audiflix/api/client.py:618
+#: src/audiflix/api/client.py:670
 msgid "Network error during download: %s"
 msgstr ""
 
-#: src/audiflix/api/client.py:653
+#: src/audiflix/api/client.py:709
 msgid "Network error: %s"
 msgstr ""
 
@@ -792,16 +992,21 @@ msgid "New title:"
 msgstr ""
 
 #: src/audiflix/ui/panels/authors_panel.py:18
-#: src/audiflix/ui/panels/library_panel.py:21
+#: src/audiflix/ui/panels/library_panel.py:23
 #: src/audiflix/ui/panels/series_panel.py:19
 msgid "Newest"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:33
+#: src/audiflix/ui/menus.py:47
+msgid "Next audio file"
 msgstr ""
 
 #: src/audiflix/ui/dialogs/settings_dialog.py:30
 msgid "Next chapter"
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:172
+#: src/audiflix/ui/item_actions.py:178
 msgid "No author is linked to this item."
 msgstr ""
 
@@ -813,7 +1018,7 @@ msgstr ""
 msgid "No bookmarks for this title yet."
 msgstr ""
 
-#: src/audiflix/ui/controller.py:275
+#: src/audiflix/ui/controller.py:361
 msgid "No chapter."
 msgstr ""
 
@@ -821,58 +1026,78 @@ msgstr ""
 msgid "No credential store available - the token is kept for this session only."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:375
+#: src/audiflix/ui/controller.py:546
+msgid "No further audio file."
+msgstr ""
+
+#: src/audiflix/ui/main_frame.py:460
 msgid "No item selected."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:218
+#: src/audiflix/ui/main_frame.py:253
 msgid "No library selected."
 msgstr ""
 
-#: src/audiflix/ui/controller.py:182
+#: src/audiflix/ui/controller.py:226
 msgid "No playable audio files were found."
+msgstr ""
+
+#: src/audiflix/ui/controller.py:527
+msgid "No sleep timer is running."
 msgstr ""
 
 #: src/audiflix/ui/dialogs/login_dialog.py:180
 msgid "No system credential store is available, so your sign-in is kept for this session only. Audiflix never writes tokens to disk in plain text, so you will need to sign in again next time."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:282
+#: src/audiflix/ui/main_frame.py:367
 msgid "No title loaded - bookmarks belong to the title that is playing."
 msgstr ""
 
-#: src/audiflix/ui/controller.py:216
-#: src/audiflix/ui/controller.py:261
-#: src/audiflix/ui/controller.py:324
-#: src/audiflix/ui/main_frame.py:303
+#: src/audiflix/ui/controller.py:302
+#: src/audiflix/ui/controller.py:347
+#: src/audiflix/ui/controller.py:490
+#: src/audiflix/ui/main_frame.py:325
+#: src/audiflix/ui/main_frame.py:388
 msgid "No title loaded."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:330
+#: src/audiflix/ui/main_frame.py:415
 msgid "No title selected."
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:34
+#: src/audiflix/helpers/formatting.py:36
 msgid "Not downloaded"
 msgstr ""
 
-#: src/audiflix/api/client.py:636
+#: src/audiflix/api/client.py:692
 msgid "Not signed in."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:10
+#: src/audiflix/helpers/formatting.py:45
+#: src/audiflix/ui/panels/library_panel.py:32
+msgid "Not started"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:16
 msgid "Off"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:78
+#: src/audiflix/ui/controller.py:667
+msgid "Offline progress for %d title sent to the server."
+msgid_plural "Offline progress for %d titles sent to the server."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/audiflix/ui/menus.py:85
 msgid "Open &log folder"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:59
+#: src/audiflix/ui/main_frame.py:62
 msgid "Overview"
 msgstr ""
 
-#: src/audiflix/ui/controller.py:219
+#: src/audiflix/ui/controller.py:305
 msgid "Paused"
 msgstr ""
 
@@ -884,19 +1109,36 @@ msgstr ""
 msgid "Play / Pause"
 msgstr ""
 
-#: src/audiflix/audio/player.py:485
-msgid "Playback failed. The stream may have expired - please try again."
+#: src/audiflix/audio/player.py:789
+msgid "Playback failed. Press play again to continue from %s."
 msgstr ""
 
-#: src/audiflix/audio/player.py:472
+#: src/audiflix/audio/player.py:682
 msgid "Playback reported repeated errors. See the log file."
 msgstr ""
 
-#: src/audiflix/ui/controller.py:219
+#: src/audiflix/audio/player.py:820
+msgid "Playback resumed."
+msgstr ""
+
+#: src/audiflix/ui/dialogs/speed_dialog.py:25
+#: src/audiflix/ui/dialogs/speed_dialog.py:39
+msgid "Playback speed"
+msgstr ""
+
+#: src/audiflix/ui/controller.py:305
 msgid "Playing"
 msgstr ""
 
-#: src/audiflix/ui/controller.py:210
+#: src/audiflix/ui/controller.py:296
+msgid "Playing from the download: %s"
+msgstr ""
+
+#: src/audiflix/ui/controller.py:294
+msgid "Playing offline: %s"
+msgstr ""
+
+#: src/audiflix/ui/controller.py:298
 msgid "Playing: %s"
 msgstr ""
 
@@ -920,6 +1162,10 @@ msgstr ""
 msgid "Please select a podcast first."
 msgstr ""
 
+#: src/audiflix/ui/item_actions.py:277
+msgid "Please stop playback before deleting the files."
+msgstr ""
+
 #: src/audiflix/ui/dialogs/busy_dialog.py:41
 msgid "Please wait"
 msgstr ""
@@ -928,7 +1174,7 @@ msgstr ""
 msgid "Podcast %s added."
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:45
+#: src/audiflix/ui/item_actions.py:51
 msgid "Podcast details"
 msgstr ""
 
@@ -940,8 +1186,8 @@ msgstr ""
 msgid "Podcast search term"
 msgstr ""
 
-#: src/audiflix/ui/panels/library_panel.py:161
-#: src/audiflix/ui/panels/library_panel.py:184
+#: src/audiflix/ui/panels/library_panel.py:189
+#: src/audiflix/ui/panels/library_panel.py:219
 msgid "Podcasts"
 msgstr ""
 
@@ -949,12 +1195,16 @@ msgstr ""
 msgid "Position"
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:128
+#: src/audiflix/helpers/formatting.py:176
 msgid "Position %(position)s, %(remaining)s remaining"
 msgstr ""
 
+#: src/audiflix/ui/dialogs/jump_to_time_dialog.py:31
+msgid "Position to jump to"
+msgstr ""
+
 #: src/audiflix/ui/panels/authors_panel.py:44
-#: src/audiflix/ui/panels/library_panel.py:50
+#: src/audiflix/ui/panels/library_panel.py:71
 #: src/audiflix/ui/panels/series_panel.py:45
 msgid "Press Enter to search"
 msgstr ""
@@ -963,12 +1213,21 @@ msgstr ""
 msgid "Previous &chapter"
 msgstr ""
 
+#: src/audiflix/ui/dialogs/settings_dialog.py:32
+#: src/audiflix/ui/menus.py:46
+msgid "Previous audio file"
+msgstr ""
+
 #: src/audiflix/ui/dialogs/settings_dialog.py:29
 msgid "Previous chapter"
 msgstr ""
 
-#: src/audiflix/api/models.py:166
-#: src/audiflix/helpers/formatting.py:26
+#: src/audiflix/helpers/formatting.py:23
+msgid "Progress"
+msgstr ""
+
+#: src/audiflix/api/models.py:180
+#: src/audiflix/helpers/formatting.py:28
 msgid "Published"
 msgstr ""
 
@@ -976,11 +1235,11 @@ msgstr ""
 msgid "Published &year:"
 msgstr ""
 
-#: src/audiflix/api/models.py:165
+#: src/audiflix/api/models.py:179
 msgid "Publisher"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:220
+#: src/audiflix/ui/dialogs/settings_dialog.py:281
 msgid "R&eset this shortcut"
 msgstr ""
 
@@ -1004,32 +1263,44 @@ msgstr ""
 msgid "Recently added (%d)"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:409
+#: src/audiflix/ui/main_frame.py:494
 msgid "Refresh: F5"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:190
+#: src/audiflix/ui/main_frame.py:225
 msgid "Refreshed."
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:160
+msgid "Remember the speed &per title"
+msgstr ""
+
+#: src/audiflix/ui/item_actions.py:38
+msgid "Remove download"
 msgstr ""
 
 #: src/audiflix/ui/dialogs/bookmarks_dialog.py:159
 msgid "Rename bookmark"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:221
+#: src/audiflix/ui/dialogs/settings_dialog.py:282
 msgid "Reset &all shortcuts"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:279
+#: src/audiflix/ui/dialogs/settings_dialog.py:340
 msgid "Reset all keyboard shortcuts to their default values?"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:34
-#: src/audiflix/ui/menus.py:48
+#: src/audiflix/ui/dialogs/settings_dialog.py:37
+#: src/audiflix/ui/menus.py:52
 msgid "Reset speed"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:229
+#: src/audiflix/ui/dialogs/settings_dialog.py:206
+msgid "Saved title speeds cleared."
+msgstr ""
+
+#: src/audiflix/ui/main_frame.py:264
 msgid "Scanning %(name)s (%(index)d/%(total)d)..."
 msgstr ""
 
@@ -1038,16 +1309,16 @@ msgid "Sea&rch"
 msgstr ""
 
 #: src/audiflix/ui/panels/authors_panel.py:39
-#: src/audiflix/ui/panels/library_panel.py:45
+#: src/audiflix/ui/panels/library_panel.py:66
 #: src/audiflix/ui/panels/series_panel.py:40
 msgid "Sea&rch:"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:44
+#: src/audiflix/ui/dialogs/settings_dialog.py:48
 msgid "Search"
 msgstr ""
 
-#: src/audiflix/ui/panels/library_panel.py:56
+#: src/audiflix/ui/panels/library_panel.py:77
 msgid "Search and &add podcast..."
 msgstr ""
 
@@ -1063,7 +1334,7 @@ msgstr ""
 msgid "Search failed: %s"
 msgstr ""
 
-#: src/audiflix/ui/panels/library_panel.py:162
+#: src/audiflix/ui/panels/library_panel.py:190
 msgid "Search podcasts"
 msgstr ""
 
@@ -1071,8 +1342,8 @@ msgstr ""
 msgid "Search series"
 msgstr ""
 
-#: src/audiflix/ui/panels/library_panel.py:162
-#: src/audiflix/ui/panels/library_panel.py:49
+#: src/audiflix/ui/panels/library_panel.py:190
+#: src/audiflix/ui/panels/library_panel.py:70
 msgid "Search titles"
 msgstr ""
 
@@ -1080,7 +1351,7 @@ msgstr ""
 msgid "Searching for podcasts..."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:53
+#: src/audiflix/ui/main_frame.py:56
 msgid "Sections"
 msgstr ""
 
@@ -1089,13 +1360,13 @@ msgid "Select &library..."
 msgstr ""
 
 #: src/audiflix/ui/dialogs/library_select_dialog.py:17
-#: src/audiflix/ui/dialogs/settings_dialog.py:42
+#: src/audiflix/ui/dialogs/settings_dialog.py:46
 msgid "Select library"
 msgstr ""
 
-#: src/audiflix/api/models.py:164
-#: src/audiflix/helpers/formatting.py:22
-#: src/audiflix/ui/main_frame.py:62
+#: src/audiflix/api/models.py:178
+#: src/audiflix/helpers/formatting.py:23
+#: src/audiflix/ui/main_frame.py:65
 #: src/audiflix/ui/panels/series_panel.py:50
 msgid "Series"
 msgstr ""
@@ -1108,40 +1379,48 @@ msgstr ""
 msgid "Series (%d)"
 msgstr ""
 
-#: src/audiflix/api/client.py:673
+#: src/audiflix/api/client.py:729
 msgid "Server error %(status)d: %(detail)s"
 msgstr ""
 
-#: src/audiflix/api/client.py:676
+#: src/audiflix/api/client.py:732
 msgid "Server error %d."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:43
-#: src/audiflix/ui/dialogs/settings_dialog.py:53
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:67
+msgid "Set a new sleep timer &length:"
+msgstr ""
+
+#: src/audiflix/ui/menus.py:53
+msgid "Set speed for this title..."
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:47
+#: src/audiflix/ui/dialogs/settings_dialog.py:57
 msgid "Settings"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:60
+#: src/audiflix/ui/dialogs/settings_dialog.py:64
 msgid "Settings pages"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:257
+#: src/audiflix/ui/main_frame.py:294
 msgid "Settings saved."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:272
+#: src/audiflix/ui/dialogs/settings_dialog.py:333
 msgid "Shortcut for %(action)s reset to %(shortcut)s."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:213
+#: src/audiflix/ui/dialogs/settings_dialog.py:274
 msgid "Shortcut for %s"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:261
+#: src/audiflix/ui/dialogs/settings_dialog.py:322
 msgid "Shortcut for %s cleared."
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:53
+#: src/audiflix/ui/item_actions.py:59
 msgid "Show books"
 msgstr ""
 
@@ -1153,7 +1432,7 @@ msgstr ""
 msgid "Sign &out"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:336
+#: src/audiflix/ui/main_frame.py:421
 msgid "Sign out of Audiflix?"
 msgstr ""
 
@@ -1161,7 +1440,7 @@ msgstr ""
 msgid "Sign-in failed: %s"
 msgstr ""
 
-#: src/audiflix/api/client.py:135
+#: src/audiflix/api/client.py:145
 msgid "Sign-in failed: the server did not return a token."
 msgstr ""
 
@@ -1177,7 +1456,7 @@ msgstr ""
 msgid "Signing in..."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:349
+#: src/audiflix/ui/main_frame.py:434
 msgid "Signing out..."
 msgstr ""
 
@@ -1193,7 +1472,7 @@ msgstr ""
 msgid "Skip back"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:103
+#: src/audiflix/ui/dialogs/settings_dialog.py:107
 msgid "Skip back (seconds):"
 msgstr ""
 
@@ -1201,49 +1480,61 @@ msgstr ""
 msgid "Skip forward"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:106
+#: src/audiflix/ui/dialogs/settings_dialog.py:110
 msgid "Skip forward (seconds):"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:54
+#: src/audiflix/ui/menus.py:59
 msgid "Sleep &timer..."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:38
-#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:23
+#: src/audiflix/ui/dialogs/settings_dialog.py:41
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:37
 msgid "Sleep timer"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:27
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:68
 msgid "Sleep timer &length:"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:118
+#: src/audiflix/ui/dialogs/settings_dialog.py:122
 msgid "Sleep timer default (minutes):"
 msgstr ""
 
-#: src/audiflix/ui/controller.py:376
+#: src/audiflix/ui/controller.py:623
 msgid "Sleep timer elapsed - playback paused."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:29
+#: src/audiflix/ui/controller.py:520
+msgid "Sleep timer extended, %s remaining"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:71
 msgid "Sleep timer length"
 msgstr ""
 
-#: src/audiflix/ui/controller.py:348
+#: src/audiflix/ui/controller.py:514
 msgid "Sleep timer off"
 msgstr ""
 
-#: src/audiflix/ui/controller.py:346
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:46
+msgid "Sleep timer running, %s remaining."
+msgstr ""
+
+#: src/audiflix/ui/controller.py:512
 msgid "Sleep timer: %d minutes"
 msgstr ""
 
-#: src/audiflix/ui/controller.py:344
+#: src/audiflix/ui/controller.py:530
+msgid "Sleep timer: %s remaining"
+msgstr ""
+
+#: src/audiflix/ui/controller.py:510
 msgid "Sleep timer: until the end of the chapter"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:32
-#: src/audiflix/ui/menus.py:47
+#: src/audiflix/ui/dialogs/settings_dialog.py:35
+#: src/audiflix/ui/menus.py:51
 msgid "Slower"
 msgstr ""
 
@@ -1251,7 +1542,7 @@ msgstr ""
 msgid "Sort authors"
 msgstr ""
 
-#: src/audiflix/ui/panels/library_panel.py:41
+#: src/audiflix/ui/panels/library_panel.py:54
 msgid "Sort order"
 msgstr ""
 
@@ -1259,20 +1550,31 @@ msgstr ""
 msgid "Sort series"
 msgstr ""
 
-#: src/audiflix/ui/controller.py:296
+#: src/audiflix/ui/controller.py:408
+#: src/audiflix/ui/controller.py:453
+msgid "Speed %(speed)s, saved for %(title)s"
+msgstr ""
+
+#: src/audiflix/ui/controller.py:415
+#: src/audiflix/ui/controller.py:460
+#: src/audiflix/ui/main_frame.py:361
 msgid "Speed %s"
+msgstr ""
+
+#: src/audiflix/ui/controller.py:423
+msgid "Speed %s (default)"
 msgstr ""
 
 #: src/audiflix/ui/dialogs/chapter_list_dialog.py:32
 msgid "Start"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:222
+#: src/audiflix/ui/main_frame.py:257
 msgid "Starting a scan of %d library/libraries..."
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:22
-#: src/audiflix/helpers/formatting.py:26
+#: src/audiflix/helpers/formatting.py:23
+#: src/audiflix/helpers/formatting.py:28
 msgid "Status"
 msgstr ""
 
@@ -1284,49 +1586,61 @@ msgstr ""
 msgid "Stay signed in"
 msgstr ""
 
-#: src/audiflix/api/models.py:161
+#: src/audiflix/api/models.py:175
 msgid "Subtitle"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:122
+#: src/audiflix/ui/dialogs/settings_dialog.py:130
 msgid "Sync progress every (seconds):"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:59
+#: src/audiflix/ui/menus.py:65
 msgid "Tab 1: &Overview"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:60
+#: src/audiflix/ui/menus.py:66
 msgid "Tab 2: &Books / Podcasts"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:61
+#: src/audiflix/ui/menus.py:67
 msgid "Tab 3: &Authors"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:62
+#: src/audiflix/ui/menus.py:68
 msgid "Tab 4: Se&ries"
 msgstr ""
 
-#: src/audiflix/ui/menus.py:63
+#: src/audiflix/ui/menus.py:69
 msgid "Tab 5: &Collections"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:408
+#: src/audiflix/ui/main_frame.py:493
 msgid "Tabs 1 to 5: Ctrl+1 ... Ctrl+5"
 msgstr ""
 
-#: src/audiflix/audio/player.py:50
+#: src/audiflix/audio/player.py:65
 msgid "The audio engine could not be started. Please reinstall the VLC media player."
 msgstr ""
 
-#: src/audiflix/audio/player.py:144
+#: src/audiflix/audio/player.py:206
 msgid "The audio engine could not be started: %s"
 msgstr ""
 
-#: src/audiflix/audio/player.py:49
+#: src/audiflix/audio/player.py:64
 #: src/audiflix/vlc_runtime.py:223
 msgid "The bundled audio engine could not be loaded. Please reinstall Audiflix."
+msgstr ""
+
+#: src/audiflix/ui/dialogs/speed_dialog.py:52
+msgid "The default speed is %s."
+msgstr ""
+
+#: src/audiflix/helpers/actions.py:151
+msgid "The downloaded files of %s could not be deleted."
+msgstr ""
+
+#: src/audiflix/ui/controller.py:562
+msgid "The length of this title is unknown."
 msgstr ""
 
 #: src/audiflix/ui/dialogs/add_podcast_dialog.py:148
@@ -1337,13 +1651,13 @@ msgstr ""
 msgid "The library has no folder to store the podcast in."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:422
+#: src/audiflix/ui/main_frame.py:553
 msgid ""
 "The log files are stored in:\n"
 "%s"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:260
+#: src/audiflix/ui/main_frame.py:297
 msgid "The new language will be used the next time Audiflix starts."
 msgstr ""
 
@@ -1359,15 +1673,15 @@ msgstr ""
 msgid "The server address must start with http:// or https://."
 msgstr ""
 
-#: src/audiflix/api/client.py:649
+#: src/audiflix/api/client.py:705
 msgid "The server did not respond in time."
 msgstr ""
 
-#: src/audiflix/api/client.py:668
+#: src/audiflix/api/client.py:724
 msgid "The server does not know this address (404)."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:313
+#: src/audiflix/ui/dialogs/settings_dialog.py:374
 msgid "The shortcut %(shortcut)s is assigned to several actions: %(actions)s."
 msgstr ""
 
@@ -1375,38 +1689,50 @@ msgstr ""
 msgid "The token is stored in your system credential store."
 msgstr ""
 
+#: src/audiflix/ui/main_frame.py:512
+msgid "The update check failed: %s"
+msgstr ""
+
 #: src/audiflix/ui/dialogs/add_podcast_dialog.py:122
 msgid "This search result has no feed URL."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:152
+#: src/audiflix/ui/main_frame.py:184
 msgid "This server has no libraries."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:325
+#: src/audiflix/ui/main_frame.py:410
 msgid "This tab has no search field."
 msgstr ""
 
-#: src/audiflix/ui/controller.py:269
-#: src/audiflix/ui/main_frame.py:307
+#: src/audiflix/ui/dialogs/speed_dialog.py:54
+msgid "This title has its own speed. The default is %s."
+msgstr ""
+
+#: src/audiflix/ui/controller.py:355
+#: src/audiflix/ui/main_frame.py:392
 msgid "This title has no chapters."
 msgstr ""
 
-#: src/audiflix/audio/player.py:210
+#: src/audiflix/audio/player.py:283
 msgid "This title has no playable audio files."
 msgstr ""
 
-#: src/audiflix/api/models.py:160
-#: src/audiflix/helpers/formatting.py:22
+#: src/audiflix/ui/controller.py:550
+msgid "This title is a single audio file."
+msgstr ""
+
+#: src/audiflix/api/models.py:174
+#: src/audiflix/helpers/formatting.py:23
 #: src/audiflix/ui/dialogs/bookmarks_dialog.py:42
 msgid "Title"
 msgstr ""
 
-#: src/audiflix/ui/controller.py:368
+#: src/audiflix/ui/controller.py:615
 msgid "Title finished."
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:44
+#: src/audiflix/ui/item_actions.py:50
 msgid "Toggle automatic episode download"
 msgstr ""
 
@@ -1414,15 +1740,23 @@ msgstr ""
 msgid "Total duration: %s"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:17
+#: src/audiflix/ui/dialogs/sleep_timer_dialog.py:23
 msgid "Until the end of the chapter"
 msgstr ""
 
-#: src/audiflix/ui/item_actions.py:83
+#: src/audiflix/ui/item_actions.py:89
 msgid "Updating the setting for %s..."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:444
+#: src/audiflix/ui/dialogs/speed_dialog.py:48
+msgid "Use as the &default speed for all titles"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:165
+msgid "Use the &media keys even when Audiflix is in the background"
+msgstr ""
+
+#: src/audiflix/ui/main_frame.py:575
 msgid "VLC is licensed under the GNU General Public License v2 or later. See THIRD_PARTY_NOTICES for the licence text and how to obtain the source code."
 msgstr ""
 
@@ -1430,57 +1764,62 @@ msgstr ""
 msgid "VLC is not available. Please install the VLC media player (https://www.videolan.org)."
 msgstr ""
 
-#: src/audiflix/ui/controller.py:307
+#: src/audiflix/ui/controller.py:473
 msgid "Volume %d percent"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:36
-#: src/audiflix/ui/menus.py:51
+#: src/audiflix/ui/dialogs/settings_dialog.py:39
+#: src/audiflix/ui/menus.py:56
 msgid "Volume down"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:115
+#: src/audiflix/ui/dialogs/settings_dialog.py:119
 msgid "Volume step (percent):"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:35
-#: src/audiflix/ui/menus.py:50
+#: src/audiflix/ui/dialogs/settings_dialog.py:38
+#: src/audiflix/ui/menus.py:55
 msgid "Volume up"
 msgstr ""
 
-#: src/audiflix/api/client.py:665
+#: src/audiflix/api/client.py:721
 msgid "Your account is not allowed to perform this action."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:362
+#: src/audiflix/ui/main_frame.py:447
 msgid ""
 "Your session has expired and could not be renewed.\n"
 "\n"
 "Please restart Audiflix and sign in again."
 msgstr ""
 
-#: src/audiflix/api/client.py:73
+#: src/audiflix/api/client.py:75
 msgid "Your session has expired. Please sign in again."
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:60
+#: src/audiflix/helpers/formatting.py:103
 msgid "by %s"
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:66
-msgid "finished"
+#: src/audiflix/ui/dialogs/jump_to_time_dialog.py:32
+msgid "for example 1:23:45 or 45%"
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:62
+#: src/audiflix/helpers/formatting.py:105
 msgid "narrated by %s"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:273
-#: src/audiflix/ui/main_frame.py:405
+#: src/audiflix/ui/dialogs/settings_dialog.py:334
+#: src/audiflix/ui/main_frame.py:490
 #: src/audiflix/ui/shortcuts.py:114
 msgid "not set"
 msgstr ""
 
-#: src/audiflix/helpers/formatting.py:64
+#: src/audiflix/helpers/formatting.py:107
 msgid "series %s"
+msgstr ""
+
+#: src/audiflix/ui/controller.py:411
+#: src/audiflix/ui/controller.py:456
+msgid "this title"
 msgstr ""

@@ -1,6 +1,7 @@
 """Tab 2: Books / Podcasts.
 
 * a choice control for sorting (newest / alphabetical),
+* a choice control for filtering by listening state,
 * a search field for titles,
 * for podcast libraries an extra button to search for and add new podcasts.
 
@@ -11,6 +12,7 @@ from __future__ import annotations
 
 import wx
 
+from audiflix.api import client as api
 from audiflix.helpers.formatting import episode_columns, episode_row
 from audiflix.i18n import N_, _
 from audiflix.ui.dialogs.add_podcast_dialog import AddPodcastDialog
@@ -20,6 +22,17 @@ from audiflix.ui.panels.base_list_panel import BaseListPanel
 SORT_OPTIONS: list[tuple[str, tuple[str, bool]]] = [
     (N_("Newest"), ("addedAt", True)),
     (N_("Alphabetical"), ("media.metadata.title", False)),
+]
+
+#: Label -> (server filter, local predicate name). The server filters the full
+#: list; a search goes through a different endpoint that takes no filter, so
+#: its results are filtered here instead.
+FILTER_OPTIONS: list[tuple[str, tuple[str | None, str | None]]] = [
+    (N_("All titles"), (None, None)),
+    (N_("Not started"), (api.NOT_STARTED_FILTER, "not_started")),
+    (N_("In progress"), (api.IN_PROGRESS_FILTER, "in_progress")),
+    (N_("Finished"), (api.FINISHED_FILTER, "finished")),
+    (N_("Downloaded"), (None, "downloaded")),
 ]
 
 
@@ -41,6 +54,14 @@ class LibraryPanel(wx.Panel):
         self.sort_choice.SetName(_("Sort order"))
         self.sort_choice.SetSelection(0)
         controls.Add(self.sort_choice, 0, wx.RIGHT, 12)
+        controls.Add(
+            wx.StaticText(self, label=_("&Filter:")), 0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4,
+        )
+        self.filter_choice = wx.Choice(self, choices=[_(option[0]) for option in FILTER_OPTIONS])
+        self.filter_choice.SetName(_("Filter by listening state"))
+        self.filter_choice.SetSelection(0)
+        controls.Add(self.filter_choice, 0, wx.RIGHT, 12)
         controls.Add(
             wx.StaticText(self, label=_("Sea&rch:")), 0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4,
@@ -78,6 +99,7 @@ class LibraryPanel(wx.Panel):
         self.SetSizer(sizer)
 
         self.sort_choice.Bind(wx.EVT_CHOICE, lambda event: self.load())
+        self.filter_choice.Bind(wx.EVT_CHOICE, lambda event: self.load())
         self.search.Bind(wx.EVT_TEXT_ENTER, lambda event: self.load())
         self.add_podcast_btn.Bind(wx.EVT_BUTTON, self._on_add_podcast)
 
@@ -104,13 +126,19 @@ class LibraryPanel(wx.Panel):
 
         def fetch():
             full = ctx.client.item(item.id)
+            # Episode progress lives on the user object, so it has to be current
+            # for the status column to mean anything.
+            ctx.progress.update(ctx.client.fetch_me())
             return full, full.episodes
 
         def show(result):
             full, episodes = result
             # newest episodes first
             episodes = sorted(episodes, key=lambda episode: episode.published_at, reverse=True)
-            rows = [episode_row(episode) for episode in episodes]
+            rows = [
+                episode_row(episode, ctx.episode_status(full.id, episode.id))
+                for episode in episodes
+            ]
             payloads = [(full, episode) for episode in episodes]
             self.episodes_list.set_rows(rows, payloads)
             self.episodes_list.set_label(
@@ -170,18 +198,27 @@ class LibraryPanel(wx.Panel):
             return
         term = self.search.GetValue().strip()
         sort_key, desc = SORT_OPTIONS[max(0, self.sort_choice.GetSelection())][1]
+        filter_index = max(0, self.filter_choice.GetSelection())
+        filter_label, (server_filter, local_filter) = FILTER_OPTIONS[filter_index]
 
         def fetch():
             if term:
                 merged = []
                 for lib_id in lib_ids:
                     merged.extend(ctx.client.search_library(lib_id, term, limit=50))
-                return merged
-            return ctx.client.all_items(lib_ids, sort=sort_key, desc=desc)
+                return self._apply_filter(merged, local_filter)
+            items = ctx.client.all_items(
+                lib_ids, sort=sort_key, desc=desc, filter_=server_filter
+            )
+            # "Downloaded" has no equivalent on the server - it is about this
+            # machine, not the library.
+            return self._apply_filter(items, local_filter) if server_filter is None else items
 
         def show(items):
-            self.list.set_items(items, ctx.is_downloaded, ctx.is_finished)
+            self.list.set_items(items, ctx.item_progress, ctx.item_status)
             base = _("Podcasts") if ctx.active_is_podcast else _("Books")
+            if filter_index:
+                base = f"{base} - {_(filter_label)}"
             if term:
                 self.list.set_label(
                     _("%(kind)s (%(count)d) - search '%(term)s'")
@@ -191,6 +228,25 @@ class LibraryPanel(wx.Panel):
                 self.list.set_label(f"{base} ({len(items)})")
 
         ctx.run_async(fetch, on_done=show, description="library-items")
+
+    def _apply_filter(self, items: list, local_filter: str | None) -> list:
+        """Filter a list of items here, for the cases the server cannot cover."""
+        if not local_filter:
+            return items
+        ctx = self.ctx
+        if local_filter == "downloaded":
+            return [item for item in items if ctx.registry.is_downloaded(item.id)]
+        if local_filter == "finished":
+            return [item for item in items if ctx.progress.is_finished(item.id)]
+        if local_filter == "in_progress":
+            return [
+                item for item in items
+                if not ctx.progress.is_finished(item.id)
+                and ctx.progress.progress_for(item.id) > 0
+            ]
+        if local_filter == "not_started":
+            return [item for item in items if ctx.progress.progress_for(item.id) <= 0]
+        return items
 
     def refresh(self):
         self.update_mode()

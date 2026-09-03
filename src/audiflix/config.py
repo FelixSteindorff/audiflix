@@ -75,10 +75,20 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "default_volume": 100,
     "volume_step": 5,
     "sleep_timer_default_minutes": 15,
+    #: Fade the volume out over the last seconds of the sleep timer (0 = off).
+    "sleep_fade_seconds": 20,
     "download_dir": str(default_download_dir()),
     "announce_on_seek": True,
+    "announce_chapter_change": True,
     "progress_sync_seconds": 15,
     "allow_insecure_http": False,
+    #: Play/pause and track keys on a keyboard or headset, even when Audiflix
+    #: is in the background (Windows only).
+    "global_media_keys": True,
+    #: Speed per title (item id -> rate), saved whenever the speed is changed
+    #: while a title is playing. Titles without an entry use "default_speed".
+    "remember_speed_per_title": True,
+    "book_speeds": {},
     # Shortcuts are stored as strings in wx accelerator syntax and can be
     # overridden in the settings dialog. An empty value disables the shortcut.
     "shortcuts": {
@@ -88,6 +98,9 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "prev_chapter": "Ctrl+Shift+Left",
         "next_chapter": "Ctrl+Shift+Right",
         "chapter_list": "Ctrl+Shift+C",
+        "prev_track": "Ctrl+Alt+Left",
+        "next_track": "Ctrl+Alt+Right",
+        "jump_to_time": "Ctrl+G",
         "speed_down": "Ctrl+-",
         "speed_up": "Ctrl++",
         "speed_reset": "Ctrl+0",
@@ -95,6 +108,7 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "volume_down": "Ctrl+Down",
         "announce_time": "Ctrl+T",
         "sleep_timer": "Ctrl+L",
+        "announce_sleep": "Ctrl+Alt+L",
         "add_bookmark": "Ctrl+B",
         "manage_bookmarks": "Ctrl+Shift+B",
         "media_info": "Ctrl+I",

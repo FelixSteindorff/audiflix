@@ -104,7 +104,7 @@ class SeriesPanel(wx.Panel):
     def _open_series(self, series):
         ctx = self.ctx
         books = series.books
-        self.books_list.set_items(books, ctx.is_downloaded, ctx.is_finished)
+        self.books_list.set_items(books, ctx.item_progress, ctx.item_status)
         self.books_list.set_label(
             _("Series %(name)s (%(count)d)") % {"name": series.name, "count": len(books)}
         )
