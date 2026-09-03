@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: audiflix\n"
-"POT-Creation-Date: 2026-09-03 07:01+0000\n"
-"PO-Revision-Date: 2026-09-03 07:01+0000\n"
+"POT-Creation-Date: 2026-09-03 08:15+0000\n"
+"PO-Revision-Date: 2026-09-03 08:15+0000\n"
 "Last-Translator: Felix Steindorff\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -294,6 +294,12 @@ msgstr "Audiflix - Anmeldung nicht gespeichert"
 
 msgid "Audiflix is an independent third-party client and is not affiliated with the Audiobookshelf project."
 msgstr "Audiflix ist ein unabhängiger Client von Dritten und steht in keiner Verbindung zum Audiobookshelf-Projekt."
+
+msgid "Audio engine: VLC installed on this system (VideoLAN)"
+msgstr "Audio-Engine: auf diesem System installiertes VLC (VideoLAN)"
+
+msgid "Audio engine: bundled VLC %s (VideoLAN)"
+msgstr "Audio-Engine: mitgeliefertes VLC %s (VideoLAN)"
 
 msgid "Author"
 msgstr "Autor"
@@ -958,6 +964,15 @@ msgstr "Tab 5: &Sammlungen"
 msgid "Tabs 1 to 5: Ctrl+1 ... Ctrl+5"
 msgstr "Tabs 1 bis 5: Ctrl+1 ... Ctrl+5"
 
+msgid "The audio engine could not be started. Please reinstall the VLC media player."
+msgstr "Die Audio-Engine konnte nicht gestartet werden. Bitte den VLC Media Player neu installieren."
+
+msgid "The audio engine could not be started: %s"
+msgstr "Die Audio-Engine konnte nicht gestartet werden: %s"
+
+msgid "The bundled audio engine could not be loaded. Please reinstall Audiflix."
+msgstr "Die mitgelieferte Audio-Engine konnte nicht geladen werden. Bitte Audiflix neu installieren."
+
 msgid "The library folder returned by the server has no id."
 msgstr "Der vom Server gelieferte Bibliotheksordner hat keine ID."
 
@@ -1033,6 +1048,9 @@ msgstr "VLC konnte nicht gestartet werden. Bitte den VLC Media Player neu instal
 
 msgid "VLC could not be started: %s"
 msgstr "VLC konnte nicht gestartet werden: %s"
+
+msgid "VLC is licensed under the GNU General Public License v2 or later. See THIRD_PARTY_NOTICES for the licence text and how to obtain the source code."
+msgstr "VLC steht unter der GNU General Public License v2 oder neuer. Den Lizenztext und Hinweise zum Bezug des Quellcodes finden Sie in THIRD_PARTY_NOTICES."
 
 msgid "VLC is not available. Please install the VLC media player (https://www.videolan.org)."
 msgstr "VLC ist nicht verfügbar. Bitte den VLC Media Player installieren (https://www.videolan.org)."

@@ -1,0 +1,37 @@
+Audiflix
+========
+
+Audiflix is an accessible, keyboard-driven desktop client for Audiobookshelf.
+It is an independent third-party client and is not affiliated with the
+Audiobookshelf project.
+
+Audio engine
+------------
+This installation contains its own copy of the VLC media player libraries
+(libVLC) from VideoLAN. You do NOT need to install VLC separately, and Audiflix
+does not use or modify any VLC installation that may already be on this
+computer.
+
+The exact VLC version shipped with this build is shown by
+"Help -> About Audiflix" and by running "audiflix.exe --version" in a terminal.
+
+Licensing
+---------
+Audiflix itself is licensed under the MIT License (LICENSE.txt).
+
+The bundled VLC libraries are licensed under the GNU General Public License,
+version 2 or later (libVLC core: GNU Lesser General Public License 2.1 or
+later). The full licence text is installed as
+_internal\vlc\licenses\COPYING.txt, and THIRD_PARTY_NOTICES.txt explains how to
+obtain the corresponding source code.
+
+Checking the installation
+-------------------------
+Run "audiflix.exe --selftest" from a command prompt to verify that the bundled
+audio engine loads and can decode audio on this machine.
+
+Uninstalling
+------------
+Use "Apps & features" in Windows Settings, or the "Uninstall Audiflix" entry in
+the start menu. Your settings, the download registry and the log files remain
+in %APPDATA%\audiflix and can be deleted by hand if you no longer need them.

@@ -2,7 +2,8 @@
 
 A lightweight, **fully keyboard-operable and screen-reader friendly** desktop
 client for [Audiobookshelf](https://www.audiobookshelf.org/), built with
-wxPython and VLC.
+wxPython and VLC. The Windows release is self-contained: it brings its own
+audio engine, so there is nothing else to install.
 
 > Audiflix is an **independent third-party client**. It is not affiliated with,
 > endorsed by, or supported by the Audiobookshelf project. "Audiobookshelf" is
@@ -60,14 +61,27 @@ Accessibility is the reason this client exists, not a feature bolted on later.
 
 ## Requirements
 
-1. **Python 3.10+** (only for running from source)
-2. **VLC media player** must be installed - `python-vlc` uses the system-wide
-   libvlc, and the packaged `.exe` needs it too.
-   Download: <https://www.videolan.org/vlc/>
-3. An **Audiobookshelf server**, version 2.x. Both the classic long-lived token
+1. **Windows 10 or newer** for the installer. Audiflix also runs from source on
+   Linux and macOS, where a system VLC is used.
+2. An **Audiobookshelf server**, version 2.x. Both the classic long-lived token
    and the JWT access/refresh tokens introduced in ABS 2.26 are supported.
+3. **Python 3.10+**, but only when running from source.
+
+**No separate VLC installation is needed.** The Windows release contains its own
+copy of the VLC libraries; see [Audio engine](#audio-engine).
 
 ## Installation
+
+### Windows
+
+Download `Audiflix-<version>-Setup.exe` from the [releases
+page](https://github.com/FelixSteindorff/audiflix/releases) and run it. The
+installer needs no administrator rights, creates a start menu entry and an
+uninstall entry, and brings its own audio engine with it.
+
+To check that everything works on your machine, run `audiflix-selftest.exe`
+from the installation folder: it loads the bundled engine and decodes a test
+tone, then prints PASS or FAIL.
 
 ### From source
 
@@ -79,18 +93,39 @@ python -m venv .venv
 # source .venv/bin/activate     # Linux / macOS
 pip install -e .
 python tools/i18n_tool.py compile   # build the translation catalogs
+python tools/fetch_vlc.py           # optional: use a bundled VLC instead of the system one
 python -m audiflix
 ```
 
-### Windows executable
-
-Download `audiflix.exe` from the [releases
-page](https://github.com/FelixSteindorff/audiflix/releases), or build it
-yourself (see [Building](#building)). VLC still has to be installed separately.
+Running from source uses `build/vlc` when `tools/fetch_vlc.py` has been run, and
+otherwise falls back to a VLC installed on the system (<https://www.videolan.org/vlc/>).
 
 On first start the sign-in dialog asks for the server address, user name and
 password. With "Stay signed in" enabled the token is stored in the Windows
 Credential Manager (via `keyring`).
+
+## Audio engine
+
+Audiflix plays audio through **libVLC, which ships inside the application**.
+Users do not install VLC, and Audiflix does not touch a VLC installation that
+may already be on the machine.
+
+- A packaged build uses **only** its bundled runtime. If those files are missing
+  or damaged it says so and asks you to reinstall - it never silently falls back
+  to a different VLC whose plugins have not been tested with Audiflix.
+- The VLC version is **not hard-coded anywhere**. It is pinned per release in
+  [`vlc.lock.json`](vlc.lock.json), fetched at build time by
+  `tools/fetch_vlc.py`, and verified against the SHA-256 checksum VideoLAN
+  publishes next to the archive.
+- Every build records what it contains: `build/vlc-version.json`,
+  `audiflix.exe --version`, and **Help → About Audiflix** all report the exact
+  bundled VLC version.
+- Rebuilding an old tag reproduces the same VLC, because the pin is committed
+  alongside the code.
+
+VLC is licensed under the GPL v2 or later. See
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the licence, the trademark
+notice and where to obtain the corresponding source code.
 
 ## Keyboard shortcuts
 
@@ -170,16 +205,38 @@ On Linux and macOS the config directory is `$XDG_CONFIG_HOME/audiflix` or
 
 ## Building
 
+Needs [Inno Setup 6](https://jrsoftware.org/isinfo.php) for the installer step.
+
 ```bash
 pip install -r requirements-build.txt
-python build_exe.py
-# result: dist/audiflix.exe   (VLC must be installed)
+python build_exe.py --installer
+# results: dist/Audiflix/                    (the application)
+#          dist/Audiflix-<version>-Setup.exe (the installer)
 ```
 
-`requirements-build.txt` pins every build dependency so a release can be
-reproduced. The build compiles the translation catalogs, embeds the application
-icon and the Windows version resource (generated from `audiflix.__version__`),
-and prints the SHA-256 of the resulting executable.
+The build
+
+1. fetches the VLC runtime pinned in `vlc.lock.json` and verifies its checksum,
+2. compiles the translation catalogs,
+3. runs PyInstaller in **onedir** mode - a onefile build would unpack about
+   200 MB into a temporary folder on every start,
+4. runs the packaged self-test and **aborts if the bundled engine cannot decode
+   audio**, so a broken bundle can never be published,
+5. builds the installer and prints its SHA-256.
+
+`requirements-build.txt` pins every Python build dependency, and
+`vlc.lock.json` pins the VLC runtime, so a release can be reproduced.
+
+Useful variants:
+
+```bash
+python build_exe.py                   # application only, no installer
+python build_exe.py --skip-vlc        # reuse an already fetched build/vlc
+python build_exe.py --latest-vlc      # try the newest stable VLC
+python tools/fetch_vlc.py --version 3.0.21   # fetch one specific version
+python tools/fetch_vlc.py --update-lock      # adopt the newest version as the pin
+python tools/fetch_vlc.py --check-only       # is a newer VLC available?
+```
 
 ## Tests and linting
 
@@ -191,7 +248,7 @@ ruff check .
 ```
 
 The test suite runs without a server, without VLC and - apart from the shortcut
-tests, which are skipped automatically - without wxPython. GitHub Actions runs
+and dialog tests, which are skipped automatically - without wxPython. GitHub Actions runs
 `pytest` on Linux and Windows against Python 3.10, 3.12 and 3.13, plus `ruff`.
 
 ## Translations
@@ -223,15 +280,22 @@ src/audiflix/
   audio/            VLC player
   helpers/          shared helpers: formatting, status, text, urls, actions
   locale/           translation catalogs
+  selftest.py       diagnostic for the bundled audio engine
+  vlc_runtime.py    locating and loading the bundled libVLC
   ui/               MainFrame, menus, panels (tabs), dialogs
-tools/              i18n, icon and version-resource tooling
+packaging/          Inno Setup script and installer notes
+tools/              VLC fetcher, i18n, icon and version-resource tooling
 ```
 
 ## Known limitations
 
-- **VLC must be installed separately.** The executable does not bundle libvlc.
+- **The Windows download is large** (around 90 MB installer, 200 MB installed)
+  because the VLC runtime travels with it. That is the price of not asking users
+  to install VLC themselves.
 - **Streams are direct-play only.** Audiflix asks the server for direct play and
-  does not transcode; a format your VLC cannot decode will not play.
+  does not transcode; a format the bundled VLC cannot decode will not play.
+- **Only the Windows build bundles VLC.** Running from source on Linux or macOS
+  uses a system VLC installation.
 - Audiobookshelf access tokens are short-lived. Audiflix refreshes them and
   re-signs every track URL when a track starts, but a *single* track that plays
   for longer than the token lifetime can still fail on a late range request.

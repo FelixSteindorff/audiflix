@@ -11,7 +11,7 @@ import sys
 
 import wx
 
-from audiflix import APP_DISPLAY_NAME, APP_NAME, __version__, i18n
+from audiflix import APP_DISPLAY_NAME, APP_NAME, __version__, i18n, vlc_runtime
 from audiflix.api.client import ApiError, AudiobookshelfClient
 from audiflix.config import (
     Settings,
@@ -88,9 +88,43 @@ def _auto_login_with_progress(settings: Settings) -> AudiobookshelfClient | None
     return client if ok else None
 
 
-def main() -> int:
+def _handle_cli(argv: list[str]) -> int | None:
+    """Handle the non-GUI command line options. Returns an exit code or None."""
+    if "--version" in argv:
+        print(f"{APP_DISPLAY_NAME} {__version__}")
+        version = vlc_runtime.bundled_version()
+        print(f"Bundled VLC: {version or 'none (using a system installation)'}")
+        return 0
+    if "--selftest" in argv:
+        from audiflix.selftest import run_selftest
+
+        setup_logging(console=True)
+        return run_selftest()
+    if "--help" in argv or "-h" in argv:
+        for line in (
+            f"{APP_DISPLAY_NAME} {__version__}",
+            "",
+            "Usage: audiflix [--selftest] [--version] [--help]",
+            "",
+            "  --selftest   check the bundled audio engine and exit",
+            "  --version    print the Audiflix and bundled VLC versions",
+            "",
+            "Without options Audiflix starts normally.",
+        ):
+            print(line)
+        return 0
+    return None
+
+
+def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else argv
+    early = _handle_cli(argv)
+    if early is not None:
+        return early
+
     setup_logging()
     log.info("Starting %s %s on %s", APP_DISPLAY_NAME, __version__, sys.platform)
+    log.info("Bundled VLC: %s", vlc_runtime.bundled_version() or "none (system installation)")
 
     settings = Settings.load()
     i18n.install(settings.get("language", "auto"))

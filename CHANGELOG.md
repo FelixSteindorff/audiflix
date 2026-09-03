@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **The Windows release now contains its own VLC runtime.** Audiflix no longer
+  requires a separate VLC installation; libVLC and the full plugin set are
+  installed as an internal part of the application.
+- `tools/fetch_vlc.py` downloads the runtime at build time, verifying it against
+  the SHA-256 checksum VideoLAN publishes next to the archive. It resolves the
+  newest stable version by default, accepts `--version` for an exact one, and
+  `--use-lock` for the version pinned in the new `vlc.lock.json`. No VLC binary
+  is committed to the repository.
+- Each build writes `build/vlc-version.json` (version, URL, checksum, file
+  count) and ships a copy inside the runtime, so an installed Audiflix can state
+  exactly which VLC it contains. The version is reported by
+  `audiflix.exe --version`, in **Help → About Audiflix**, and in the log.
+- `audiflix-selftest.exe` (and `audiflix --selftest` from source): a console
+  diagnostic that loads the bundled engine, checks that the plugins for
+  M4B/AAC/MP3/FLAC, HTTP(S) and HLS are present, and decodes a generated audio
+  file. `build_exe.py` runs it automatically and refuses to publish a build that
+  fails it.
+- An **Inno Setup installer** (`Audiflix-<version>-Setup.exe`) with a start menu
+  entry, an uninstall entry and an optional desktop icon. It installs per user by
+  default, needs no administrator rights, and pre-builds the libVLC plugin cache.
+  VLC is installed as an internal component only - no separate application entry.
+- `THIRD_PARTY_NOTICES.md` with the VLC licence, the VideoLAN trademark notice
+  and a written offer of the corresponding source code; it is installed
+  alongside the application.
+- A scheduled workflow that checks VideoLAN weekly for a newer stable release
+  and opens a pull request updating `vlc.lock.json`. It never modifies an
+  existing release.
+- `--version` and `--help` command line options.
+
+### Changed
+
+- **The Windows build is now onedir plus an installer instead of a single
+  executable.** With the VLC runtime included, a onefile build would unpack
+  around 200 MB into a temporary directory on every start.
+- A packaged build uses **only** its bundled runtime. If the bundled files are
+  missing or unloadable it reports "The bundled audio engine could not be loaded.
+  Please reinstall Audiflix." instead of silently falling back to an untested
+  system VLC. Running from source still prefers `build/vlc` and falls back to a
+  system installation.
+- The release build workflow uses the pinned VLC version, verifies that no
+  system VLC is present on the runner, and runs the packaged self-test there.
+
+### Fixed
+
+- python-vlc calls `sys.exit(1)` when the library named by `PYTHON_VLC_LIB_PATH`
+  cannot be loaded, which would have terminated Audiflix without a message. The
+  library is now probed first so the failure is reported properly.
+
 ## [0.1.0] - 2026-09-03
 
 First public release. Audiflix was written as a private, German-only client;

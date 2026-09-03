@@ -1,0 +1,96 @@
+name: Check for a new VLC release
+
+# Watches VideoLAN for a newer stable Windows release and, if there is one,
+# opens a pull request that updates vlc.lock.json.
+#
+# It deliberately does NOT touch anything that has already been released:
+# published installers keep the VLC version they were built with, and adopting
+# a new one is a reviewed change that produces a new Audiflix version.
+
+on:
+  schedule:
+    # Mondays at 06:00 UTC - VLC releases are rare, weekly is plenty.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compare the pinned version with the latest stable release
+        id: check
+        run: |
+          python tools/fetch_vlc.py --check-only | tee vlc-check.json
+          {
+            echo "latest=$(jq -r .latest vlc-check.json)"
+            echo "pinned=$(jq -r .pinned vlc-check.json)"
+            echo "update=$(jq -r .update_available vlc-check.json)"
+            echo "sha256=$(jq -r .sha256 vlc-check.json)"
+          } >> "$GITHUB_OUTPUT"
+          rm vlc-check.json
+
+      - name: Report the result
+        run: |
+          if [ "${{ steps.check.outputs.update }}" = "true" ]; then
+            echo "### VLC ${{ steps.check.outputs.latest }} is available (pinned: ${{ steps.check.outputs.pinned }})" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### VLC pin is current (${{ steps.check.outputs.pinned }})" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Update the lock file
+        if: steps.check.outputs.update == 'true'
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, "tools")
+          import fetch_vlc
+
+          version = "${{ steps.check.outputs.latest }}"
+          # Take the checksum from VideoLAN directly rather than trusting the
+          # value that was passed through the workflow.
+          fetch_vlc.write_lock(version, fetch_vlc.official_sha256(version))
+          print(f"vlc.lock.json now pins VLC {version}")
+          PY
+
+      - name: Open a pull request
+        if: steps.check.outputs.update == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/vlc-${{ steps.check.outputs.latest }}
+          title: "Bundle VLC ${{ steps.check.outputs.latest }}"
+          commit-message: |
+            Pin VLC ${{ steps.check.outputs.latest }} for the bundled runtime
+
+            Was: ${{ steps.check.outputs.pinned }}
+          labels: dependencies
+          delete-branch: true
+          body: |
+            VideoLAN published **VLC ${{ steps.check.outputs.latest }}**; Audiflix
+            currently bundles **${{ steps.check.outputs.pinned }}**.
+
+            This PR only updates `vlc.lock.json`. Existing releases keep the VLC
+            version they were built with.
+
+            Checksum published by VideoLAN:
+
+            ```
+            ${{ steps.check.outputs.sha256 }}
+            ```
+
+            Before merging:
+
+            - [ ] Read the [VLC release notes](https://www.videolan.org/vlc/releases/)
+                  for changes affecting audio playback or HTTP/HLS access.
+            - [ ] Run the **Build Windows installer** workflow from this branch and
+                  confirm the packaged self-test passes on the VLC-free runner.
+            - [ ] Note the new VLC version in `CHANGELOG.md`.

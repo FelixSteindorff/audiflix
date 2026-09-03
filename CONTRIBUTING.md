@@ -27,8 +27,14 @@ python -m venv .venv
 pip install -e .
 pip install -r requirements-dev.txt
 python tools/i18n_tool.py compile
+python tools/fetch_vlc.py         # optional: fetch the bundled VLC runtime
 python -m audiflix
 ```
+
+Without `fetch_vlc.py` a system VLC installation is used, which is fine for
+everyday development. Fetch the runtime when you touch anything in
+`audiflix/vlc_runtime.py`, the spec file or the installer, and verify it with
+`python -m audiflix --selftest`.
 
 Set `AUDIFLIX_LOG_LEVEL=DEBUG` for a more talkative log, and
 `AUDIFLIX_CONFIG_DIR=<path>` to keep a test configuration away from your real
@@ -65,6 +71,12 @@ CI run.
   (`SetName`) and a label with an access key; new dialogs need a default button,
   an escape id and a sensible initial focus. Say things once - the status bar
   and the screen reader should not repeat each other.
+- **Never commit VLC binaries.** The runtime is downloaded at build time and
+  verified against VideoLAN's checksum. If a new VLC version is needed, update
+  `vlc.lock.json` with `python tools/fetch_vlc.py --update-lock` and say why in
+  the pull request.
+- **Do not hard-code a VLC version.** Read it from the build metadata
+  (`audiflix.vlc_runtime.bundled_version()`) if you need to display it.
 - Match the surrounding style: type hints on new functions, docstrings that
   explain *why*, and comments only where the reason is not obvious from the
   code.

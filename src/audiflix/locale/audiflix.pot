@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: audiflix\n"
-"POT-Creation-Date: 2026-09-03 07:02+0000\n"
+"POT-Creation-Date: 2026-09-03 08:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -299,7 +299,7 @@ msgstr ""
 msgid "60 minutes"
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:437
+#: src/audiflix/ui/main_frame.py:452
 msgid "About Audiflix"
 msgstr ""
 
@@ -383,6 +383,14 @@ msgstr ""
 
 #: src/audiflix/ui/main_frame.py:431
 msgid "Audiflix is an independent third-party client and is not affiliated with the Audiobookshelf project."
+msgstr ""
+
+#: src/audiflix/ui/main_frame.py:451
+msgid "Audio engine: VLC installed on this system (VideoLAN)"
+msgstr ""
+
+#: src/audiflix/ui/main_frame.py:442
+msgid "Audio engine: bundled VLC %s (VideoLAN)"
 msgstr ""
 
 #: src/audiflix/api/models.py:162
@@ -500,7 +508,7 @@ msgstr ""
 msgid "Checking %s for new episodes..."
 msgstr ""
 
-#: src/audiflix/ui/main_frame.py:469
+#: src/audiflix/ui/main_frame.py:484
 msgid "Closing Audiflix."
 msgstr ""
 
@@ -876,11 +884,11 @@ msgstr ""
 msgid "Play / Pause"
 msgstr ""
 
-#: src/audiflix/audio/player.py:470
+#: src/audiflix/audio/player.py:485
 msgid "Playback failed. The stream may have expired - please try again."
 msgstr ""
 
-#: src/audiflix/audio/player.py:457
+#: src/audiflix/audio/player.py:472
 msgid "Playback reported repeated errors. See the log file."
 msgstr ""
 
@@ -1308,6 +1316,19 @@ msgstr ""
 msgid "Tabs 1 to 5: Ctrl+1 ... Ctrl+5"
 msgstr ""
 
+#: src/audiflix/audio/player.py:50
+msgid "The audio engine could not be started. Please reinstall the VLC media player."
+msgstr ""
+
+#: src/audiflix/audio/player.py:144
+msgid "The audio engine could not be started: %s"
+msgstr ""
+
+#: src/audiflix/audio/player.py:49
+#: src/audiflix/vlc_runtime.py:223
+msgid "The bundled audio engine could not be loaded. Please reinstall Audiflix."
+msgstr ""
+
 #: src/audiflix/ui/dialogs/add_podcast_dialog.py:148
 msgid "The library folder returned by the server has no id."
 msgstr ""
@@ -1371,7 +1392,7 @@ msgstr ""
 msgid "This title has no chapters."
 msgstr ""
 
-#: src/audiflix/audio/player.py:195
+#: src/audiflix/audio/player.py:210
 msgid "This title has no playable audio files."
 msgstr ""
 
@@ -1401,15 +1422,11 @@ msgstr ""
 msgid "Updating the setting for %s..."
 msgstr ""
 
-#: src/audiflix/audio/player.py:122
-msgid "VLC could not be started. Please reinstall the VLC media player."
+#: src/audiflix/ui/main_frame.py:444
+msgid "VLC is licensed under the GNU General Public License v2 or later. See THIRD_PARTY_NOTICES for the licence text and how to obtain the source code."
 msgstr ""
 
-#: src/audiflix/audio/player.py:130
-msgid "VLC could not be started: %s"
-msgstr ""
-
-#: src/audiflix/audio/player.py:113
+#: src/audiflix/vlc_runtime.py:229
 msgid "VLC is not available. Please install the VLC media player (https://www.videolan.org)."
 msgstr ""
 

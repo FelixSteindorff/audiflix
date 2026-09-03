@@ -1,10 +1,19 @@
-name: Build Windows executable
+name: Build Windows installer
 
-# Not triggered by ordinary pushes: building the .exe is only useful when
+# Not triggered by ordinary pushes: building the app is only useful when
 # preparing a release, so it runs on demand or for a version tag. The workflow
-# uploads a build artifact and never publishes a release by itself.
+# uploads build artifacts and never publishes a release by itself.
+#
+# The bundled VLC runtime always comes from the version pinned in
+# vlc.lock.json, verified against VideoLAN's published checksum, so the same
+# tag always produces a build containing the same VLC.
 on:
   workflow_dispatch:
+    inputs:
+      latest_vlc:
+        description: "Use the newest stable VLC instead of the pinned version"
+        type: boolean
+        default: false
   push:
     tags: ["v*"]
 
@@ -27,19 +36,83 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-build.txt
 
-      - name: Compile translation catalogs
-        run: python tools/i18n_tool.py compile
-
-      - name: Build the executable
-        run: python build_exe.py
-
-      - name: Show the build result
+      # The runner image has no VLC installed, which is exactly the environment
+      # the bundled runtime has to work in.
+      - name: Confirm that no system VLC is present
+        shell: pwsh
         run: |
-          dir dist
-          python -c "import hashlib,pathlib;p=pathlib.Path('dist/audiflix.exe');print(p.name, p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())"
+          $found = @(
+            "$env:ProgramFiles\VideoLAN\VLC\libvlc.dll",
+            "${env:ProgramFiles(x86)}\VideoLAN\VLC\libvlc.dll"
+          ) | Where-Object { Test-Path $_ }
+          if ($found) {
+            Write-Host "::warning::A system VLC is present at $found - the no-VLC guarantee is not being verified here."
+          } else {
+            Write-Host "No system VLC installed: this run verifies the bundled runtime."
+          }
 
-      - uses: actions/upload-artifact@v4
+      - name: Cache the VLC download
+        uses: actions/cache@v4
         with:
-          name: audiflix-windows
-          path: dist/audiflix.exe
+          path: build/_cache
+          key: vlc-${{ hashFiles('vlc.lock.json') }}
+
+      # No flag means "newest stable"; --use-lock means "exactly the pin".
+      - name: Fetch the VLC runtime
+        run: python tools/fetch_vlc.py ${{ inputs.latest_vlc && ' ' || '--use-lock' }}
+
+      - name: Record the bundled VLC version
+        shell: pwsh
+        run: |
+          Get-Content build/vlc-version.json
+          $vlc = (Get-Content build/vlc-version.json | ConvertFrom-Json).vlc_version
+          "VLC_VERSION=$vlc" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "### Bundled VLC $vlc" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+
+      - name: Make sure Inno Setup is available
+        shell: pwsh
+        run: |
+          if (Get-Command iscc -ErrorAction SilentlyContinue) {
+            Write-Host "Inno Setup already installed."
+          } elseif (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe") {
+            Write-Host "Inno Setup found in Program Files."
+          } else {
+            choco install innosetup --no-progress -y
+          }
+
+      - name: Build the application and the installer
+        # The build runs the packaged self-test and fails if the bundled engine
+        # cannot decode audio on this machine.
+        run: python build_exe.py --installer --skip-vlc
+
+      - name: Verify the bundled engine on a machine without VLC
+        working-directory: dist/Audiflix
+        run: ./audiflix-selftest.exe
+
+      - name: Summarise the artifacts
+        shell: pwsh
+        run: |
+          $setup = Get-ChildItem dist/Audiflix-*-Setup.exe | Select-Object -First 1
+          $hash = (Get-FileHash $setup.FullName -Algorithm SHA256).Hash.ToLower()
+          @(
+            "| Artifact | Size | SHA-256 |",
+            "|---|---|---|",
+            "| $($setup.Name) | $([math]::Round($setup.Length / 1MB, 1)) MB | ``$hash`` |"
+          ) | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          Write-Host "$($setup.Name)  $hash"
+
+      - name: Upload the installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: audiflix-windows-installer
+          path: |
+            dist/Audiflix-*-Setup.exe
+            build/vlc-version.json
+          if-no-files-found: error
+
+      - name: Upload the unpacked application
+        uses: actions/upload-artifact@v4
+        with:
+          name: audiflix-windows-portable
+          path: dist/Audiflix/
           if-no-files-found: error

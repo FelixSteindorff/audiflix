@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import wx
 
-from audiflix import APP_DISPLAY_NAME, __version__, speech
+from audiflix import APP_DISPLAY_NAME, __version__, speech, vlc_runtime
 from audiflix.api.client import AudiobookshelfClient
 from audiflix.config import Settings, clear_tokens
 from audiflix.i18n import _
@@ -424,7 +424,7 @@ class MainFrame(wx.Frame):
             )
 
     def show_about(self):
-        text = "\n".join([
+        lines = [
             f"{APP_DISPLAY_NAME} {__version__}",
             _("An accessible, keyboard-driven client for Audiobookshelf."),
             "",
@@ -433,8 +433,23 @@ class MainFrame(wx.Frame):
                 "affiliated with the Audiobookshelf project."
             ),
             _("Licensed under the MIT License."),
-        ])
-        self._show_text_dialog(_("About Audiflix"), text)
+            "",
+        ]
+        # Which VLC is inside this build is part of the licence notice, so it
+        # belongs where a user can actually find it.
+        vlc_version = vlc_runtime.bundled_version()
+        if vlc_version:
+            lines.append(_("Audio engine: bundled VLC %s (VideoLAN)") % vlc_version)
+            lines.append(
+                _(
+                    "VLC is licensed under the GNU General Public License v2 or later. "
+                    "See THIRD_PARTY_NOTICES for the licence text and how to obtain "
+                    "the source code."
+                )
+            )
+        else:
+            lines.append(_("Audio engine: VLC installed on this system (VideoLAN)"))
+        self._show_text_dialog(_("About Audiflix"), "\n".join(lines))
 
     def _show_text_dialog(self, title: str, text: str) -> None:
         """Read-only text in a dialog a screen reader can navigate line by line."""

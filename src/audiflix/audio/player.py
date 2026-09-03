@@ -27,8 +27,10 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
+from audiflix import vlc_runtime
 from audiflix.i18n import _
 from audiflix.logging_setup import get_logger
+from audiflix.vlc_runtime import VlcRuntimeError
 
 log = get_logger(__name__)
 
@@ -39,6 +41,13 @@ MAX_CONSECUTIVE_TICK_ERRORS = 5
 
 class PlayerError(RuntimeError):
     """Audio backend unavailable or playback failed."""
+
+
+def _broken_engine_message() -> str:
+    """Shown when libVLC is present but refuses to start."""
+    if vlc_runtime.is_frozen():
+        return _("The bundled audio engine could not be loaded. Please reinstall Audiflix.")
+    return _("The audio engine could not be started. Please reinstall the VLC media player.")
 
 
 @dataclass
@@ -103,33 +112,39 @@ class VlcPlayer:
 
     # --- VLC initialisation ------------------------------------------------
     def _ensure_vlc(self):
+        """Load the bundled libVLC and create the media player.
+
+        The runtime is resolved by :mod:`audiflix.vlc_runtime`, which points
+        python-vlc at the copy of VLC shipped with Audiflix before importing
+        it. A packaged build never falls back to a system installation.
+        """
         if self._player is not None:
             return
         try:
-            import vlc
-        except Exception as exc:  # pragma: no cover - depends on system install
-            log.error("python-vlc could not be imported: %s", exc)
-            raise PlayerError(
-                _(
-                    "VLC is not available. Please install the VLC media player "
-                    "(https://www.videolan.org)."
-                )
-            ) from exc
+            vlc = vlc_runtime.load_vlc()
+        except VlcRuntimeError as exc:  # pragma: no cover - depends on the install
+            raise PlayerError(str(exc)) from exc
+
+        runtime = vlc_runtime.configure()
+        # libVLC 3 removed the --plugin-path option; the module directory is
+        # controlled through VLC_PLUGIN_PATH, which vlc_runtime.configure() set.
+        args = ["--no-video", "--quiet"]
         try:
-            self._instance = vlc.Instance("--no-video", "--quiet")
+            self._instance = vlc.Instance(*args)
             if self._instance is None:
-                raise PlayerError(
-                    _("VLC could not be started. Please reinstall the VLC media player.")
-                )
+                raise PlayerError(_broken_engine_message())
             self._player = self._instance.media_player_new()
+            if self._player is None:
+                raise PlayerError(_broken_engine_message())
         except PlayerError:
             raise
         except Exception as exc:  # pragma: no cover - libvlc runtime failures
             log.exception("Could not create a VLC instance")
             raise PlayerError(
-                _("VLC could not be started: %s") % exc
+                _("The audio engine could not be started: %s") % exc
             ) from exc
         self._vlc = vlc
+        log.info("Audio engine ready (%s)", runtime.describe())
 
     # --- Loading / playback ------------------------------------------------
     def load(

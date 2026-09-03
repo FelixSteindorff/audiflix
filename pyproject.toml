@@ -99,6 +99,9 @@ ignore = [
 # Command line helpers print by design.
 "tools/*.py" = ["T20"]
 "build_exe.py" = ["T20"]
+# The console diagnostics write to stdout on purpose; they run without a GUI.
+"src/audiflix/selftest.py" = ["T20"]
+"src/audiflix/app.py" = ["T20"]
 # Tests reach into internals on purpose and import after importorskip.
 "tests/*.py" = ["E402", "SLF001", "T20"]
 

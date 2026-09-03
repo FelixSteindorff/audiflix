@@ -125,6 +125,10 @@ TRANSLATIONS: dict[str, str] = {
     "Audiflix - insecure connection": "Audiflix - unsichere Verbindung",
     "Audiflix - invalid shortcut": "Audiflix - ungültiges Tastenkürzel",
     "Audiflix - sign-in not saved": "Audiflix - Anmeldung nicht gespeichert",
+    "Audio engine: VLC installed on this system (VideoLAN)":
+        "Audio-Engine: auf diesem System installiertes VLC (VideoLAN)",
+    "Audio engine: bundled VLC %s (VideoLAN)":
+        "Audio-Engine: mitgeliefertes VLC %s (VideoLAN)",
     "Audiflix is an independent third-party client and is not affiliated with the "
     "Audiobookshelf project.":
         "Audiflix ist ein unabhängiger Client von Dritten und steht in keiner Verbindung "
@@ -381,6 +385,14 @@ TRANSLATIONS: dict[str, str] = {
     "Tab 4: Se&ries": "Tab 4: &Reihen",
     "Tab 5: &Collections": "Tab 5: &Sammlungen",
     "Tabs 1 to 5: Ctrl+1 ... Ctrl+5": "Tabs 1 bis 5: Ctrl+1 ... Ctrl+5",
+    "The audio engine could not be started. Please reinstall the VLC media player.":
+        "Die Audio-Engine konnte nicht gestartet werden. Bitte den VLC Media Player neu "
+        "installieren.",
+    "The audio engine could not be started: %s":
+        "Die Audio-Engine konnte nicht gestartet werden: %s",
+    "The bundled audio engine could not be loaded. Please reinstall Audiflix.":
+        "Die mitgelieferte Audio-Engine konnte nicht geladen werden. Bitte Audiflix neu "
+        "installieren.",
     "The library folder returned by the server has no id.":
         "Der vom Server gelieferte Bibliotheksordner hat keine ID.",
     "The library has no folder to store the podcast in.":
@@ -414,6 +426,10 @@ TRANSLATIONS: dict[str, str] = {
     "Total duration: %s": "Gesamtdauer: %s",
     "Until the end of the chapter": "Bis Kapitelende",
     "Updating the setting for %s...": "Aktualisiere Einstellung für %s...",
+    "VLC is licensed under the GNU General Public License v2 or later. See "
+    "THIRD_PARTY_NOTICES for the licence text and how to obtain the source code.":
+        "VLC steht unter der GNU General Public License v2 oder neuer. Den Lizenztext "
+        "und Hinweise zum Bezug des Quellcodes finden Sie in THIRD_PARTY_NOTICES.",
     "VLC could not be started. Please reinstall the VLC media player.":
         "VLC konnte nicht gestartet werden. Bitte den VLC Media Player neu installieren.",
     "VLC could not be started: %s": "VLC konnte nicht gestartet werden: %s",
