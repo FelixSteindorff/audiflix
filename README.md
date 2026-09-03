@@ -2,165 +2,159 @@
 
 **Accessible, keyboard-driven desktop player for Audiobookshelf.**
 
-I started this project because I wanted a straightforward, accessible Audiobookshelf client for desktop. The Windows version is built with wxPython and uses libVLC for playback.
+I started this project because I wanted a straightforward, accessible Audiobookshelf client for desktop. Audiflix is built around keyboard use and screen readers, with native wxPython controls and libVLC for playback.
 
-The Windows release is self-contained and brings its own audio engine, so VLC does not have to be installed separately.
+The Windows builds include the audio engine, so you do not need to install VLC separately.
 
-> Audiflix is an **independent third-party client**. It is not affiliated with,
-> endorsed by, or supported by the Audiobookshelf project. "Audiobookshelf" is
-> the name of that project and is used here only to describe compatibility.
+> Audiflix is an independent third-party client for Audiobookshelf. It is not affiliated with or supported by the Audiobookshelf project.
 
 [![CI](https://github.com/FelixSteindorff/audiflix/actions/workflows/ci.yml/badge.svg)](https://github.com/FelixSteindorff/audiflix/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
----
-
 ## Features
 
-- **Tab 1 - Overview:** continue listening, recently added, finished. Every row
-  shows title, author, narrator, series and whether the title is downloaded.
-- **Tab 2 - Books / Podcasts:** sorting (newest / alphabetical) and title
-  search. Podcast libraries additionally offer a podcast search and the option
-  to add new podcasts. The context menu of a podcast can check the feed for new
-  episodes (the server downloads them), toggle automatic episode downloads and
-  show podcast details. Enter opens the episode list.
-- **Tab 3 - Authors:** sorting, author search, books per author.
-- **Tab 4 - Series:** sorting, series search; Enter opens the books of a series
-  in reading order.
-- **Tab 5 - Collections:** browse and open collections.
-- **Playback** through VLC with speed control, skip back/forward, chapter
-  navigation (previous/next, chapter list with jump), a sleep timer, bookmarks
-  (add, jump to, rename, delete) and progress synchronisation back to the
-  server.
-- **Item context menu:** add to collection, mark as finished, item details, go
-  to author, edit media details, download.
-- **Spoken feedback** for status, playback position and remaining time.
-- **English and German** user interface (gettext; more languages can be added
-  without touching the code).
+- Browse books, podcasts, authors, series and collections
+- Continue listening, recently added and finished views
+- Search and sorting for books, podcasts, authors and series
+- Podcast search and adding new podcasts
+- Check podcast feeds for new episodes
+- Automatic podcast episode downloads on the server
+- Playback speed control
+- Skip forward and backward
+- Chapter navigation and chapter list
+- Sleep timer
+- Bookmarks
+- Playback progress sync with Audiobookshelf
+- Mark items as finished
+- Edit media information
+- Download items
+- Spoken feedback for status, playback position and remaining time
+- Configurable keyboard shortcuts
+- English and German interface
+
+Most item actions are also available from the context menu.
 
 ## Accessibility
 
-Accessibility is the reason this client exists, not a feature bolted on later.
+Audiflix is mainly built for people who use a keyboard and screen reader.
 
-- Every function is reachable from the **menu bar**, from a **keyboard
-  shortcut**, and - where it applies to a single item - from the **context
-  menu** (applications key or `Shift+F10`).
-- Lists are native `wx.ListCtrl` controls, so the screen reader reads the row
-  and its columns with the usual navigation keys.
-- Every list, field and dialog carries an explicit **accessible name**; every
-  input has an associated label with an access key (`Alt+letter`).
-- Dialogs define a **default button** and respond to **Escape**, and the
-  keyboard focus is placed on the most useful control when they open.
-- Status messages are shown in the status bar **and** announced. Identical
-  messages within one second are suppressed, so nothing is announced twice.
-- Long network operations show a **"Please wait" dialog** with a Cancel button
-  instead of freezing the window.
-- Tested with **NVDA** on Windows. Audiflix uses
-  [accessible_output2](https://pypi.org/project/accessible-output2/), which also
-  supports JAWS and SAPI5; the application runs normally when no screen reader
-  is present.
+The interface uses native wxPython controls where possible. Lists work with the usual arrow-key navigation, context menus can be opened with the Applications key or `Shift+F10`, and the important actions are available from the menu bar or through keyboard shortcuts.
+
+Dialogs have labelled controls, a sensible initial focus and support Escape where appropriate. Longer network operations run in the background instead of freezing the window.
+
+Audiflix also provides spoken feedback for things such as playback position, remaining time and status messages.
+
+The Windows version is mainly tested with **NVDA**. Screen-reader output is handled through [accessible_output2](https://pypi.org/project/accessible-output2/).
+
+If something does not work properly with a screen reader or keyboard-only use, please open an issue and mention what your screen reader announced, or what it did not announce.
 
 ## Requirements
 
-1. **Windows 10 or newer** for the installer. Audiflix also runs from source on
-   Linux and macOS, where a system VLC is used.
-2. An **Audiobookshelf server**, version 2.x. Both the classic long-lived token
-   and the JWT access/refresh tokens introduced in ABS 2.26 are supported.
-3. **Python 3.10+**, but only when running from source.
+For the Windows builds you need:
 
-**No separate VLC installation is needed.** The Windows release contains its own
-copy of the VLC libraries; see [Audio engine](#audio-engine).
+- Windows 10 or newer
+- An Audiobookshelf 2.x server
+
+That's it. VLC is included.
+
+Python 3.10+ is only needed when running Audiflix from source.
+
+Audiflix supports both the older long-lived Audiobookshelf token and the newer access/refresh-token system.
 
 ## Installation
 
 ### Windows
 
-Two downloads on the [releases
-page](https://github.com/FelixSteindorff/audiflix/releases); both contain the
-audio engine, so nothing else has to be installed.
+There are two Windows downloads on the [Releases page](https://github.com/FelixSteindorff/audiflix/releases).
 
-**Installer** - `Audiflix-<version>-Setup.exe`. Needs no administrator rights,
-creates a start menu entry and an uninstall entry.
+**Installer**
 
-**Portable** - `Audiflix-<version>-portable-win64.zip`. Unpack it anywhere,
-including a USB stick, and run `audiflix.exe`. Nothing is installed or
-registered, and no traces are left in the registry.
+```text
+Audiflix-<version>-Setup.exe
+```
 
-To check that everything works on a machine, run `audiflix-selftest.exe` from
-the installation or portable folder: it loads the bundled engine and decodes a
-test tone, then prints PASS or FAIL.
+The installer does not need administrator rights. It adds Audiflix to the Start menu and creates an uninstall entry.
 
-#### What the portable build does not carry
+**Portable**
 
-The application travels with you; your data stays on the machine you run it on:
+```text
+Audiflix-<version>-portable-win64.zip
+```
 
-| | Where it lives |
+Unpack it anywhere and run `audiflix.exe`. The application itself does not need to be installed.
+
+Both versions include the VLC runtime used for playback.
+
+### Portable data
+
+The portable build carries the application, but your personal data normally stays on the computer you run it on.
+
+| Data | Location |
 |---|---|
-| Settings, logs, download registry | `%APPDATA%\audiflix` |
-| Downloaded books | `%USERPROFILE%\Audiflix` (configurable) |
-| Sign-in token | the Windows Credential Manager of that machine |
+| Settings, logs and download registry | `%APPDATA%\audiflix` |
+| Downloaded books | `%USERPROFILE%\Audiflix` by default |
+| Sign-in token | Windows Credential Manager |
 
-So a new computer starts with the default settings and asks you to sign in
-again. This is deliberate: putting the token on the stick would mean writing it
-somewhere Audiflix cannot protect it. Nothing secret is ever written into the
-portable folder.
+This also means that using the portable build on another computer will normally ask you to sign in again.
 
-If you do want the settings to travel, point `AUDIFLIX_CONFIG_DIR` at a folder
-inside the portable directory before starting:
+If you want the configuration itself to live next to the portable copy, set `AUDIFLIX_CONFIG_DIR` before starting Audiflix:
 
 ```bat
 set AUDIFLIX_CONFIG_DIR=%~dp0data
 audiflix.exe
 ```
 
-### From source
+Authentication tokens are still kept in the system credential store rather than written into the portable folder.
+
+### Running from source
 
 ```bash
 git clone https://github.com/FelixSteindorff/audiflix.git
 cd audiflix
+
 python -m venv .venv
-.venv\Scripts\activate          # Windows
-# source .venv/bin/activate     # Linux / macOS
+.venv\Scripts\activate
+
 pip install -e .
-python tools/i18n_tool.py compile   # build the translation catalogs
-python tools/fetch_vlc.py           # optional: use a bundled VLC instead of the system one
+python tools/i18n_tool.py compile
 python -m audiflix
 ```
 
-Running from source uses `build/vlc` when `tools/fetch_vlc.py` has been run, and
-otherwise falls back to a VLC installed on the system (<https://www.videolan.org/vlc/>).
+On Linux or macOS:
 
-On first start the sign-in dialog asks for the server address, user name and
-password. With "Stay signed in" enabled the token is stored in the Windows
-Credential Manager (via `keyring`).
+```bash
+source .venv/bin/activate
+```
 
-## Audio engine
+Running from source normally uses a system VLC installation. You can also fetch a bundled VLC runtime with:
 
-Audiflix plays audio through **libVLC, which ships inside the application**.
-Users do not install VLC, and Audiflix does not touch a VLC installation that
-may already be on the machine.
+```bash
+python tools/fetch_vlc.py
+```
 
-- A packaged build uses **only** its bundled runtime. If those files are missing
-  or damaged it says so and asks you to reinstall - it never silently falls back
-  to a different VLC whose plugins have not been tested with Audiflix.
-- The VLC version is **not hard-coded anywhere**. It is pinned per release in
-  [`vlc.lock.json`](vlc.lock.json), fetched at build time by
-  `tools/fetch_vlc.py`, and verified against the SHA-256 checksum VideoLAN
-  publishes next to the archive.
-- Every build records what it contains: `build/vlc-version.json`,
-  `audiflix.exe --version`, and **Help → About Audiflix** all report the exact
-  bundled VLC version.
-- Rebuilding an old tag reproduces the same VLC, because the pin is committed
-  alongside the code.
+On first start, enter your Audiobookshelf server address, username and password. If **Stay signed in** is enabled, Audiflix stores the token through the system credential store.
 
-VLC is licensed under the GPL v2 or later. See
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the licence, the trademark
-notice and where to obtain the corresponding source code.
+## Playback and VLC
+
+Audiflix uses libVLC for playback.
+
+The packaged Windows builds include their own VLC runtime and do not depend on whatever VLC version may or may not already be installed on the computer.
+
+The VLC version is pinned per Audiflix release in:
+
+```text
+vlc.lock.json
+```
+
+The build checks the downloaded runtime against VideoLAN's published SHA-256 checksum. The exact bundled version is also shown in **Help → About Audiflix**.
+
+This keeps the application code independent of one specific VLC version while still making release builds reproducible.
+
+For VLC licensing information, see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Keyboard shortcuts
 
-Defaults; all of them can be changed in **Settings → Keyboard shortcuts**
-(`Ctrl+,`).
+These are the defaults. They can be changed under **Settings → Keyboard shortcuts**.
 
 | Function | Shortcut |
 |---|---|
@@ -168,9 +162,9 @@ Defaults; all of them can be changed in **Settings → Keyboard shortcuts**
 | Skip back / forward | `Ctrl+Left` / `Ctrl+Right` |
 | Previous / next chapter | `Ctrl+Shift+Left` / `Ctrl+Shift+Right` |
 | Chapter list | `Ctrl+Shift+C` |
-| Slower / faster / reset speed | `Ctrl+-` / `Ctrl++` / `Ctrl+0` |
+| Slower / faster / normal speed | `Ctrl+-` / `Ctrl++` / `Ctrl+0` |
 | Volume up / down | `Ctrl+Up` / `Ctrl+Down` |
-| Announce position and time remaining | `Ctrl+T` |
+| Announce position and remaining time | `Ctrl+T` |
 | Sleep timer | `Ctrl+L` |
 | Add bookmark | `Ctrl+B` |
 | Manage bookmarks | `Ctrl+Shift+B` |
@@ -178,95 +172,110 @@ Defaults; all of them can be changed in **Settings → Keyboard shortcuts**
 | Select library | `Ctrl+Shift+L` |
 | Settings | `Ctrl+,` |
 | Search | `Ctrl+F` |
-| Tabs 1-5 | `Ctrl+1` … `Ctrl+5` |
+| Tabs 1–5 | `Ctrl+1` … `Ctrl+5` |
 | Refresh | `F5` |
 | Shortcut overview | `F1` |
 | Exit | `Ctrl+Q` |
 
-**In lists:** arrow keys navigate, **Enter** opens (a book starts playing),
-**Backspace** goes back, **applications key / Shift+F10** opens the context
-menu.
+Inside lists:
 
-The shortcut editor validates what you type: an unusable combination or one
-that is already assigned to another action is reported before the dialog
-closes. Individual shortcuts can be cleared (an empty field disables the
-shortcut) or reset, and all of them can be restored to the defaults at once.
+- Arrow keys move through items
+- Enter opens an item or starts playback
+- Backspace goes back
+- Applications key or `Shift+F10` opens the context menu
 
-## Library selection
+The shortcut editor checks for invalid or conflicting shortcuts. Shortcuts can also be cleared or reset.
 
-`Ctrl+Shift+L` opens the selection. "All books" combines every book library.
-Podcast libraries can only be selected one at a time.
+## Libraries
+
+`Ctrl+Shift+L` opens the library selector.
+
+**All books** combines all book libraries. Podcast libraries are currently selected individually.
 
 ## Security
 
-- **Tokens are never written to disk in plain text.** They are stored through
-  `keyring` (Windows Credential Manager, macOS Keychain, Secret Service). If no
-  keyring backend is available, the token is kept in memory for the current
-  session only and you are told that you will have to sign in again next time.
-  A `token.json` written by a pre-release version is deleted on start-up.
-- **The auth token is only ever sent to your own server.** Audiobookshelf may
-  return absolute media URLs; Audiflix compares scheme, host and port against
-  the configured server and refuses to attach the token to anything else.
-  Downloads use the `Authorization` header rather than a URL parameter.
-- **Unencrypted HTTP is called out.** Signing in over `http://` to a non-local
-  host requires an explicit confirmation, because credentials and token would
-  otherwise be readable on the network.
-- **Logs are redacted.** Tokens in URLs and `Authorization` /
-  `x-refresh-token` headers are replaced with `<redacted>` before anything is
-  written, so a log file is safe to attach to a bug report.
-- Access tokens are refreshed before they expire and once automatically after a
-  `401`.
+Audiflix does not store authentication tokens in plain-text files.
 
-Please report vulnerabilities as described in [SECURITY.md](SECURITY.md).
+When a supported credential store is available, tokens are stored there. On Windows this means the Windows Credential Manager. If no credential store is available, the login only lasts for the current session.
 
-## Where Audiflix stores data
+Authentication is only attached to URLs belonging to the configured Audiobookshelf server. Downloads use the `Authorization` header rather than putting the token into the URL.
 
-| What | Where |
+Audiflix warns before sending credentials to a non-local server over plain HTTP.
+
+Log files automatically redact authentication tokens and sensitive headers.
+
+Access tokens are refreshed before they expire and once automatically after a `401` response.
+
+Security issues should be reported as described in [SECURITY.md](SECURITY.md).
+
+## Data locations
+
+On Windows:
+
+| Data | Location |
 |---|---|
 | Settings | `%APPDATA%\audiflix\settings.json` |
 | Download registry | `%APPDATA%\audiflix\downloads.json` |
-| Log files (rotating, 5 × 1 MB) | `%APPDATA%\audiflix\logs\audiflix.log` |
-| Access and refresh token | System credential store (never a file) |
-| Downloaded books | `%USERPROFILE%\Audiflix` (configurable) |
+| Logs | `%APPDATA%\audiflix\logs\audiflix.log` |
+| Authentication tokens | Windows Credential Manager |
+| Downloaded books | `%USERPROFILE%\Audiflix` by default |
 
-On Linux and macOS the config directory is `$XDG_CONFIG_HOME/audiflix` or
-`~/.config/audiflix`. `AUDIFLIX_CONFIG_DIR` overrides it entirely.
-**Help → Open log folder** opens the log directory.
+The download folder can be changed in Settings.
 
-## Building
+On Linux and macOS the configuration directory is `$XDG_CONFIG_HOME/audiflix` or `~/.config/audiflix`.
 
-Needs [Inno Setup 6](https://jrsoftware.org/isinfo.php) for the installer step.
+You can override it with:
+
+```text
+AUDIFLIX_CONFIG_DIR
+```
+
+The log directory can also be opened from **Help → Open log folder**.
+
+## Building the Windows version
+
+The Windows release uses PyInstaller and Inno Setup.
+
+Install the build dependencies:
 
 ```bash
 pip install -r requirements-build.txt
-python build_exe.py --installer
-# results: dist/Audiflix/                    (the application)
-#          dist/Audiflix-<version>-Setup.exe (the installer)
 ```
 
-The build
+Build the application and installer:
 
-1. fetches the VLC runtime pinned in `vlc.lock.json` and verifies its checksum,
-2. compiles the translation catalogs,
-3. runs PyInstaller in **onedir** mode - a onefile build would unpack about
-   200 MB into a temporary folder on every start,
-4. runs the packaged self-test and **aborts if the bundled engine cannot decode
-   audio**, so a broken bundle can never be published,
-5. builds the installer and prints its SHA-256.
+```bash
+python build_exe.py --installer
+```
 
-`requirements-build.txt` pins every Python build dependency, and
-`vlc.lock.json` pins the VLC runtime, so a release can be reproduced.
+The results are placed in `dist`:
+
+```text
+dist\Audiflix\
+dist\Audiflix-<version>-Setup.exe
+```
+
+The build process:
+
+1. fetches the VLC runtime pinned in `vlc.lock.json`
+2. verifies its checksum
+3. compiles the translation catalogs
+4. builds Audiflix with PyInstaller in onedir mode
+5. runs the packaged audio self-test
+6. builds the Inno Setup installer
+7. prints the SHA-256 of the result
 
 Useful variants:
 
 ```bash
-python build_exe.py                   # application only, no installer
-python build_exe.py --skip-vlc        # reuse an already fetched build/vlc
-python build_exe.py --latest-vlc      # try the newest stable VLC
-python tools/fetch_vlc.py --version 3.0.21   # fetch one specific version
-python tools/fetch_vlc.py --update-lock      # adopt the newest version as the pin
-python tools/fetch_vlc.py --check-only       # is a newer VLC available?
+python build_exe.py
+python build_exe.py --skip-vlc
+python build_exe.py --latest-vlc
+python tools/fetch_vlc.py --update-lock
+python tools/fetch_vlc.py --check-only
 ```
+
+`--latest-vlc` is useful for testing a newer stable VLC version. Published Audiflix releases still use the pinned version from `vlc.lock.json` so old releases remain reproducible.
 
 ## Tests and linting
 
@@ -277,81 +286,78 @@ pytest
 ruff check .
 ```
 
-The test suite runs without a server, without VLC and - apart from the shortcut
-and dialog tests, which are skipped automatically - without wxPython. GitHub Actions runs
-`pytest` on Linux and Windows against Python 3.10, 3.12 and 3.13, plus `ruff`.
+GitHub Actions runs the tests on Windows and Linux with Python 3.10, 3.12 and 3.13.
+
+Most of the test suite does not need a running Audiobookshelf server, VLC or wxPython.
 
 ## Translations
 
-All source strings are English and wrapped in `_()`; German ships as a gettext
-catalog.
+English is the source language. German is included as a gettext translation.
+
+After changing user-visible text:
 
 ```bash
-python tools/i18n_tool.py extract   # update src/audiflix/locale/audiflix.pot
-python tools/i18n_tool.py compile   # .po -> .mo
+python tools/i18n_tool.py extract
 ```
 
-To add a language, copy `audiflix.pot` to
-`src/audiflix/locale/<code>/LC_MESSAGES/audiflix.po`, translate it, compile, and
-pick the language in the settings. The tooling only uses the standard library,
-so no gettext installation is required.
+Compile translations with:
 
-## Project layout
-
+```bash
+python tools/i18n_tool.py compile
 ```
+
+Additional languages can be added under:
+
+```text
+src/audiflix/locale/<language>/LC_MESSAGES/
+```
+
+## Project structure
+
+```text
 src/audiflix/
-  app.py            entry point (auto sign-in + MainFrame)
-  config.py         settings and secure token storage
-  i18n.py           gettext setup
-  logging_setup.py  rotating log files, token redaction
-  resources.py      bundled icon lookup
-  speech.py         screen-reader output
-  api/              API client and data models
-  audio/            VLC player
-  helpers/          shared helpers: formatting, status, text, urls, actions
-  locale/           translation catalogs
-  selftest.py       diagnostic for the bundled audio engine
-  vlc_runtime.py    locating and loading the bundled libVLC
-  ui/               MainFrame, menus, panels (tabs), dialogs
-packaging/          Inno Setup script and installer notes
-tools/              VLC fetcher, i18n, icon and version-resource tooling
+  api/              Audiobookshelf API
+  audio/            playback
+  helpers/          shared helpers
+  locale/           translations
+  ui/               wxPython interface
+  app.py            application startup
+  config.py         settings and credentials
+  i18n.py           translations
+  logging_setup.py  logging and token redaction
+  selftest.py       audio-engine self test
+  vlc_runtime.py    bundled VLC handling
+
+packaging/          Windows installer
+tools/              build and translation tools
 ```
 
 ## Known limitations
 
-- **The Windows download is large** (around 90 MB installer, 200 MB installed)
-  because the VLC runtime travels with it. That is the price of not asking users
-  to install VLC themselves.
-- **Streams are direct-play only.** Audiflix asks the server for direct play and
-  does not transcode; a format the bundled VLC cannot decode will not play.
-- **Only the Windows build bundles VLC.** Running from source on Linux or macOS
-  uses a system VLC installation.
-- Audiobookshelf access tokens are short-lived. Audiflix refreshes them and
-  re-signs every track URL when a track starts, but a *single* track that plays
-  for longer than the token lifetime can still fail on a late range request.
-  Pressing play again resumes at the stored position.
-- **Downloads are stored as the `.zip` the server returns** and are only used as
-  a "downloaded" marker in the lists; playback always streams from the server.
-- **The library scan** (File → Re-scan library) requires an admin account.
-- Podcast libraries are selected one at a time; there is no combined
-  "all podcasts" view.
-- Only tested on Windows with NVDA. It should run on Linux and macOS, but the
-  accessibility behaviour there is unverified.
-- Changing the interface language takes effect after a restart.
+Audiflix is still a young project, so there are a few things to be aware of:
+
+- The Windows downloads are fairly large because VLC is included.
+- Playback currently uses direct play. Audiflix does not request transcoding from the server.
+- Linux and macOS builds do not currently bundle VLC.
+- Downloads are currently mainly used as a downloaded-state marker; normal playback still streams from the server.
+- Podcast libraries cannot yet be combined into one "all podcasts" view.
+- Changing the interface language currently requires a restart.
+- Windows with NVDA is the main tested platform. Linux and macOS support is less tested.
+
+If you find another limitation or bug, please open an issue.
 
 ## AI-assisted development
 
-Most of the code in Audiflix was created with the help of AI coding agents. I use them heavily for implementation, refactoring and tests, while I decide what the app should do, review the changes and test the application in actual use, especially with NVDA and keyboard-only workflows.
+Most of the code in Audiflix has been created with the help of AI coding agents. I use them heavily for implementation, refactoring and tests, while I decide what the application should do, review the changes and test the result in actual use, especially with NVDA and keyboard-only workflows.
 
-I'm mentioning this simply to be transparent about how the project is developed.
+This note is here simply to be transparent about how the project is developed.
 
 ## Contributing
 
-Bug reports and pull requests are welcome - see
-[CONTRIBUTING.md](CONTRIBUTING.md). Reports from screen-reader users are
-especially valuable; please mention your screen reader, its version and what it
-announced.
+Bug reports and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the development setup and a few project conventions.
+
+Accessibility reports are especially useful. If possible, mention your screen reader, its version and what Audiflix announced or failed to announce.
 
 ## License
 
-MIT - see [LICENSE](LICENSE).
+Audiflix is released under the MIT License. See [LICENSE](LICENSE).
