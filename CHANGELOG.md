@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-06
+
+More control over playback, expanded keyboard customization, improved speech
+and braille feedback, and more reliable listening progress synchronization.
+
 ### Added
 
 - Shortcut recording with F2 or a Record shortcut button: press a combination,
@@ -284,7 +289,8 @@ people.
 - See the "Changed" section: token storage, token scoping to the configured
   host, log redaction and the HTTP warning are all part of this release.
 
-[Unreleased]: https://github.com/FelixSteindorff/audiflix/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/FelixSteindorff/audiflix/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/FelixSteindorff/audiflix/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/FelixSteindorff/audiflix/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/FelixSteindorff/audiflix/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/FelixSteindorff/audiflix/releases/tag/v0.1.0
