@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: audiflix\n"
-"POT-Creation-Date: 2026-10-06 17:57+0000\n"
+"POT-Creation-Date: 2026-10-06 18:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -125,7 +125,7 @@ msgstr ""
 msgid "&Add"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:172
+#: src/audiflix/ui/dialogs/settings_dialog.py:173
 msgid "&Announce position after skipping"
 msgstr ""
 
@@ -169,7 +169,7 @@ msgstr ""
 msgid "&Details:"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:157
+#: src/audiflix/ui/dialogs/settings_dialog.py:158
 msgid "&Download folder:"
 msgstr ""
 
@@ -185,12 +185,12 @@ msgstr ""
 msgid "&Filter:"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:237
-#: src/audiflix/ui/dialogs/settings_dialog.py:256
+#: src/audiflix/ui/dialogs/settings_dialog.py:238
+#: src/audiflix/ui/dialogs/settings_dialog.py:257
 msgid "&Forget all saved title speeds"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:255
+#: src/audiflix/ui/dialogs/settings_dialog.py:256
 msgid "&Forget all saved title speeds (%d)"
 msgstr ""
 
@@ -218,7 +218,7 @@ msgstr ""
 msgid "&Keyboard shortcuts"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:125
+#: src/audiflix/ui/dialogs/settings_dialog.py:126
 msgid "&Language:"
 msgstr ""
 
@@ -253,6 +253,10 @@ msgstr ""
 
 #: src/audiflix/ui/dialogs/edit_metadata_dialog.py:21
 msgid "&Publisher:"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:339
+msgid "&Record shortcut..."
 msgstr ""
 
 #: src/audiflix/ui/menus.py:27
@@ -317,7 +321,7 @@ msgstr ""
 msgid "&Subtitle:"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:132
+#: src/audiflix/ui/dialogs/settings_dialog.py:133
 msgid "&Sync progress every (seconds):"
 msgstr ""
 
@@ -337,7 +341,7 @@ msgstr ""
 msgid "&View"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:416
+#: src/audiflix/ui/dialogs/settings_dialog.py:445
 msgid ""
 "'%(shortcut)s' is not a valid shortcut for %(action)s.\n"
 "\n"
@@ -407,7 +411,7 @@ msgstr ""
 msgid "About Audiflix"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:82
+#: src/audiflix/ui/dialogs/settings_dialog.py:83
 msgid "Accessibility"
 msgstr ""
 
@@ -415,7 +419,7 @@ msgstr ""
 msgid "Add book&mark"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:44
+#: src/audiflix/ui/dialogs/settings_dialog.py:45
 msgid "Add bookmark"
 msgstr ""
 
@@ -441,7 +445,7 @@ msgstr ""
 msgid "All books"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:404
+#: src/audiflix/ui/dialogs/settings_dialog.py:433
 msgid "All shortcuts reset to their defaults."
 msgstr ""
 
@@ -455,11 +459,15 @@ msgstr ""
 msgid "Alphabetical"
 msgstr ""
 
+#: src/audiflix/ui/dialogs/shortcut_capture_dialog.py:62
+msgid "Already assigned to: %s"
+msgstr ""
+
 #: src/audiflix/ui/main_frame.py:598
 msgid "An accessible, keyboard-driven client for Audiobookshelf."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:174
+#: src/audiflix/ui/dialogs/settings_dialog.py:175
 msgid "Announce a new &chapter while listening"
 msgstr ""
 
@@ -467,7 +475,7 @@ msgstr ""
 msgid "Announce current chapter"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:41
+#: src/audiflix/ui/dialogs/settings_dialog.py:42
 msgid "Announce position"
 msgstr ""
 
@@ -475,7 +483,7 @@ msgstr ""
 msgid "Announce position and time remaining"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:43
+#: src/audiflix/ui/dialogs/settings_dialog.py:44
 #: src/audiflix/ui/menus.py:60
 msgid "Announce sleep timer"
 msgstr ""
@@ -483,8 +491,8 @@ msgstr ""
 #: src/audiflix/ui/dialogs/add_podcast_dialog.py:164
 #: src/audiflix/ui/dialogs/bookmarks_dialog.py:141
 #: src/audiflix/ui/dialogs/jump_to_time_dialog.py:66
-#: src/audiflix/ui/dialogs/settings_dialog.py:265
-#: src/audiflix/ui/dialogs/settings_dialog.py:396
+#: src/audiflix/ui/dialogs/settings_dialog.py:266
+#: src/audiflix/ui/dialogs/settings_dialog.py:425
 #: src/audiflix/ui/item_actions.py:272
 msgid "Audiflix"
 msgstr ""
@@ -508,7 +516,7 @@ msgstr ""
 msgid "Audiflix - insecure connection"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:106
+#: src/audiflix/ui/dialogs/settings_dialog.py:107
 msgid "Audiflix - invalid shortcut"
 msgstr ""
 
@@ -543,7 +551,7 @@ msgstr ""
 msgid "Authors (%d)"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:141
+#: src/audiflix/ui/dialogs/settings_dialog.py:142
 msgid "Automatic (system language)"
 msgstr ""
 
@@ -605,7 +613,7 @@ msgstr ""
 msgid "Books in this series"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:335
+#: src/audiflix/ui/dialogs/settings_dialog.py:341
 msgid "C&lear this shortcut"
 msgstr ""
 
@@ -633,7 +641,7 @@ msgid "Chapter &list..."
 msgstr ""
 
 #: src/audiflix/ui/dialogs/chapter_list_dialog.py:30
-#: src/audiflix/ui/dialogs/settings_dialog.py:32
+#: src/audiflix/ui/dialogs/settings_dialog.py:33
 msgid "Chapter list"
 msgstr ""
 
@@ -727,11 +735,11 @@ msgstr ""
 msgid "Current position: %s"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:211
+#: src/audiflix/ui/dialogs/settings_dialog.py:212
 msgid "Default speed:"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:214
+#: src/audiflix/ui/dialogs/settings_dialog.py:215
 msgid "Default volume (percent):"
 msgstr ""
 
@@ -755,7 +763,7 @@ msgstr ""
 msgid "Diagnostics copied to the clipboard."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:181
+#: src/audiflix/ui/dialogs/settings_dialog.py:182
 msgid "Digits (1:23:45)"
 msgstr ""
 
@@ -767,7 +775,7 @@ msgstr ""
 msgid "Download failed (HTTP %d)."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:159
+#: src/audiflix/ui/dialogs/settings_dialog.py:160
 msgid "Download folder"
 msgstr ""
 
@@ -796,7 +804,7 @@ msgstr ""
 msgid "Downloading %s..."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:82
+#: src/audiflix/ui/dialogs/settings_dialog.py:83
 msgid "Downloads"
 msgstr ""
 
@@ -824,10 +832,6 @@ msgstr ""
 msgid "Enter a time as hours:minutes:seconds or minutes:seconds, or a percentage of the whole title."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:317
-msgid "Enter shortcuts in the form Ctrl+Shift+B. Leave a field empty to disable that shortcut."
-msgstr ""
-
 #: src/audiflix/helpers/formatting.py:28
 msgid "Episode"
 msgstr ""
@@ -844,7 +848,7 @@ msgstr ""
 msgid "Error: %s"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:50
+#: src/audiflix/ui/dialogs/settings_dialog.py:51
 msgid "Exit"
 msgstr ""
 
@@ -852,11 +856,11 @@ msgstr ""
 msgid "Extend the sleep timer by"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:224
+#: src/audiflix/ui/dialogs/settings_dialog.py:225
 msgid "Fade out before the sleep timer (seconds, 0 = off):"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:37
+#: src/audiflix/ui/dialogs/settings_dialog.py:38
 #: src/audiflix/ui/menus.py:50
 msgid "Faster"
 msgstr ""
@@ -885,11 +889,11 @@ msgstr ""
 msgid "For example https://abs.example.com"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:264
+#: src/audiflix/ui/dialogs/settings_dialog.py:265
 msgid "Forget the speed saved for %d title(s)?"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:82
+#: src/audiflix/ui/dialogs/settings_dialog.py:83
 msgid "General"
 msgstr ""
 
@@ -938,11 +942,11 @@ msgid "Jump &to:"
 msgstr ""
 
 #: src/audiflix/ui/dialogs/jump_to_time_dialog.py:18
-#: src/audiflix/ui/dialogs/settings_dialog.py:35
+#: src/audiflix/ui/dialogs/settings_dialog.py:36
 msgid "Jump to position"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:82
+#: src/audiflix/ui/dialogs/settings_dialog.py:83
 #: src/audiflix/ui/main_frame.py:537
 msgid "Keyboard shortcuts"
 msgstr ""
@@ -952,7 +956,7 @@ msgid "Keyboard shortcuts:"
 msgstr ""
 
 #: src/audiflix/api/models.py:181
-#: src/audiflix/ui/dialogs/settings_dialog.py:128
+#: src/audiflix/ui/dialogs/settings_dialog.py:129
 msgid "Language"
 msgstr ""
 
@@ -1006,7 +1010,7 @@ msgstr ""
 msgid "Mana&ge bookmarks..."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:45
+#: src/audiflix/ui/dialogs/settings_dialog.py:46
 msgid "Manage bookmarks"
 msgstr ""
 
@@ -1057,12 +1061,12 @@ msgstr ""
 msgid "Newest"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:34
+#: src/audiflix/ui/dialogs/settings_dialog.py:35
 #: src/audiflix/ui/menus.py:47
 msgid "Next audio file"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:31
+#: src/audiflix/ui/dialogs/settings_dialog.py:32
 msgid "Next chapter"
 msgstr ""
 
@@ -1189,15 +1193,15 @@ msgstr ""
 msgid "Play / &Pause"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:27
+#: src/audiflix/ui/dialogs/settings_dialog.py:28
 msgid "Play / Pause"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:82
+#: src/audiflix/ui/dialogs/settings_dialog.py:83
 msgid "Playback"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:179
+#: src/audiflix/ui/dialogs/settings_dialog.py:180
 msgid "Playback &time format (display, speech and braille):"
 msgstr ""
 
@@ -1222,7 +1226,7 @@ msgstr ""
 msgid "Playback speed"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:183
+#: src/audiflix/ui/dialogs/settings_dialog.py:184
 msgid "Playback time format"
 msgstr ""
 
@@ -1313,16 +1317,28 @@ msgstr ""
 msgid "Press Enter to search"
 msgstr ""
 
+#: src/audiflix/ui/dialogs/settings_dialog.py:318
+msgid "Press F2 in a shortcut field to record a key combination, or use Record shortcut. You can also type Ctrl+Shift+B. Leave a field empty to disable that shortcut."
+msgstr ""
+
+#: src/audiflix/ui/dialogs/shortcut_capture_dialog.py:25
+msgid "Press the desired key combination"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/shortcut_capture_dialog.py:18
+msgid "Press the desired key combination. Enter confirms, Escape cancels. Tab moves to the buttons."
+msgstr ""
+
 #: src/audiflix/ui/menus.py:41
 msgid "Previous &chapter"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:33
+#: src/audiflix/ui/dialogs/settings_dialog.py:34
 #: src/audiflix/ui/menus.py:46
 msgid "Previous audio file"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:30
+#: src/audiflix/ui/dialogs/settings_dialog.py:31
 msgid "Previous chapter"
 msgstr ""
 
@@ -1343,7 +1359,7 @@ msgstr ""
 msgid "Publisher"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:336
+#: src/audiflix/ui/dialogs/settings_dialog.py:342
 msgid "R&eset this shortcut"
 msgstr ""
 
@@ -1365,7 +1381,11 @@ msgstr ""
 msgid "Recently added"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:228
+#: src/audiflix/ui/dialogs/shortcut_capture_dialog.py:14
+msgid "Record shortcut for %s"
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:229
 msgid "Remember the speed &per title"
 msgstr ""
 
@@ -1377,15 +1397,15 @@ msgstr ""
 msgid "Rename bookmark"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:337
+#: src/audiflix/ui/dialogs/settings_dialog.py:343
 msgid "Reset &all shortcuts"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:395
+#: src/audiflix/ui/dialogs/settings_dialog.py:424
 msgid "Reset all keyboard shortcuts to their default values?"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:38
+#: src/audiflix/ui/dialogs/settings_dialog.py:39
 #: src/audiflix/ui/menus.py:52
 msgid "Reset speed"
 msgstr ""
@@ -1394,7 +1414,7 @@ msgstr ""
 msgid "Retry loading this list"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:271
+#: src/audiflix/ui/dialogs/settings_dialog.py:272
 msgid "Saved title speeds will be cleared when you press OK."
 msgstr ""
 
@@ -1412,7 +1432,7 @@ msgstr ""
 msgid "Sea&rch:"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:49
+#: src/audiflix/ui/dialogs/settings_dialog.py:50
 msgid "Search"
 msgstr ""
 
@@ -1462,7 +1482,7 @@ msgid "Select &library..."
 msgstr ""
 
 #: src/audiflix/ui/dialogs/library_select_dialog.py:17
-#: src/audiflix/ui/dialogs/settings_dialog.py:47
+#: src/audiflix/ui/dialogs/settings_dialog.py:48
 msgid "Select library"
 msgstr ""
 
@@ -1497,12 +1517,12 @@ msgstr ""
 msgid "Set speed for this title..."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:48
-#: src/audiflix/ui/dialogs/settings_dialog.py:68
+#: src/audiflix/ui/dialogs/settings_dialog.py:49
+#: src/audiflix/ui/dialogs/settings_dialog.py:69
 msgid "Settings"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:75
+#: src/audiflix/ui/dialogs/settings_dialog.py:76
 msgid "Settings pages"
 msgstr ""
 
@@ -1510,15 +1530,19 @@ msgstr ""
 msgid "Settings saved."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:388
+#: src/audiflix/ui/dialogs/shortcut_capture_dialog.py:63
+msgid "Shortcut detected: %s. Press Enter to confirm."
+msgstr ""
+
+#: src/audiflix/ui/dialogs/settings_dialog.py:417
 msgid "Shortcut for %(action)s reset to %(shortcut)s."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:329
+#: src/audiflix/ui/dialogs/settings_dialog.py:332
 msgid "Shortcut for %s"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:377
+#: src/audiflix/ui/dialogs/settings_dialog.py:406
 msgid "Shortcut for %s cleared."
 msgstr ""
 
@@ -1572,19 +1596,19 @@ msgstr ""
 msgid "Skip &forward"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:28
+#: src/audiflix/ui/dialogs/settings_dialog.py:29
 msgid "Skip back"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:205
+#: src/audiflix/ui/dialogs/settings_dialog.py:206
 msgid "Skip back (seconds):"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:29
+#: src/audiflix/ui/dialogs/settings_dialog.py:30
 msgid "Skip forward"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:208
+#: src/audiflix/ui/dialogs/settings_dialog.py:209
 msgid "Skip forward (seconds):"
 msgstr ""
 
@@ -1592,7 +1616,7 @@ msgstr ""
 msgid "Sleep &timer..."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:42
+#: src/audiflix/ui/dialogs/settings_dialog.py:43
 #: src/audiflix/ui/dialogs/sleep_timer_dialog.py:37
 #: src/audiflix/ui/panels/playback_panel.py:36
 msgid "Sleep timer"
@@ -1602,7 +1626,7 @@ msgstr ""
 msgid "Sleep timer &length:"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:220
+#: src/audiflix/ui/dialogs/settings_dialog.py:221
 msgid "Sleep timer default (minutes):"
 msgstr ""
 
@@ -1635,7 +1659,7 @@ msgstr ""
 msgid "Sleep timer: until the end of the chapter"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:36
+#: src/audiflix/ui/dialogs/settings_dialog.py:37
 #: src/audiflix/ui/menus.py:51
 msgid "Slower"
 msgstr ""
@@ -1696,7 +1720,7 @@ msgstr ""
 msgid "Subtitle"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:134
+#: src/audiflix/ui/dialogs/settings_dialog.py:135
 msgid "Sync progress every (seconds):"
 msgstr ""
 
@@ -1783,7 +1807,7 @@ msgstr ""
 msgid "The server does not know this address (404)."
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:429
+#: src/audiflix/ui/dialogs/settings_dialog.py:458
 msgid "The shortcut %(shortcut)s is assigned to several actions: %(actions)s."
 msgstr ""
 
@@ -1839,7 +1863,7 @@ msgid "Title finished."
 msgstr ""
 
 #: src/audiflix/ui/dialogs/media_info_dialog.py:52
-#: src/audiflix/ui/dialogs/settings_dialog.py:46
+#: src/audiflix/ui/dialogs/settings_dialog.py:47
 #: src/audiflix/ui/item_actions.py:33
 msgid "Title information"
 msgstr ""
@@ -1868,7 +1892,7 @@ msgstr ""
 msgid "Use as the &default speed for all titles"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:233
+#: src/audiflix/ui/dialogs/settings_dialog.py:234
 msgid "Use the &media keys even when Audiflix is in the background"
 msgstr ""
 
@@ -1896,21 +1920,21 @@ msgstr ""
 msgid "Volume %d%%"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:40
+#: src/audiflix/ui/dialogs/settings_dialog.py:41
 #: src/audiflix/ui/menus.py:56
 msgid "Volume down"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:217
+#: src/audiflix/ui/dialogs/settings_dialog.py:218
 msgid "Volume step (percent):"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:39
+#: src/audiflix/ui/dialogs/settings_dialog.py:40
 #: src/audiflix/ui/menus.py:55
 msgid "Volume up"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:181
+#: src/audiflix/ui/dialogs/settings_dialog.py:182
 msgid "Words (1 hour 23 minutes 45 seconds)"
 msgstr ""
 
@@ -1941,9 +1965,9 @@ msgstr ""
 msgid "narrated by %s"
 msgstr ""
 
-#: src/audiflix/ui/dialogs/settings_dialog.py:389
+#: src/audiflix/ui/dialogs/settings_dialog.py:418
 #: src/audiflix/ui/main_frame.py:529
-#: src/audiflix/ui/shortcuts.py:114
+#: src/audiflix/ui/shortcuts.py:135
 msgid "not set"
 msgstr ""
 

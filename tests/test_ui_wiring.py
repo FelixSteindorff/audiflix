@@ -260,7 +260,7 @@ def test_settings_fit_available_screen_and_buttons_stay_below_pages():
         area = wx.GetClientDisplayRect()
         assert dialog.GetSize().height <= area.height
         assert dialog.GetSize().width <= area.width
-        ok = dialog.FindWindowById(wx.ID_OK)
+        ok = dialog.FindWindowById(wx.ID_OK, dialog)
         assert ok.GetRect().bottom <= dialog.GetClientSize().height
         assert ok.GetRect().top >= dialog.notebook.GetRect().bottom
     finally:

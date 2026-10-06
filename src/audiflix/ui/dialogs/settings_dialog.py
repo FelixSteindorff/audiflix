@@ -16,6 +16,7 @@ from audiflix.config import DEFAULT_SHORTCUTS, Settings
 from audiflix.i18n import N_, _, available_languages
 from audiflix.ui import menus
 from audiflix.ui import shortcuts as shortcut_utils
+from audiflix.ui.dialogs.shortcut_capture_dialog import ShortcutCaptureDialog
 
 #: Display names for the languages that ship with Audiflix.
 LANGUAGE_NAMES = {
@@ -315,10 +316,12 @@ class _ShortcutPage(wx.ScrolledWindow):
         hint = wx.StaticText(
             self,
             label=_(
-                "Enter shortcuts in the form Ctrl+Shift+B. Leave a field empty to "
-                "disable that shortcut."
+                "Press F2 in a shortcut field to record a key combination, or use "
+                "Record shortcut. You can also type Ctrl+Shift+B. Leave a field "
+                "empty to disable that shortcut."
             ),
         )
+        hint.Wrap(self.FromDIP(380))
         grid = wx.FlexGridSizer(0, 2, 6, 10)
         grid.AddGrowableCol(1, 1)
         stored = settings.get("shortcuts", {})
@@ -328,10 +331,13 @@ class _ShortcutPage(wx.ScrolledWindow):
             ctrl = wx.TextCtrl(self, value=stored.get(key, ""))
             ctrl.SetName(_("Shortcut for %s") % display_label)
             ctrl.Bind(wx.EVT_SET_FOCUS, lambda event, k=key: self._on_focus(event, k))
+            ctrl.Bind(wx.EVT_KEY_DOWN, lambda event, k=key: self._on_field_key(event, k))
             grid.Add(static, 0, wx.ALIGN_CENTER_VERTICAL)
             grid.Add(ctrl, 1, wx.EXPAND)
             self._ctrls[key] = ctrl
 
+        self.record_button = wx.Button(self, label=_("&Record shortcut..."))
+        self.record_button.Bind(wx.EVT_BUTTON, self._on_record)
         self.clear_button = wx.Button(self, label=_("C&lear this shortcut"))
         self.reset_button = wx.Button(self, label=_("R&eset this shortcut"))
         self.reset_all_button = wx.Button(self, label=_("Reset &all shortcuts"))
@@ -339,7 +345,8 @@ class _ShortcutPage(wx.ScrolledWindow):
         self.reset_button.Bind(wx.EVT_BUTTON, self._on_reset_one)
         self.reset_all_button.Bind(wx.EVT_BUTTON, self._on_reset_all)
 
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
+        buttons = wx.WrapSizer(wx.HORIZONTAL)
+        buttons.Add(self.record_button, 0, wx.RIGHT, 6)
         buttons.Add(self.clear_button, 0, wx.RIGHT, 6)
         buttons.Add(self.reset_button, 0, wx.RIGHT, 6)
         buttons.Add(self.reset_all_button, 0)
@@ -351,6 +358,28 @@ class _ShortcutPage(wx.ScrolledWindow):
         self.SetSizer(outer)
 
     # --- Buttons ----------------------------------------------------------
+    def _on_field_key(self, event: wx.KeyEvent, key: str) -> None:
+        if event.GetKeyCode() == wx.WXK_F2 and event.GetModifiers() == wx.MOD_NONE:
+            self._focused_key = key
+            self._on_record(None)
+        else:
+            event.Skip()
+
+    def _on_record(self, event) -> None:
+        current = self._current_ctrl()
+        if current is None:
+            return
+        key, ctrl = current
+        bindings = {self._label_for(action): value for action, value in self.values().items()
+                    if action != key}
+        dialog = ShortcutCaptureDialog(self, self._label_for(key), bindings)
+        try:
+            if dialog.ShowModal() == wx.ID_OK:
+                ctrl.SetValue(dialog.shortcut)
+        finally:
+            dialog.Destroy()
+        ctrl.SetFocus()
+
     def _on_focus(self, event: wx.FocusEvent, key: str) -> None:
         self._focused_key = key
         event.Skip()

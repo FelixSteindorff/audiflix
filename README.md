@@ -201,6 +201,11 @@ Inside lists:
 
 The shortcut editor checks for invalid or conflicting shortcuts. Shortcuts can also be cleared or reset.
 
+To capture a shortcut directly, focus its field and press **F2**, or choose
+**Record shortcut**. Press the desired combination, then **Enter** to accept it;
+**Escape** cancels. Assigned combinations are reported immediately and cannot
+be accepted until the conflict is resolved. Changes are saved with Settings.
+
 Every menu command can be assigned a shortcut, including downloads, editing
 media details, marking a title finished, announcing the current chapter and
 setting a title's speed. These additional commands start without a shortcut.

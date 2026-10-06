@@ -68,6 +68,27 @@ def is_valid(text: str) -> bool:
     return parse(text) is not None
 
 
+def from_key_event(event: wx.KeyEvent) -> str | None:
+    """Convert an actual key combination into our persisted accelerator syntax."""
+    key = event.GetKeyCode()
+    if key in (wx.WXK_NONE, wx.WXK_SHIFT, wx.WXK_CONTROL, wx.WXK_ALT,
+               wx.WXK_COMMAND, wx.WXK_WINDOWS_LEFT, wx.WXK_WINDOWS_RIGHT):
+        return None
+    # Windows/Super shortcuts belong to the OS and are not supported by wx's
+    # menu accelerators. Do not silently record them without the modifier.
+    if event.MetaDown():
+        return None
+    flags = 0
+    if event.ControlDown():
+        flags |= wx.ACCEL_CTRL
+    if event.AltDown():
+        flags |= wx.ACCEL_ALT
+    if event.ShiftDown():
+        flags |= wx.ACCEL_SHIFT
+    text = wx.AcceleratorEntry(flags, key, wx.ID_ANY).ToString()
+    return text if text and parse(text) == (flags, key) else None
+
+
 def to_entry(text: str, command_id: int) -> wx.AcceleratorEntry | None:
     """Build an :class:`wx.AcceleratorEntry` for ``command_id``."""
     parsed = parse(text)

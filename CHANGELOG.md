@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Shortcut recording with F2 or a Record shortcut button: press a combination,
+  confirm with Enter or cancel with Escape. Conflicts are shown immediately,
+  and captured shortcuts are announced through speech and braille.
 - A playback time format setting (digits or words), shared by display, speech
   and braille, including position, remaining time and sleep timer feedback.
 - Configurable shortcuts for every menu command, including downloads, item

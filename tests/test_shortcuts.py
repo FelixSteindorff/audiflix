@@ -47,6 +47,107 @@ def test_case_is_irrelevant():
     assert shortcuts.parse("ctrl+a") == shortcuts.parse("Ctrl+A")
 
 
+def _key_event(key, *, ctrl=False, alt=False, shift=False, meta=False):
+    event = wx.KeyEvent(wx.wxEVT_CHAR_HOOK)
+    event.SetKeyCode(key)
+    event.SetControlDown(ctrl)
+    event.SetAltDown(alt)
+    event.SetShiftDown(shift)
+    event.SetMetaDown(meta)
+    return event
+
+
+@pytest.mark.parametrize("key, modifiers, expected", [
+    (ord("B"), {"ctrl": True, "shift": True}, "Ctrl+Shift+B"),
+    (wx.WXK_LEFT, {"alt": True}, "Alt+Left"),
+    (wx.WXK_F5, {}, "F5"),
+    (wx.WXK_SPACE, {"ctrl": True}, "Ctrl+Space"),
+    (ord("+"), {"ctrl": True}, "Ctrl++"),
+    (ord(","), {"ctrl": True}, "Ctrl+,"),
+    (wx.WXK_TAB, {"ctrl": True}, "Ctrl+Tab"),
+])
+def test_captured_keys_roundtrip_into_menu_accelerators(key, modifiers, expected):
+    result = shortcuts.from_key_event(_key_event(key, **modifiers))
+    assert result is not None
+    assert shortcuts.parse(result) == shortcuts.parse(expected)
+
+
+@pytest.mark.parametrize("key, modifiers", [
+    (wx.WXK_CONTROL, {"ctrl": True}),
+    (wx.WXK_SHIFT, {"shift": True}),
+    (wx.WXK_ALT, {"alt": True}),
+    (ord("B"), {"meta": True}),
+])
+def test_modifiers_alone_and_unsupported_system_keys_are_not_recorded(key, modifiers):
+    assert shortcuts.from_key_event(_key_event(key, **modifiers)) is None
+
+
+def test_capture_blocks_conflicts_and_preserves_navigation(monkeypatch):
+    from unittest.mock import Mock
+
+    from audiflix import speech
+    from audiflix.ui.dialogs.shortcut_capture_dialog import ShortcutCaptureDialog
+
+    announce = Mock()
+    monkeypatch.setattr(speech, "announce", announce)
+    dialog = ShortcutCaptureDialog(None, "Download", {"Refresh": "F5"})
+    monkeypatch.setattr(wx.Window, "FindFocus", lambda: dialog.capture)
+    monkeypatch.setattr(dialog, "EndModal", Mock())
+    try:
+        assert not dialog.ok.IsEnabled()
+        dialog._on_key(_key_event(wx.WXK_F5))
+        assert not dialog.ok.IsEnabled()
+        assert "Refresh" in dialog.status.GetLabel()
+        event = _key_event(ord("D"), ctrl=True)
+        dialog._on_key(event)
+        assert not event.GetSkipped()  # Prevent the parent menu from handling it.
+        assert dialog.ok.IsEnabled()
+        assert dialog.shortcut == "Ctrl+D"
+        assert "Ctrl+D" in announce.call_args.args[0]
+        for key in (wx.WXK_TAB, wx.WXK_RETURN):
+            event = _key_event(key)
+            dialog._on_key(event)
+            assert event.GetSkipped()
+            assert dialog.shortcut == "Ctrl+D"
+        dialog._on_key(_key_event(wx.WXK_ESCAPE))
+        dialog.EndModal.assert_called_once_with(wx.ID_CANCEL)
+    finally:
+        dialog.Destroy()
+
+
+@pytest.mark.parametrize("result", [wx.ID_OK, wx.ID_CANCEL])
+def test_recorded_shortcut_is_staged_only_after_confirmation(monkeypatch, result):
+    from audiflix.config import Settings
+    from audiflix.ui.dialogs import settings_dialog
+
+    class FakeCapture:
+        shortcut = "Ctrl+D"
+
+        def __init__(self, parent, label, bindings):
+            assert "Ctrl+D" not in bindings.values()
+
+        def ShowModal(self):
+            return result
+
+        def Destroy(self):
+            pass
+
+    monkeypatch.setattr(settings_dialog, "ShortcutCaptureDialog", FakeCapture)
+    settings = Settings()
+    frame = wx.Frame(None)
+    try:
+        page = settings_dialog._ShortcutPage(frame, settings)
+        page._focused_key = "ctx_download"
+        page._on_record(None)
+        expected = "Ctrl+D" if result == wx.ID_OK else ""
+        assert page.values()["ctx_download"] == expected
+        assert settings.shortcut("ctx_download") == ""
+        page.apply()
+        assert settings.shortcut("ctx_download") == expected
+    finally:
+        frame.Destroy()
+
+
 def test_normalize_produces_a_canonical_spelling():
     assert shortcuts.normalize("ctrl+a") == shortcuts.normalize("Ctrl+A")
     assert shortcuts.normalize("nonsense") is None

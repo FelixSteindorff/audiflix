@@ -714,6 +714,27 @@ msgstr "Lautstärke %d%%"
 msgid "Playback time format"
 msgstr "Zeitformat bei der Wiedergabe"
 
+msgid "Record shortcut for %s"
+msgstr "Tastenkürzel für %s aufnehmen"
+
+msgid "Press the desired key combination. Enter confirms, Escape cancels. Tab moves to the buttons."
+msgstr "Drücke die gewünschte Tastenkombination. Enter bestätigt, Escape bricht ab. Tab wechselt zu den Schaltflächen."
+
+msgid "Press the desired key combination"
+msgstr "Gewünschte Tastenkombination drücken"
+
+msgid "Already assigned to: %s"
+msgstr "Bereits vergeben für: %s"
+
+msgid "Shortcut detected: %s. Press Enter to confirm."
+msgstr "Tastenkürzel erkannt: %s. Zum Bestätigen Enter drücken."
+
+msgid "Press F2 in a shortcut field to record a key combination, or use Record shortcut. You can also type Ctrl+Shift+B. Leave a field empty to disable that shortcut."
+msgstr "Drücke F2 in einem Kürzelfeld oder wähle Tastenkürzel aufnehmen, um eine Kombination direkt zu erfassen. Du kannst auch Ctrl+Shift+B eintippen. Ein leeres Feld deaktiviert das Kürzel."
+
+msgid "&Record shortcut..."
+msgstr "Tastenkürzel &aufnehmen..."
+
 msgid "Playback &time format (display, speech and braille):"
 msgstr "&Zeitformat bei der Wiedergabe (Anzeige, Sprache und Braille):"
 
