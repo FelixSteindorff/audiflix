@@ -9,8 +9,10 @@ keyboard shortcuts.
 
 from __future__ import annotations
 
+import sqlite3
 import threading
 from collections.abc import Callable
+from functools import partial
 
 import wx
 
@@ -18,8 +20,10 @@ from audiflix import speech
 from audiflix.api.client import ApiError, AudiobookshelfClient, AuthExpiredError
 from audiflix.api.models import LibraryItem
 from audiflix.audio.player import PlayerError, VlcPlayer
-from audiflix.config import Settings
+from audiflix.config import Settings, config_dir
 from audiflix.helpers import formatting
+from audiflix.helpers.progress_sync import ProgressOutbox
+from audiflix.helpers.requests import RequestGate
 from audiflix.helpers.status import DownloadRegistry, ProgressIndex
 from audiflix.i18n import _, ngettext
 from audiflix.logging_setup import get_logger
@@ -33,6 +37,14 @@ class AppContext:
         self.settings = settings
         self.registry = DownloadRegistry()
         self.progress = ProgressIndex(client.user)
+        self.requests = RequestGate()
+        self._closing = False
+        self._progress_sync_lock = threading.Lock()
+        self._expired_sessions: set[str] = set()
+        self.outbox = ProgressOutbox(
+            config_dir() / "progress.sqlite3", settings.get("server_url", ""),
+            str(client.user.get("id") or settings.get("username", "")),
+        )
 
         # active library selection: list of library ids plus a display name
         self.libraries: list[dict] = []
@@ -61,16 +73,20 @@ class AppContext:
         )
 
     # --- Status message plus speech ---------------------------------------
-    def notify(self, text: str, interrupt: bool = True, speak: bool = True) -> None:
+    def notify(
+        self, text: str, interrupt: bool = True, speak: bool = True, *, braille_text: str | None = None,
+    ) -> None:
         """Set the status bar and announce it (safe from any thread)."""
         if not text:
             return
 
         def do():
+            if self._closing:
+                return
             if self.status_cb:
-                self.status_cb(text)
+                self.status_cb(text if braille_text is None else braille_text)
             if speak:
-                speech.announce(text, interrupt=interrupt)
+                speech.announce(text, interrupt=interrupt, braille_text=braille_text)
 
         if wx.IsMainThread():
             do()
@@ -84,26 +100,34 @@ class AppContext:
         on_done: Callable | None = None,
         on_error: Callable[[Exception], None] | None = None,
         description: str = "",
+        request_key: str | None = None,
     ) -> None:
         """Run ``func`` on a worker thread and deliver the result on the main thread."""
+
+        token = self.requests.issue(request_key) if request_key else None
+
+        def deliver(callback, *args):
+            if self._closing or (token and not self.requests.current(token)):
+                return
+            callback(*args)
 
         def worker():
             try:
                 result = func()
             except AuthExpiredError as exc:
                 log.info("Session expired during %s", description or "a background call")
-                wx.CallAfter(self._handle_auth_expired, exc)
+                wx.CallAfter(deliver, self._handle_auth_expired, exc)
                 return
             except ApiError as exc:
                 log.warning("API call failed (%s): %s", description or func, exc)
-                wx.CallAfter(self._deliver_error, exc, on_error)
+                wx.CallAfter(deliver, self._deliver_error, exc, on_error)
                 return
             except Exception as exc:
                 log.exception("Background call failed (%s)", description or func)
-                wx.CallAfter(self._deliver_error, exc, on_error)
+                wx.CallAfter(deliver, self._deliver_error, exc, on_error)
                 return
             if on_done:
-                wx.CallAfter(on_done, result)
+                wx.CallAfter(deliver, on_done, result)
 
         threading.Thread(
             target=worker, name=f"audiflix-{description or 'worker'}", daemon=True
@@ -116,6 +140,8 @@ class AppContext:
             self.notify(_("Error: %s") % exc)
 
     def _handle_auth_expired(self, exc: AuthExpiredError) -> None:
+        if self._closing:
+            return
         self.notify(str(exc))
         if self.auth_expired_cb:
             self.auth_expired_cb()
@@ -208,6 +234,7 @@ class AppContext:
 
         def load():
             try:
+                self._flush_pending_progress(wait=True)
                 return self.client.play_item(item.id, episode_id)
             except ApiError as exc:
                 if not local_tracks or exc.is_auth_error:
@@ -256,7 +283,7 @@ class AppContext:
         manifest = self.registry.manifest(item.id) or {}
         duration = float(manifest.get("duration") or sum(t["duration"] for t in tracks))
         start_time = float(manifest.get("position") or 0.0)
-        if not start_time:
+        if (not start_time and "position_updated_at" not in manifest) or manifest.get("position_scope", self.outbox.scope) != self.outbox.scope:
             start_time = self.progress.current_time(item.id)
         self.current_session_id = None
         self._start_playback(
@@ -276,8 +303,15 @@ class AppContext:
         offline: bool = False,
         disconnected: bool = False,
     ) -> None:
+        if self.current_item and self.player.has_media:
+            self.player.stop(sync=True)
         self.current_item = item
         self.current_episode = episode
+        self.player.on_progress = partial(
+            self._on_player_progress, item_id=item.id,
+            episode_id=getattr(episode, "id", episode) if episode else None,
+            session_id=self.current_session_id,
+        )
         try:
             self.player.load(
                 tracks, total, start_time=start_time,
@@ -303,6 +337,12 @@ class AppContext:
             return
         playing = self.player.toggle()
         self.notify(_("Playing") if playing else _("Paused"))
+
+    def pause_playback(self) -> None:
+        """The Stop media key must never resume a paused title."""
+        if self.player.has_media and self.player.is_playing:
+            self.player.pause()
+            self.notify(_("Paused"))
 
     def skip_back(self) -> None:
         if not self._require_media():
@@ -470,15 +510,24 @@ class AppContext:
         self._announce_volume(self.player.change_volume(-step))
 
     def _announce_volume(self, volume: int) -> None:
-        self.notify(_("Volume %d percent") % volume)
+        self.notify(
+            _("Volume %d percent") % volume,
+            braille_text=_("Volume %d%%") % volume,
+        )
 
     def announce_time(self) -> None:
         if not self._require_media():
             return
-        text = formatting.announce_position(self.player.position, self.player.duration)
+        position, duration = self.player.position, self.player.duration
+        text = formatting.announce_position(
+            position, duration, compact=self.settings.get("time_format", "clock") != "words",
+        )
         if self.status_cb:
-            self.status_cb(formatting.format_position(self.player.position, self.player.duration))
+            self.status_cb(text)
         speech.announce(text, interrupt=True, force=True)
+
+    def format_time(self, seconds: float) -> str:
+        return formatting.format_time(seconds, self.settings.get("time_format", "clock"))
 
     def _announce_position(self) -> None:
         if self.settings.get("announce_on_seek", True):
@@ -499,7 +548,7 @@ class AppContext:
         self.run_async(
             do,
             on_done=lambda t: self.notify(
-                _("Bookmark set at %s.") % formatting.format_clock(t)
+                _("Bookmark set at %s.") % self.format_time(t)
             ),
             description="add-bookmark",
         )
@@ -509,7 +558,7 @@ class AppContext:
         if until_chapter:
             self.notify(_("Sleep timer: until the end of the chapter"))
         elif minutes:
-            self.notify(_("Sleep timer: %d minutes") % int(minutes))
+            self.notify(_("Sleep timer: %s remaining") % self.format_time(minutes * 60))
         else:
             self.notify(_("Sleep timer off"))
 
@@ -518,7 +567,7 @@ class AppContext:
         remaining = self.player.extend_sleep_timer(minutes)
         self.notify(
             _("Sleep timer extended, %s remaining")
-            % formatting.format_duration(remaining or 0.0)
+            % self.format_time(remaining or 0.0),
         )
 
     def announce_sleep_timer(self) -> None:
@@ -527,7 +576,7 @@ class AppContext:
             self.notify(_("No sleep timer is running."))
             return
         self.notify(
-            _("Sleep timer: %s remaining") % formatting.format_duration(remaining)
+            _("Sleep timer: %s remaining") % self.format_time(remaining),
         )
 
     # --- Tracks ------------------------------------------------------------
@@ -565,40 +614,49 @@ class AppContext:
 
     # --- Player callbacks (run on the player's sync thread) ----------------
     def _on_player_progress(
-        self, position: float, duration: float, is_finished: bool, listened: float = 0.0
+        self, position: float, duration: float, is_finished: bool, listened: float = 0.0,
+        *, item_id: str | None = None, episode_id: str | None = None, session_id: str | None = None,
     ) -> None:
-        item = self.current_item
-        if not item:
+        if item_id is None and self.current_item:
+            item_id = self.current_item.id
+            episode_id = getattr(self.current_episode, "id", self.current_episode)
+            session_id = self.current_session_id
+        if not item_id:
             return
-        episode_id = getattr(self.current_episode, "id", None)
-        try:
-            self.client.sync_progress(
-                item.id, position, duration, is_finished, episode_id=episode_id
-            )
-        except AuthExpiredError:
-            log.info("Progress sync skipped: session expired")
-            self.registry.record_offline_position(item.id, position)
-            wx.CallAfter(self._handle_auth_expired, AuthExpiredError())
-            return
-        except ApiError as exc:
-            # Losing one sync is harmless while the server is reachable; for a
-            # downloaded title it may not be, so the position is kept locally
-            # and pushed as soon as the server answers again.
-            log.warning("Progress sync failed: %s", exc)
-            self.registry.record_offline_position(item.id, position)
-            return
-        self.registry.clear_offline_position(item.id, position)
-        self._sync_session(position, duration, listened)
+        with self._progress_sync_lock:
+            entry = None
+            try:
+                entry = self.outbox.record(item_id, episode_id, position, duration, is_finished)
+            except (sqlite3.Error, OSError):
+                log.exception("Could not persist playback progress")
+                self.notify(_("Could not save progress locally. Check free disk space."), interrupt=False)
+            if not episode_id:
+                self.registry.record_offline_position(item_id, position, scope=self.outbox.scope)
+            try:
+                if entry and not self.outbox.contains(entry):
+                    return
+                self.client.sync_progress(item_id, position, duration, is_finished, episode_id=episode_id)
+                if entry:
+                    self.outbox.acknowledge(entry)
+                if not episode_id:
+                    self.registry.clear_offline_position(item_id, position)
+            except AuthExpiredError:
+                log.info("Progress sync skipped: session expired")
+                wx.CallAfter(self._handle_auth_expired, AuthExpiredError())
+                return
+            except ApiError as exc:
+                log.warning("Progress sync failed: %s", exc)
+                return
+            self._sync_session(position, duration, listened, session_id=session_id)
 
-    def _sync_session(self, position: float, duration: float, listened: float) -> None:
+    def _sync_session(self, position: float, duration: float, listened: float, *, session_id: str | None = None) -> None:
         """Report the same progress to the open playback session.
 
         The progress endpoint alone keeps the resume position correct, but the
         server's listening statistics are built from sessions - without this
         the time spent listening in Audiflix would never show up there.
         """
-        session_id = self.current_session_id
-        if not session_id or listened <= 0:
+        if not session_id or session_id in self._expired_sessions or listened <= 0:
             return
         try:
             self.client.sync_session(session_id, position, listened, duration)
@@ -607,7 +665,9 @@ class AppContext:
                 # The server has already closed the session (it does that after
                 # a while); reporting to it again would fail every single time.
                 log.info("Playback session %s no longer exists - stopping session sync", session_id)
-                self.current_session_id = None
+                self._expired_sessions.add(session_id)
+                if self.current_session_id == session_id:
+                    self.current_session_id = None
             else:
                 log.warning("Session sync failed: %s", exc)
 
@@ -642,24 +702,6 @@ class AppContext:
     # --- Offline progress --------------------------------------------------
     def flush_offline_progress(self) -> None:
         """Send positions that were played while the server was unreachable."""
-        pending = self.registry.pending_positions()
-        if not pending:
-            return
-
-        def push():
-            sent = 0
-            for item_id, position in pending.items():
-                manifest = self.registry.manifest(item_id) or {}
-                duration = float(manifest.get("duration") or 0.0)
-                try:
-                    self.client.sync_progress(item_id, position, duration)
-                except ApiError as exc:
-                    log.info("Offline progress for %s stays pending: %s", item_id, exc)
-                    continue
-                self.registry.clear_offline_position(item_id, position)
-                sent += 1
-            return sent
-
         def done(count: int):
             if count:
                 log.info("Pushed offline progress for %d title(s)", count)
@@ -676,7 +718,54 @@ class AppContext:
                     description="refresh-progress",
                 )
 
-        self.run_async(push, on_done=done, description="flush-offline-progress")
+        self.run_async(self._flush_pending_progress, on_done=done, description="flush-offline-progress")
+
+    def _flush_pending_progress(self, wait: bool = False) -> int:
+        """Reconcile durable positions before resuming a title online."""
+        # Replay and live reports share one writer, so an old replay cannot
+        # finish after a more recent live update of the same title.
+        if not self._progress_sync_lock.acquire(blocking=wait):
+            return 0
+        try:
+            existing = {(e.item_id, e.episode_id) for e in self.outbox.pending()}
+            for item_id, position in self.registry.pending_positions().items():
+                if (item_id, "") not in existing:
+                    manifest = self.registry.manifest(item_id) or {}
+                    if manifest.get("position_scope", self.outbox.scope) != self.outbox.scope:
+                        continue
+                    self.outbox.record(item_id, None, position,
+                                       float(manifest.get("duration") or 0.0),
+                                       updated_at=int(manifest.get("position_updated_at") or 0))
+            pending = self.outbox.pending()
+            if not pending:
+                return 0
+            remote = ProgressIndex(self.client.fetch_me())
+            sent = 0
+            for entry in pending:
+                if not self.outbox.contains(entry):
+                    continue
+                server = remote.entry(entry.item_id, entry.episode_id)
+                if entry.server_is_newer(server):
+                    if self.outbox.acknowledge(entry) and not entry.episode_id:
+                        self.registry.clear_offline_position(entry.item_id, float(server.get("currentTime") or 0))
+                    log.info("Kept newer server progress for %s", entry.item_id)
+                    self.notify(_("A newer listening position from the server was kept."), interrupt=False)
+                    continue
+                try:
+                    self.client.sync_progress(entry.item_id, entry.position, entry.duration,
+                                              entry.finished, episode_id=entry.episode_id or None)
+                except AuthExpiredError:
+                    raise
+                except ApiError as exc:
+                    log.info("Progress stays pending for %s: %s", entry.item_id, exc)
+                    continue
+                if self.outbox.acknowledge(entry) and not entry.episode_id:
+                    self.registry.clear_offline_position(entry.item_id, entry.position)
+                sent += 1
+            return sent
+        finally:
+            self._progress_sync_lock.release()
+
 
     # --- Shutdown ----------------------------------------------------------
     def shutdown(self, network_timeout: float = 3.0) -> None:
@@ -686,6 +775,7 @@ class AppContext:
         is already closing, and a slow or unreachable server must not freeze
         the application for the full request timeout.
         """
+        self._closing = True
         session_id = self.current_session_id
         self.current_session_id = None
         if session_id:

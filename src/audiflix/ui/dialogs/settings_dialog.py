@@ -14,6 +14,7 @@ import wx
 from audiflix import speech
 from audiflix.config import DEFAULT_SHORTCUTS, Settings
 from audiflix.i18n import N_, _, available_languages
+from audiflix.ui import menus
 from audiflix.ui import shortcuts as shortcut_utils
 
 #: Display names for the languages that ship with Audiflix.
@@ -42,12 +43,22 @@ SHORTCUT_LABELS: list[tuple[str, str]] = [
     ("announce_sleep", N_("Announce sleep timer")),
     ("add_bookmark", N_("Add bookmark")),
     ("manage_bookmarks", N_("Manage bookmarks")),
-    ("media_info", N_("Media details")),
+    ("media_info", N_("Title information")),
     ("select_library", N_("Select library")),
     ("settings", N_("Settings")),
     ("search", N_("Search")),
     ("quit", N_("Exit")),
 ]
+
+# Reuse translated menu labels for additional actions so the editor and help
+# cannot omit newly configurable commands. Keep the familiar playback order.
+_listed_shortcuts = {key for key, _label in SHORTCUT_LABELS}
+SHORTCUT_LABELS.extend(
+    (entry[2], entry[1])
+    for _menu, entries in menus.MENUS
+    for entry in entries
+    if entry is not None and entry[2] and entry[2] not in _listed_shortcuts
+)
 
 
 class SettingsDialog(wx.Dialog):
@@ -63,43 +74,130 @@ class SettingsDialog(wx.Dialog):
         self.notebook = wx.Notebook(self)
         self.notebook.SetName(_("Settings pages"))
         self._general = _GeneralPage(self.notebook, settings)
+        self._playback = _PlaybackPage(self.notebook, settings)
+        self._downloads = _DownloadsPage(self.notebook, settings)
+        self._accessibility = _AccessibilityPage(self.notebook, settings)
         self._shortcuts = _ShortcutPage(self.notebook, settings)
-        self.notebook.AddPage(self._general, _("General"))
-        self.notebook.AddPage(self._shortcuts, _("Keyboard shortcuts"))
+        self._pages = [self._general, self._playback, self._downloads, self._accessibility, self._shortcuts]
+        for page, label in zip(self._pages, (_("General"), _("Playback"), _("Downloads"), _("Accessibility"), _("Keyboard shortcuts")), strict=True):
+            self.notebook.AddPage(page, label)
 
         buttons = self.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.notebook, 1, wx.EXPAND | wx.ALL, 6)
         sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
         self.SetSizer(sizer)
-        self.SetSize((520, 520))
+        area = wx.GetClientDisplayRect()
+        preferred = self.FromDIP((640, 560))
+        self.SetSize((min(preferred.width, area.width), min(preferred.height, area.height)))
+        minimum = self.FromDIP((440, 320))
+        self.SetMinSize((min(minimum.width, area.width), min(minimum.height, area.height)))
+        self.CentreOnParent()
 
         self.SetAffirmativeId(wx.ID_OK)
         self.SetEscapeId(wx.ID_CANCEL)
         self.Bind(wx.EVT_BUTTON, self._on_ok, id=wx.ID_OK)
-        self._general.skip_back.SetFocus()
+        self._general.language.SetFocus()
 
     def _on_ok(self, event):
         problem = self._shortcuts.validate()
         if problem is not None:
             message, ctrl = problem
             wx.MessageBox(message, _("Audiflix - invalid shortcut"), wx.OK | wx.ICON_WARNING, self)
-            self.notebook.SetSelection(1)
+            self.notebook.SetSelection(self._pages.index(self._shortcuts))
             ctrl.SetFocus()
             ctrl.SelectAll()
             return
         previous_language = self.settings.get("language", "auto")
-        self._general.apply()
-        self._shortcuts.apply()
+        for page in self._pages:
+            page.apply()
         self.settings.save()
         self.language_changed = self.settings.get("language", "auto") != previous_language
         self.EndModal(wx.ID_OK)
 
 
-class _GeneralPage(wx.Panel):
+class _GeneralPage(wx.ScrolledWindow):
     def __init__(self, parent, settings: Settings):
         super().__init__(parent)
         self.settings = settings
+        self.SetScrollRate(0, self.FromDIP(10))
+        outer = wx.BoxSizer(wx.VERTICAL)
+        outer.Add(wx.StaticText(self, label=_("&Language:")), 0, wx.ALL, 12)
+        self._languages = ["auto", *available_languages()]
+        self.language = wx.Choice(self, choices=[self._language_name(c) for c in self._languages])
+        self.language.SetName(_("Language"))
+        current = str(settings.get("language", "auto") or "auto")
+        self.language.SetSelection(self._languages.index(current) if current in self._languages else 0)
+        outer.Add(self.language, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
+        outer.Add(wx.StaticText(self, label=_("&Sync progress every (seconds):")), 0, wx.ALL, 12)
+        self.sync = wx.SpinCtrl(self, min=5, max=120, initial=int(settings.get("progress_sync_seconds", 15)))
+        self.sync.SetName(_("Sync progress every (seconds):"))
+        outer.Add(self.sync, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
+        self.SetSizer(outer)
+
+    @staticmethod
+    def _language_name(code: str) -> str:
+        if code == "auto":
+            return _("Automatic (system language)")
+        return LANGUAGE_NAMES.get(code, code)
+
+    def apply(self) -> None:
+        index = self.language.GetSelection()
+        if 0 <= index < len(self._languages):
+            self.settings["language"] = self._languages[index]
+        self.settings["progress_sync_seconds"] = self.sync.GetValue()
+
+
+class _DownloadsPage(wx.ScrolledWindow):
+    def __init__(self, parent, settings: Settings):
+        super().__init__(parent)
+        self.settings = settings
+        self.SetScrollRate(0, self.FromDIP(10))
+        outer = wx.BoxSizer(wx.VERTICAL)
+        outer.Add(wx.StaticText(self, label=_("&Download folder:")), 0, wx.ALL, 12)
+        self.download_dir = wx.DirPickerCtrl(self, path=settings.get("download_dir", ""))
+        self.download_dir.SetName(_("Download folder"))
+        outer.Add(self.download_dir, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
+        self.SetSizer(outer)
+
+    def apply(self) -> None:
+        self.settings["download_dir"] = self.download_dir.GetPath()
+
+
+class _AccessibilityPage(wx.ScrolledWindow):
+    def __init__(self, parent, settings: Settings):
+        super().__init__(parent)
+        self.settings = settings
+        self.SetScrollRate(0, self.FromDIP(10))
+        self.announce = wx.CheckBox(self, label=_("&Announce position after skipping"))
+        self.announce.SetValue(bool(settings.get("announce_on_seek", True)))
+        self.announce_chapter = wx.CheckBox(self, label=_("Announce a new &chapter while listening"))
+        self.announce_chapter.SetValue(bool(settings.get("announce_chapter_change", True)))
+        outer = wx.BoxSizer(wx.VERTICAL)
+        outer.Add(self.announce, 0, wx.ALL, 12)
+        outer.Add(self.announce_chapter, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
+        time_label = wx.StaticText(self, label=_("Playback &time format (display, speech and braille):"))
+        self.time_format = wx.Choice(self, choices=[
+            _("Digits (1:23:45)"), _("Words (1 hour 23 minutes 45 seconds)"),
+        ])
+        self.time_format.SetName(_("Playback time format"))
+        self.time_format.SetSelection(1 if settings.get("time_format") == "words" else 0)
+        outer.Add(time_label, 0, wx.LEFT | wx.RIGHT, 12)
+        outer.Add(self.time_format, 0, wx.EXPAND | wx.ALL, 12)
+        self.SetSizer(outer)
+
+    def apply(self) -> None:
+        self.settings["announce_on_seek"] = self.announce.GetValue()
+        self.settings["announce_chapter_change"] = self.announce_chapter.GetValue()
+        self.settings["time_format"] = "words" if self.time_format.GetSelection() == 1 else "clock"
+
+
+class _PlaybackPage(wx.ScrolledWindow):
+    def __init__(self, parent, settings: Settings):
+        super().__init__(parent)
+        self.settings = settings
+        self.SetScrollRate(0, self.FromDIP(10))
+        self._forget_speeds = False
         grid = wx.FlexGridSizer(0, 2, 8, 10)
         grid.AddGrowableCol(1, 1)
 
@@ -126,36 +224,6 @@ class _GeneralPage(wx.Panel):
             grid, _("Fade out before the sleep timer (seconds, 0 = off):"),
             settings.get("sleep_fade_seconds", 20), 0, 120,
         )
-        self.sync = self._spin(
-            grid, _("Sync progress every (seconds):"),
-            settings.get("progress_sync_seconds", 15), 5, 120,
-        )
-
-        self._languages = ["auto", *available_languages()]
-        language_label = wx.StaticText(self, label=_("&Language:"))
-        self.language = wx.Choice(self, choices=[self._language_name(c) for c in self._languages])
-        self.language.SetName(_("Language"))
-        current = str(settings.get("language", "auto") or "auto")
-        self.language.SetSelection(
-            self._languages.index(current) if current in self._languages else 0
-        )
-        grid.Add(language_label, 0, wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.language, 1, wx.EXPAND)
-
-        download_label = wx.StaticText(self, label=_("&Download folder:"))
-        self.download_dir = wx.DirPickerCtrl(self, path=settings.get("download_dir", ""))
-        self.download_dir.SetName(_("Download folder"))
-        grid.Add(download_label, 0, wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.download_dir, 1, wx.EXPAND)
-
-        self.announce = wx.CheckBox(self, label=_("&Announce position after skipping"))
-        self.announce.SetValue(bool(settings.get("announce_on_seek", True)))
-
-        self.announce_chapter = wx.CheckBox(
-            self, label=_("Announce a new &chapter while listening")
-        )
-        self.announce_chapter.SetValue(bool(settings.get("announce_chapter_change", True)))
-
         self.remember_speed = wx.CheckBox(
             self, label=_("Remember the speed &per title")
         )
@@ -172,15 +240,13 @@ class _GeneralPage(wx.Panel):
 
         outer = wx.BoxSizer(wx.VERTICAL)
         outer.Add(grid, 0, wx.EXPAND | wx.ALL, 12)
-        outer.Add(self.announce, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
-        outer.Add(self.announce_chapter, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
         outer.Add(self.remember_speed, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
         outer.Add(self.media_keys, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
         outer.Add(self.forget_speeds, 0, wx.ALL, 12)
         self.SetSizer(outer)
 
     def _saved_speed_count(self) -> int:
-        return len(self.settings.get("book_speeds") or {})
+        return 0 if self._forget_speeds else len(self.settings.get("book_speeds") or {})
 
     def _update_forget_button(self) -> None:
         count = self._saved_speed_count()
@@ -200,16 +266,9 @@ class _GeneralPage(wx.Panel):
         )
         if answer != wx.YES:
             return
-        self.settings["book_speeds"] = {}
-        self.settings.save()
+        self._forget_speeds = True
         self._update_forget_button()
-        speech.announce(_("Saved title speeds cleared."), interrupt=True)
-
-    @staticmethod
-    def _language_name(code: str) -> str:
-        if code == "auto":
-            return _("Automatic (system language)")
-        return LANGUAGE_NAMES.get(code, code)
+        speech.announce(_("Saved title speeds will be cleared when you press OK."), interrupt=True)
 
     def _spin(self, grid, label, value, lo, hi):
         static = wx.StaticText(self, label=label)
@@ -237,15 +296,10 @@ class _GeneralPage(wx.Panel):
         settings["volume_step"] = self.volume_step.GetValue()
         settings["sleep_timer_default_minutes"] = self.sleep_default.GetValue()
         settings["sleep_fade_seconds"] = self.sleep_fade.GetValue()
-        settings["progress_sync_seconds"] = self.sync.GetValue()
-        settings["download_dir"] = self.download_dir.GetPath()
-        settings["announce_on_seek"] = self.announce.GetValue()
-        settings["announce_chapter_change"] = self.announce_chapter.GetValue()
         settings["remember_speed_per_title"] = self.remember_speed.GetValue()
         settings["global_media_keys"] = self.media_keys.GetValue()
-        index = self.language.GetSelection()
-        if 0 <= index < len(self._languages):
-            settings["language"] = self._languages[index]
+        if self._forget_speeds:
+            settings["book_speeds"] = {}
 
 
 class _ShortcutPage(wx.ScrolledWindow):
@@ -269,9 +323,10 @@ class _ShortcutPage(wx.ScrolledWindow):
         grid.AddGrowableCol(1, 1)
         stored = settings.get("shortcuts", {})
         for key, label in SHORTCUT_LABELS:
-            static = wx.StaticText(self, label=f"{_(label)}:")
+            display_label = _(label).replace("&", "")
+            static = wx.StaticText(self, label=f"{display_label}:")
             ctrl = wx.TextCtrl(self, value=stored.get(key, ""))
-            ctrl.SetName(_("Shortcut for %s") % _(label))
+            ctrl.SetName(_("Shortcut for %s") % display_label)
             ctrl.Bind(wx.EVT_SET_FOCUS, lambda event, k=key: self._on_focus(event, k))
             grid.Add(static, 0, wx.ALIGN_CENTER_VERTICAL)
             grid.Add(ctrl, 1, wx.EXPAND)
@@ -309,7 +364,7 @@ class _ShortcutPage(wx.ScrolledWindow):
     def _label_for(self, key: str) -> str:
         for action, label in SHORTCUT_LABELS:
             if action == key:
-                return _(label)
+                return _(label).replace("&", "")
         return key
 
     def _on_clear(self, event) -> None:

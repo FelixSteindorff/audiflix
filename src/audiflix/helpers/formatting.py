@@ -140,7 +140,7 @@ def episode_row(episode: Episode, status: str = "") -> list[str]:
     ]
 
 
-def format_duration(seconds: float) -> str:
+def format_duration(seconds: float, *, include_seconds: bool = False) -> str:
     """Seconds as a spoken duration, e.g. '3 hours 12 minutes'."""
     seconds = int(max(0, seconds))
     hours, rem = divmod(seconds, 3600)
@@ -150,7 +150,7 @@ def format_duration(seconds: float) -> str:
         parts.append(ngettext("%d hour", "%d hours", hours) % hours)
     if minutes:
         parts.append(ngettext("%d minute", "%d minutes", minutes) % minutes)
-    if not hours and not minutes:
+    if (include_seconds and secs) or (not hours and not minutes):
         parts.append(ngettext("%d second", "%d seconds", secs) % secs)
     return " ".join(parts)
 
@@ -170,12 +170,17 @@ def format_position(position: float, duration: float) -> str:
     return f"{format_clock(position)} / {format_clock(duration)}"
 
 
-def announce_position(position: float, duration: float) -> str:
-    """Verbose speech output: position and remaining time."""
+def format_time(seconds: float, style: str = "clock") -> str:
+    """The selected playback time format, identical for all output channels."""
+    return format_duration(seconds, include_seconds=True) if style == "words" else format_clock(seconds)
+
+
+def announce_position(position: float, duration: float, *, compact: bool = False) -> str:
+    """Position and remaining time, with digits for braille and the status bar."""
     remaining = max(0.0, duration - position)
     return _("Position %(position)s, %(remaining)s remaining") % {
-        "position": format_duration(position),
-        "remaining": format_duration(remaining),
+        "position": format_time(position, "clock" if compact else "words"),
+        "remaining": format_time(remaining, "clock" if compact else "words"),
     }
 
 

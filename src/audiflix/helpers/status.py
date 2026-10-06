@@ -128,11 +128,11 @@ class DownloadRegistry:
         return removed
 
     # --- Offline progress --------------------------------------------------
-    def record_offline_position(self, item_id: str, position: float) -> None:
+    def record_offline_position(self, item_id: str, position: float, scope: str | None = None) -> None:
         """Remember a position that could not be sent to the server."""
         folder = self.folder_for(item_id)
         if folder:
-            downloads.update_position(folder, position, synced=False)
+            downloads.update_position(folder, position, synced=False, scope=scope)
 
     def clear_offline_position(self, item_id: str, position: float) -> None:
         """Mark the stored position as sent."""
@@ -168,11 +168,12 @@ class ProgressIndex:
             self.update(user)
 
     def update(self, user: dict[str, Any]) -> None:
-        self._by_item.clear()
+        by_item = {}
         for progress in (user or {}).get("mediaProgress", []) or []:
             item_id = progress.get("libraryItemId")
             if item_id:
-                self._by_item[_key(item_id, progress.get("episodeId"))] = progress
+                by_item[_key(item_id, progress.get("episodeId"))] = progress
+        self._by_item = by_item
 
     def entry(self, item_id: str, episode_id: str | None = None) -> dict[str, Any] | None:
         return self._by_item.get(_key(item_id, episode_id))

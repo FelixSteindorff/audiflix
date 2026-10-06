@@ -28,6 +28,7 @@ track gets a currently valid token.
 
 from __future__ import annotations
 
+import sys
 import threading
 import time
 from collections.abc import Callable
@@ -99,6 +100,7 @@ class ProgressReport:
     duration: float
     is_finished: bool = False
     listened: float = 0.0
+    callback: Callable | None = None
 
 
 class VlcPlayer:
@@ -129,7 +131,8 @@ class VlcPlayer:
         self.sync_interval = sync_interval
         self.fade_seconds = float(fade_seconds)
         self.rate = default_rate
-        self.volume = int(default_volume)
+        self.volume = max(0, min(int(default_volume), 100))
+        self._pending_volume: int | None = None
 
         self._vlc = None
         self._instance = None
@@ -168,6 +171,7 @@ class VlcPlayer:
         # Progress reports are sent from their own thread, see _sync_now().
         self._sync_lock = threading.Lock()
         self._pending_sync: ProgressReport | None = None
+        self._previous_sync: list[ProgressReport] = []
         self._sync_event = threading.Event()
         self._sync_stop = threading.Event()
         self._sync_thread: threading.Thread | None = None
@@ -191,6 +195,10 @@ class VlcPlayer:
         # libVLC 3 removed the --plugin-path option; the module directory is
         # controlled through VLC_PLUGIN_PATH, which vlc_runtime.configure() set.
         args = ["--no-video", "--quiet"]
+        if sys.platform == "win32":
+            # Use our setting from the first audio output creation instead of
+            # VLC's saved Windows session volume (which can otherwise be 100%).
+            args += ["--no-volume-save", f"--mmdevice-volume={self.volume / 100:.2f}"]
         try:
             self._instance = vlc.Instance(*args)
             if self._instance is None:
@@ -286,6 +294,7 @@ class VlcPlayer:
         self._index = index
         self._load_generation += 1
         generation = self._load_generation
+        self._apply_volume()
         self._player.play()
         # Apply rate, volume and position as soon as VLC is ready.
         self._apply_rate()
@@ -337,6 +346,7 @@ class VlcPlayer:
         if self._player.get_media() is None:
             self._load_index(self._index)
         else:
+            self._apply_volume()
             self._player.play()
             self._apply_rate()
             self._apply_volume()
@@ -537,11 +547,20 @@ class VlcPlayer:
         The sleep timer fades the sound out with this; the volume the user set
         is what playback returns to afterwards.
         """
-        if self._player is not None:
+        with self._lock:
+            self._pending_volume = max(0, min(int(volume), 100))
+            self._retry_pending_volume()
+
+    def _retry_pending_volume(self) -> None:
+        """VLC returns -1 while no audio output exists; keep the latest target."""
+        with self._lock:
+            if self._player is None or self._pending_volume is None:
+                return
             try:
-                self._player.audio_set_volume(max(0, min(int(volume), 100)))
+                if self._player.audio_set_volume(self._pending_volume) == 0:
+                    self._pending_volume = None
             except Exception:
-                log.exception("Could not set the volume to %d", volume)
+                log.exception("Could not set the volume to %d", self._pending_volume)
 
     # --- State -------------------------------------------------------------
     @property
@@ -684,6 +703,7 @@ class VlcPlayer:
     def _tick(self) -> None:
         if self._player is None:
             return
+        self._retry_pending_volume()
         self._count_listening_time()
         state = self._player.get_state()
         ended = self._vlc is not None and state == self._vlc.State.Ended
@@ -867,9 +887,13 @@ class VlcPlayer:
             duration=self.duration,
             is_finished=is_finished,
             listened=self._take_listened(),
+            callback=self.on_progress,
         )
         with self._sync_lock:
             pending = self._pending_sync
+            if pending is not None and pending.callback is not report.callback:
+                self._previous_sync.append(pending)
+                pending = None
             if pending is not None:
                 # Superseding a queued report must not drop what it carried:
                 # "finished" is a one-off event and listening time accumulates.
@@ -903,11 +927,14 @@ class VlcPlayer:
     def _drain_sync(self) -> None:
         while True:
             with self._sync_lock:
-                report, self._pending_sync = self._pending_sync, None
+                if self._previous_sync:
+                    report = self._previous_sync.pop(0)
+                else:
+                    report, self._pending_sync = self._pending_sync, None
             if report is None:
                 return
             try:
-                self.on_progress(
+                report.callback(
                     report.position, report.duration, report.is_finished, report.listened
                 )
             except Exception:

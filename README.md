@@ -34,6 +34,8 @@ The Windows builds include the audio engine, so you do not need to install VLC s
 - Edit media information
 - Spoken feedback for status, playback position and remaining time
 - Configurable keyboard shortcuts
+- Persistent playback bar with title, chapter, remaining time, speed and sleep timer
+- Remembered window size and configurable list columns
 - English and German interface
 
 Most item actions are also available from the context menu.
@@ -48,7 +50,11 @@ The interface uses native wxPython controls where possible. Lists work with the 
 
 Dialogs have labelled controls, a sensible initial focus and support Escape where appropriate. Longer network operations run in the background instead of freezing the window.
 
-Audiflix also provides spoken feedback for things such as playback position, remaining time and status messages.
+Audiflix sends feedback for playback position, remaining time, volume, speed and
+other status messages to both speech and the screen reader's braille output.
+Under **Settings → Accessibility**, choose digits or words for playback times.
+Position, remaining time and sleep timer feedback use the same format for
+speech, braille and display. The choice takes effect when Settings is confirmed.
 
 The Windows version is mainly tested with **NVDA**. Screen-reader output is handled through [accessible_output2](https://pypi.org/project/accessible-output2/).
 
@@ -177,7 +183,7 @@ These are the defaults. They can be changed under **Settings → Keyboard shortc
 | Announce sleep timer | `Ctrl+Alt+L` |
 | Add bookmark | `Ctrl+B` |
 | Manage bookmarks | `Ctrl+Shift+B` |
-| Media details | `Ctrl+I` |
+| Title information (selected title, otherwise the playing title) | `Ctrl+I` |
 | Select library | `Ctrl+Shift+L` |
 | Settings | `Ctrl+,` |
 | Search | `Ctrl+F` |
@@ -195,9 +201,29 @@ Inside lists:
 
 The shortcut editor checks for invalid or conflicting shortcuts. Shortcuts can also be cleared or reset.
 
+Every menu command can be assigned a shortcut, including downloads, editing
+media details, marking a title finished, announcing the current chapter and
+setting a title's speed. These additional commands start without a shortcut.
+The existing F1, F5 and tab shortcuts can also be changed or disabled. Changes
+apply when you confirm Settings; the shortcut overview shows your current
+assignments.
+
 The media keys on a keyboard or headset also work while Audiflix is in the background: play/pause, and next/previous chapter. If another player has already claimed a key, Audiflix leaves it alone. The whole thing can be switched off in Settings.
 
 ## Offline listening
+
+Playback progress for books and podcast episodes is saved in a local queue
+before it is sent. Failed reports survive a restart and are retried every minute
+and before a playback session is opened. The queue is separate for each server
+and account. When replaying a queued report, a newer server `lastUpdate` wins;
+otherwise the local position is sent. This also respects deliberate rewinds,
+rather than always choosing the furthest position. Timestamps use the computer
+and server clocks, so those clocks should agree.
+
+The queue is stored as `progress.sqlite3` in the configuration directory. It
+contains media identifiers, positions and timestamps, but no authentication
+tokens. Existing pending positions in downloaded-book manifests are migrated
+when replay runs.
 
 **Download for offline listening** in the item menu or the context menu fetches every audio file of a book into a folder of its own, together with a small `audiflix.json` holding the track order and the chapter marks.
 
@@ -212,6 +238,16 @@ A few details worth knowing:
 - A `.zip` archive downloaded by Audiflix 0.2 still counts as downloaded but cannot be played. Downloading such a book again replaces it with a playable folder.
 
 ## Playback speed
+
+The playback bar stays visible while browsing. Its buttons provide play/pause,
+skip, jump to position, speed and sleep timer controls. Temporary status
+messages do not replace the current playback information.
+
+The Overview tab lets you switch between Continue listening, Recently added
+and Finished. Each list has a **Columns** button; the first column always stays
+visible. Column widths and visibility are remembered, as is the window size.
+Settings are grouped into General, Playback, Downloads, Accessibility and
+Keyboard shortcuts, with scrollable pages for smaller windows and large fonts.
 
 Settings hold one default speed for everything.
 
@@ -328,6 +364,8 @@ ruff check .
 ```
 
 GitHub Actions runs the tests on Windows and Linux with Python 3.10, 3.12 and 3.13.
+An additional Windows job installs wxPython and runs the native control and
+dialog tests with Python 3.13.
 
 Most of the test suite does not need a running Audiobookshelf server, VLC or wxPython.
 

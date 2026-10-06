@@ -81,6 +81,7 @@ class LibraryPanel(wx.Panel):
         self.list = BaseListPanel(
             self,
             label=_("Books"),
+            settings_key="library",
             on_open=self._open,
             on_back=self._clear_search,
             context_builder=lambda item: context_actions(self.frame, item),
@@ -89,6 +90,7 @@ class LibraryPanel(wx.Panel):
         self.episodes_list = BaseListPanel(
             self,
             label=_("Episodes"),
+            settings_key="episodes",
             columns=episode_columns(),
             on_open=self._play_episode,
             on_back=self._back_from_episodes,
@@ -128,11 +130,12 @@ class LibraryPanel(wx.Panel):
             full = ctx.client.item(item.id)
             # Episode progress lives on the user object, so it has to be current
             # for the status column to mean anything.
-            ctx.progress.update(ctx.client.fetch_me())
-            return full, full.episodes
+            user = ctx.client.fetch_me()
+            return full, full.episodes, user
 
         def show(result):
-            full, episodes = result
+            full, episodes, user = result
+            ctx.progress.update(user)
             # newest episodes first
             episodes = sorted(episodes, key=lambda episode: episode.published_at, reverse=True)
             rows = [
@@ -148,15 +151,17 @@ class LibraryPanel(wx.Panel):
             self.list.Hide()
             self.episodes_list.Show()
             self.Layout()
-            self.episodes_list.focus_list()
+            if self.IsShownOnScreen():
+                self.episodes_list.focus_list()
 
-        ctx.run_async(fetch, on_done=show, description="podcast-episodes")
+        self.list.load_async(ctx, fetch, show, "podcast-episodes", lambda: self._show_episodes(item))
 
     def _play_episode(self, payload):
         parent_item, episode = payload
         self.ctx.play_item(parent_item, episode)
 
     def _back_from_episodes(self):
+        self.ctx.requests.invalidate("view:podcast-episodes")
         self.episodes_list.Hide()
         self.list.Show()
         self.Layout()
@@ -182,6 +187,7 @@ class LibraryPanel(wx.Panel):
     def update_mode(self):
         """Adapt the podcast row and the labels to the active library."""
         is_podcast = self.ctx.active_is_podcast
+        self.ctx.requests.invalidate("view:podcast-episodes")
         self.podcast_row.ShowItems(is_podcast)
         # always return to the main list when the library changes
         self.episodes_list.Hide()
@@ -204,17 +210,22 @@ class LibraryPanel(wx.Panel):
         def fetch():
             if term:
                 merged = []
+                limited = False
                 for lib_id in lib_ids:
-                    merged.extend(ctx.client.search_library(lib_id, term, limit=50))
-                return self._apply_filter(merged, local_filter)
+                    found = ctx.client.search_library(lib_id, term, limit=50)
+                    limited = limited or len(found) >= 50
+                    merged.extend(found)
+                merged.sort(key=lambda item: item.title.casefold() if not desc else item.added_at, reverse=desc)
+                return self._apply_filter(merged, local_filter), limited
             items = ctx.client.all_items(
                 lib_ids, sort=sort_key, desc=desc, filter_=server_filter
             )
             # "Downloaded" has no equivalent on the server - it is about this
             # machine, not the library.
-            return self._apply_filter(items, local_filter) if server_filter is None else items
+            return (self._apply_filter(items, local_filter) if server_filter is None else items), False
 
-        def show(items):
+        def show(result):
+            items, limited = result
             self.list.set_items(items, ctx.item_progress, ctx.item_status)
             base = _("Podcasts") if ctx.active_is_podcast else _("Books")
             if filter_index:
@@ -226,8 +237,12 @@ class LibraryPanel(wx.Panel):
                 )
             else:
                 self.list.set_label(f"{base} ({len(items)})")
+            if limited:
+                self.list.set_message(_("Search shows at most 50 matches per library before filtering. Refine your search to find other titles."))
+            elif not items:
+                self.list.set_message(_("No matches. Change the search or filter.") if term or filter_index else _("This library is empty. Refresh with F5 after adding titles."))
 
-        ctx.run_async(fetch, on_done=show, description="library-items")
+        self.list.load_async(ctx, fetch, show, "library-items", self.load)
 
     def _apply_filter(self, items: list, local_filter: str | None) -> list:
         """Filter a list of items here, for the cases the server cannot cover."""

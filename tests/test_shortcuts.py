@@ -10,11 +10,7 @@ wx = pytest.importorskip("wx")
 
 from audiflix.ui import shortcuts
 
-
-@pytest.fixture(scope="module", autouse=True)
-def wx_app():
-    app = wx.App()
-    yield app
+pytestmark = pytest.mark.usefixtures("wx_app")
 
 
 @pytest.mark.parametrize(
@@ -92,5 +88,73 @@ def test_defaults_have_no_conflicts():
 def test_defaults_are_all_valid():
     from audiflix.config import DEFAULT_SHORTCUTS
 
-    invalid = [key for key, value in DEFAULT_SHORTCUTS.items() if not shortcuts.is_valid(value)]
+    invalid = [key for key, value in DEFAULT_SHORTCUTS.items() if value and not shortcuts.is_valid(value)]
     assert invalid == []
+
+
+def test_every_menu_command_is_configurable_and_listed_once():
+    from audiflix.config import DEFAULT_SHORTCUTS
+    from audiflix.ui.dialogs.settings_dialog import SHORTCUT_LABELS
+    from audiflix.ui.menus import MENUS
+
+    entries = [entry for _label, group in MENUS for entry in group if entry is not None]
+    keys = [key for key, _label in SHORTCUT_LABELS]
+    assert len(keys) == len(set(keys))
+    assert set(keys) == set(DEFAULT_SHORTCUTS) == {entry[0] for entry in entries}
+    assert all(entry[2] == entry[0] and entry[3] is None for entry in entries)
+    assert "media_info" in keys
+    assert "ctx_info" not in keys
+
+
+def test_shortcut_editing_detects_conflicts_and_updates_saved_menu(tmp_path, monkeypatch):
+    from audiflix.config import Settings
+    from audiflix.ui.dialogs.settings_dialog import _ShortcutPage
+    from audiflix.ui.menus import build_menubar
+
+    monkeypatch.setenv("AUDIFLIX_CONFIG_DIR", str(tmp_path))
+    settings = Settings({"shortcuts": {"play_pause": "Ctrl+P", "search": ""}})
+    frame = wx.Frame(None)
+    menubar = None
+    try:
+        page = _ShortcutPage(frame, settings)
+        page._ctrls["ctx_download"].SetValue("F5")
+        assert page.validate() is not None  # Conflicts with refresh.
+        page._ctrls["refresh"].SetValue("")
+        page._ctrls["shortcuts"].SetValue("")
+        page._ctrls["tab_overview"].SetValue("Ctrl+9")
+        assert page.validate() is None
+        page.apply()
+        assert settings.save()
+        restored = Settings.load()
+        assert restored.shortcut("play_pause") == "Ctrl+P"
+        assert restored.shortcut("search") == ""
+        menubar, ids = build_menubar(restored, {})
+        for action, expected in {"ctx_download": "F5", "tab_overview": "Ctrl+9"}.items():
+            accel = menubar.FindItemById(ids[action]).GetAccel()
+            assert (accel.GetFlags(), accel.GetKeyCode()) == shortcuts.parse(expected)
+        for action in ("refresh", "shortcuts", "search"):
+            assert menubar.FindItemById(ids[action]).GetAccel() is None
+    finally:
+        if menubar is not None:
+            menubar.Destroy()
+        frame.Destroy()
+
+
+def test_shortcut_help_reports_custom_and_disabled_bindings():
+    from types import SimpleNamespace
+
+    from audiflix.config import Settings
+    from audiflix.ui.main_frame import MainFrame
+
+    shown = []
+    frame = SimpleNamespace(
+        settings=Settings({"shortcuts": {
+            "refresh": "Ctrl+R", "tab_overview": "Ctrl+9", "shortcuts": "",
+        }}),
+        _show_text_dialog=lambda title, text: shown.append(text),
+    )
+    MainFrame.show_shortcuts(frame)
+    assert "Ctrl+R" in shown[0]
+    assert "Ctrl+9" in shown[0]
+    assert "F5" not in shown[0]
+    assert "Ctrl+1" not in shown[0]

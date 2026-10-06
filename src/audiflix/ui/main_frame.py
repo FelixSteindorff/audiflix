@@ -31,6 +31,7 @@ from audiflix.ui.panels.base_list_panel import BaseListPanel
 from audiflix.ui.panels.collections_panel import CollectionsPanel
 from audiflix.ui.panels.library_panel import LibraryPanel
 from audiflix.ui.panels.overview_panel import OverviewPanel
+from audiflix.ui.panels.playback_panel import PlaybackPanel
 from audiflix.ui.panels.series_panel import SeriesPanel
 
 log = get_logger(__name__)
@@ -40,7 +41,17 @@ TAB_OVERVIEW, TAB_LIBRARY, TAB_AUTHORS, TAB_SERIES, TAB_COLLECTIONS = range(5)
 
 class MainFrame(wx.Frame):
     def __init__(self, client: AudiobookshelfClient, settings: Settings):
-        super().__init__(None, title=f"{APP_DISPLAY_NAME} {__version__}", size=(900, 640))
+        super().__init__(None, title=APP_DISPLAY_NAME)
+        size = settings.get("window_size", [1000, 780])
+        if not isinstance(size, (list, tuple)) or len(size) != 2 or not all(isinstance(n, int) and n > 0 for n in size):
+            size = [1000, 780]
+        area = wx.GetClientDisplayRect()
+        self.SetSize((min(self.FromDIP(size[0]), area.width), min(self.FromDIP(size[1]), area.height)))
+        minimum = self.FromDIP((640, 480))
+        self.SetMinSize((min(minimum.width, area.width), min(minimum.height, area.height)))
+        self.Centre()
+        if settings.get("window_maximized", False):
+            self.Maximize()
         self.settings = settings
         self.ctx = AppContext(client, settings)
         self.ctx.status_cb = self._set_status
@@ -52,7 +63,8 @@ class MainFrame(wx.Frame):
         self.CreateStatusBar()
         self._set_status(_("Connecting..."))
 
-        self.notebook = wx.Notebook(self)
+        self.content = wx.Panel(self)
+        self.notebook = wx.Notebook(self.content)
         self.notebook.SetName(_("Sections"))
         self.overview = OverviewPanel(self.notebook, self)
         self.library = LibraryPanel(self.notebook, self)
@@ -68,6 +80,19 @@ class MainFrame(wx.Frame):
         self._panels = [
             self.overview, self.library, self.authors, self.series, self.collections
         ]
+        self.playback = PlaybackPanel(self.content, self)
+        layout = wx.BoxSizer(wx.VERTICAL)
+        layout.Add(self.notebook, 1, wx.EXPAND)
+        layout.Add(wx.StaticLine(self.content), 0, wx.EXPAND | wx.TOP, 4)
+        layout.Add(self.playback, 0, wx.EXPAND)
+        self.content.SetSizer(layout)
+        outer = wx.BoxSizer(wx.VERTICAL)
+        outer.Add(self.content, 1, wx.EXPAND)
+        self.SetSizer(outer)
+        self._playback_timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self._on_playback_tick, self._playback_timer)
+        self._playback_timer.Start(1000)
+        self._retry_ticks = 0
 
         menubar, self._menu_ids = menus.build_menubar(settings, self._handlers())
         self.SetMenuBar(menubar)
@@ -84,7 +109,7 @@ class MainFrame(wx.Frame):
                 "play_pause": self.ctx.toggle_play,
                 "next_track": self.ctx.next_chapter,
                 "prev_track": self.ctx.prev_chapter,
-                "stop": self.ctx.toggle_play,
+                "stop": self.ctx.pause_playback,
             },
         )
         self._apply_media_keys()
@@ -150,7 +175,6 @@ class MainFrame(wx.Frame):
             "media_info": self.show_media_info,
             "ctx_collection": lambda: self._item_action(item_actions.add_to_collection),
             "ctx_finished": lambda: self._item_action(item_actions.mark_finished),
-            "ctx_info": lambda: self._item_action(item_actions.show_info),
             "ctx_author": lambda: self._item_action(item_actions.go_to_author),
             "ctx_edit": lambda: self._item_action(item_actions.edit_metadata),
             "ctx_download": lambda: self._item_action(item_actions.download),
@@ -191,6 +215,20 @@ class MainFrame(wx.Frame):
         self.ctx.run_async(fetch, on_done=done, description="load-libraries")
 
     def _on_library_changed(self):
+        self.ctx.requests.invalidate("view:")
+        for panel in self._panels:
+            for child in panel.GetChildren():
+                if isinstance(child, BaseListPanel):
+                    child.set_rows([], [])
+            if hasattr(panel, "books_list"):
+                panel.books_list.Hide()
+                for name in ("authors_list", "series_list", "collections_list"):
+                    if hasattr(panel, name):
+                        getattr(panel, name).Show()
+            for name in ("_authors", "_series", "_collections"):
+                if hasattr(panel, name):
+                    setattr(panel, name, [])
+            panel.Layout()
         # One message only: notify() writes the status bar *and* announces it,
         # so the screen reader does not say the same thing twice.
         self.ctx.notify(_("Library: %s") % self.ctx.active_library_label)
@@ -222,7 +260,7 @@ class MainFrame(wx.Frame):
         index = self.notebook.GetSelection()
         if 0 <= index < len(self._panels):
             self._panels[index].refresh()
-            self.ctx.notify(_("Refreshed."))
+            self.ctx.notify(_("Loading..."), interrupt=False)
 
     # --- Global actions ----------------------------------------------------
     def choose_library(self):
@@ -487,11 +525,10 @@ class MainFrame(wx.Frame):
         lines = [_("Keyboard shortcuts:"), ""]
         for key, label in SHORTCUT_LABELS:
             value = stored.get(key, "")
-            lines.append(f"{_(label)}: {value or _('not set')}")
+            display_label = _(label).replace("&", "")
+            lines.append(f"{display_label}: {value or _('not set')}")
         lines += [
             "",
-            _("Tabs 1 to 5: Ctrl+1 ... Ctrl+5"),
-            _("Refresh: F5"),
             _(
                 "In lists: arrow keys navigate, Enter opens, Backspace goes back, "
                 "and the applications key or Shift+F10 opens the context menu."
@@ -556,7 +593,8 @@ class MainFrame(wx.Frame):
 
     def show_about(self):
         lines = [
-            f"{APP_DISPLAY_NAME} {__version__}",
+            APP_DISPLAY_NAME,
+            _("Version: %s") % __version__,
             _("An accessible, keyboard-driven client for Audiobookshelf."),
             "",
             _(
@@ -607,11 +645,32 @@ class MainFrame(wx.Frame):
             dlg.Destroy()
 
     # --- Internal ----------------------------------------------------------
+    def _on_playback_tick(self, event: wx.TimerEvent) -> None:
+        if self.ctx._closing:
+            return
+        self.playback.refresh()
+        self._retry_ticks += 1
+        if self._retry_ticks >= 60:
+            self._retry_ticks = 0
+            self.ctx.flush_offline_progress()
+
     def _set_status(self, text: str):
+        if self.ctx._closing:
+            return
         self.SetStatusText(text)
 
     def _on_close(self, event):
         log.info("Closing the main window")
+        self._playback_timer.Stop()
+        self._media_keys.unregister()
+        self.settings["window_maximized"] = self.IsMaximized()
+        if not self.IsMaximized() and not self.IsIconized():
+            self.settings["window_size"] = list(self.ToDIP(self.GetSize()))
+        for panel in self._panels:
+            for child in panel.GetChildren():
+                if isinstance(child, BaseListPanel):
+                    child.save_layout()
+        self.settings.save()
         speech.announce(_("Closing Audiflix."), interrupt=True)
         self.ctx.shutdown()
         event.Skip()

@@ -153,7 +153,7 @@ def local_tracks(folder: str | os.PathLike[str]) -> list[dict[str, Any]]:
 
 
 def update_position(
-    folder: str | os.PathLike[str], position: float, synced: bool
+    folder: str | os.PathLike[str], position: float, synced: bool, scope: str | None = None
 ) -> None:
     """Remember where the listener is in a downloaded title.
 
@@ -165,6 +165,12 @@ def update_position(
         return
     manifest["position"] = float(max(0.0, position))
     manifest["position_synced"] = bool(synced)
+    if not synced:
+        import time
+
+        manifest["position_updated_at"] = time.time_ns() // 1_000_000
+        if scope is not None:
+            manifest["position_scope"] = scope
     try:
         _write(folder, manifest)
     except OSError as exc:
@@ -177,7 +183,7 @@ def pending_position(folder: str | os.PathLike[str]) -> float | None:
     if manifest is None or manifest.get("position_synced", True):
         return None
     position = float(manifest.get("position") or 0.0)
-    return position if position > 0 else None
+    return max(0.0, position)
 
 
 def remove(folder: str | os.PathLike[str]) -> bool:

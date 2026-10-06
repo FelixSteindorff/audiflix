@@ -13,11 +13,7 @@ wx = pytest.importorskip("wx")
 
 from audiflix.ui.dialogs.busy_dialog import ID_FAILED, BusyDialog
 
-
-@pytest.fixture(scope="module", autouse=True)
-def wx_app():
-    app = wx.App()
-    yield app
+pytestmark = pytest.mark.usefixtures("wx_app")
 
 
 def test_worker_result_is_returned():

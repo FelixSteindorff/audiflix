@@ -14,6 +14,12 @@ def test_format_clock_never_goes_negative():
     assert formatting.format_clock(-30) == "00:00"
 
 
+def test_selected_time_format_keeps_the_same_precision():
+    assert formatting.format_time(5025, "clock") == "1:23:45"
+    assert formatting.format_time(5025, "words") == "1 hour 23 minutes 45 seconds"
+    assert formatting.format_time(0, "words") == "0 seconds"
+
+
 def test_format_duration_uses_singular_and_plural():
     assert formatting.format_duration(3600) == "1 hour"
     assert formatting.format_duration(7320) == "2 hours 2 minutes"
@@ -27,6 +33,15 @@ def test_announce_position_reports_remaining():
     assert "Position" in text
     assert "remaining" in text
     assert "1 hour" in text
+
+
+def test_compact_position_keeps_seconds_and_clamps_remaining():
+    assert formatting.announce_position(3661, 7323, compact=True) == (
+        "Position 1:01:01, 1:01:02 remaining"
+    )
+    assert formatting.announce_position(61, 60, compact=True) == (
+        "Position 01:01, 00:00 remaining"
+    )
 
 
 def test_item_row_columns_and_status():

@@ -82,6 +82,21 @@ def test_customised_shortcut_is_not_migrated(isolated_config):
     assert settings.shortcut("chapter_list") == "Ctrl+J"
 
 
+@pytest.mark.parametrize("current, expected", [
+    ("Ctrl+I", "Ctrl+Shift+I"),
+    ("Ctrl+J", "Ctrl+J"),
+    ("", ""),
+])
+def test_duplicate_info_shortcut_is_merged(current, expected):
+    settings = config.Settings({"shortcuts": {
+        "media_info": current, "ctx_info": "Ctrl+Shift+I",
+    }})
+    assert settings.shortcut("media_info") == expected
+    assert "ctx_info" not in settings["shortcuts"]
+    assert settings.save()
+    assert config.Settings.load().shortcut("media_info") == expected
+
+
 def test_token_is_stored_in_the_keyring(monkeypatch, isolated_config):
     fake = FakeKeyring()
     monkeypatch.setattr(config, "keyring", fake)

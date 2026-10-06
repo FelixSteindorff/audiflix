@@ -279,6 +279,9 @@ msgstr "60 Minuten"
 msgid "About Audiflix"
 msgstr "Über Audiflix"
 
+msgid "Version: %s"
+msgstr "Version: %s"
+
 msgid "Add book&mark"
 msgstr "&Lesezeichen setzen"
 
@@ -701,6 +704,30 @@ msgstr "Als abgeschlossen markieren"
 
 msgid "Media details"
 msgstr "Medieninfos"
+
+msgid "Title information"
+msgstr "Titelinformationen"
+
+msgid "Volume %d%%"
+msgstr "Lautstärke %d%%"
+
+msgid "Playback time format"
+msgstr "Zeitformat bei der Wiedergabe"
+
+msgid "Playback &time format (display, speech and braille):"
+msgstr "&Zeitformat bei der Wiedergabe (Anzeige, Sprache und Braille):"
+
+msgid "Digits (1:23:45)"
+msgstr "Ziffern (1:23:45)"
+
+msgid "Words (1 hour 23 minutes 45 seconds)"
+msgstr "Worte (1 Stunde 23 Minuten 45 Sekunden)"
+
+msgid "&Title information"
+msgstr "&Titelinformationen"
+
+msgid "Title information - %s"
+msgstr "Titelinformationen - %s"
 
 msgid "Media details - %s"
 msgstr "Medieninfos - %s"
@@ -1344,3 +1371,105 @@ msgstr "Reihe %s"
 
 msgid "this title"
 msgstr "diesen Titel"
+
+msgid "%s remaining"
+msgstr "Noch %s"
+
+msgid "&Columns..."
+msgstr "&Spalten..."
+
+msgid "&Pause"
+msgstr "&Pause"
+
+msgid "&Play"
+msgstr "&Wiedergabe"
+
+msgid "&Position..."
+msgstr "&Position..."
+
+msgid "&Retry"
+msgstr "&Erneut versuchen"
+
+msgid "&Sleep timer..."
+msgstr "&Einschlaftimer..."
+
+msgid "&Sleep: %s..."
+msgstr "&Einschlaftimer: %s..."
+
+msgid "&Speed: %s..."
+msgstr "&Tempo: %s..."
+
+msgid "&Sync progress every (seconds):"
+msgstr "&Fortschritt synchronisieren alle (Sekunden):"
+
+msgid "A newer listening position from the server was kept."
+msgstr "Eine neuere Hörposition vom Server wurde beibehalten."
+
+msgid "Accessibility"
+msgstr "Barrierefreiheit"
+
+msgid "Choose additional columns. The first column stays visible."
+msgstr "Zusätzliche Spalten auswählen. Die erste Spalte bleibt sichtbar."
+
+msgid "Columns: %s"
+msgstr "Spalten: %s"
+
+msgid "Could not save progress locally. Check free disk space."
+msgstr "Der Fortschritt konnte nicht lokal gespeichert werden. Bitte freien Speicherplatz prüfen."
+
+msgid "Downloads"
+msgstr "Downloads"
+
+msgid "Loading failed: %s"
+msgstr "Laden fehlgeschlagen: %s"
+
+msgid "Loading..."
+msgstr "Wird geladen..."
+
+msgid "No items in this list."
+msgstr "Keine Einträge in dieser Liste."
+
+msgid "No matches. Change the search or filter."
+msgstr "Keine Treffer. Bitte Suche oder Filter ändern."
+
+msgid "Now &playing:"
+msgstr "Aktuelle &Wiedergabe:"
+
+msgid "Now playing"
+msgstr "Aktuelle Wiedergabe"
+
+msgid "Playback"
+msgstr "Wiedergabe"
+
+msgid "Playback position and remaining time"
+msgstr "Wiedergabeposition und Restzeit"
+
+msgid "Retry loading this list"
+msgstr "Diese Liste erneut laden"
+
+msgid "Saved title speeds will be cleared when you press OK."
+msgstr "Gespeicherte Titelgeschwindigkeiten werden beim Bestätigen mit OK gelöscht."
+
+msgid "Search shows at most 50 matches per library before filtering. Refine your search to find other titles."
+msgstr "Die Suche liefert vor dem Filtern höchstens 50 Treffer je Bibliothek. Bitte die Suche eingrenzen, um weitere Titel zu finden."
+
+msgid "Speed"
+msgstr "Geschwindigkeit"
+
+msgid "This library is empty. Refresh with F5 after adding titles."
+msgstr "Diese Bibliothek ist leer. Nach dem Hinzufügen von Titeln mit F5 aktualisieren."
+
+msgid "Visible columns"
+msgstr "Sichtbare Spalten"
+
+msgid "&Show:"
+msgstr "&Anzeigen:"
+
+msgid "Overview list"
+msgstr "Liste der Übersicht"
+
+msgid "Position and &remaining time:"
+msgstr "Position und &Restzeit:"
+
+msgid "&Jump..."
+msgstr "&Springen..."

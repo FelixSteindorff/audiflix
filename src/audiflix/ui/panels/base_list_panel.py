@@ -66,6 +66,7 @@ class BaseListPanel(wx.Panel):
         on_open: Callable[[object], None] | None = None,
         on_back: Callable[[], None] | None = None,
         context_builder: Callable[[object], list[tuple[str, Callable[[], None]]]] | None = None,
+        settings_key: str = "",
     ):
         super().__init__(parent)
         self.on_open = on_open
@@ -74,24 +75,52 @@ class BaseListPanel(wx.Panel):
         self._items: list = []
         self._columns = columns or item_columns()
         self._base_label = label
+        self._settings_key = settings_key
+        self._settings = getattr(getattr(parent, "ctx", None), "settings", None)
+        self._retry: Callable | None = None
 
         sizer = wx.BoxSizer(wx.VERTICAL)
+        heading_row = wx.BoxSizer(wx.HORIZONTAL)
         if label:
-            self.heading = wx.StaticText(self, label=label)
-            sizer.Add(self.heading, 0, wx.ALL, 4)
+            self.heading = wx.StaticText(self, label=label, style=wx.ST_ELLIPSIZE_END)
+            heading_row.Add(self.heading, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 4)
         else:
             self.heading = None
+        self.columns_button = wx.Button(self, label=_("&Columns..."))
+        self.columns_button.SetName(_("Columns: %s") % (label or _("List")))
+        self.columns_button.Bind(wx.EVT_BUTTON, self._choose_columns)
+        heading_row.Add(self.columns_button, 0, wx.ALL, 2)
+        sizer.Add(heading_row, 0, wx.EXPAND)
+
+        self.message = wx.StaticText(self, label="")
+        self._message_text = ""
+        self.message.Hide()
+        sizer.Add(self.message, 0, wx.EXPAND | wx.ALL, 4)
+        self.retry_button = wx.Button(self, label=_("&Retry"))
+        self.retry_button.SetName(_("Retry loading this list"))
+        self.retry_button.Bind(wx.EVT_BUTTON, self._on_retry)
+        self.retry_button.Hide()
+        sizer.Add(self.retry_button, 0, wx.ALL, 4)
 
         self.list_ctrl = VirtualListCtrl(self, len(self._columns))
         self.list_ctrl.SetName(label or _("List"))
+        layouts = self._settings.get("list_columns", {}) if self._settings else {}
+        saved = layouts.get(settings_key, {}) if isinstance(layouts, dict) else {}
+        self._widths = saved.get("widths", []) if isinstance(saved, dict) else []
+        self._hidden = set(saved.get("hidden", [])) - {0} if isinstance(saved, dict) else set()
+        if not isinstance(self._widths, list) or len(self._widths) != len(self._columns) or not all(isinstance(w, int) for w in self._widths):
+            self._widths = [320, *([160] * (len(self._columns) - 1))]
         for index, column in enumerate(self._columns):
-            self.list_ctrl.InsertColumn(index, column, width=wx.LIST_AUTOSIZE_USEHEADER)
+            width = max(60, min(2000, int(self._widths[index])))
+            self.list_ctrl.InsertColumn(index, column, width=0 if index in self._hidden else self.FromDIP(width))
         sizer.Add(self.list_ctrl, 1, wx.EXPAND | wx.ALL, 2)
         self.SetSizer(sizer)
 
         self.list_ctrl.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._on_activate)
         self.list_ctrl.Bind(wx.EVT_KEY_DOWN, self._on_key)
         self.list_ctrl.Bind(wx.EVT_CONTEXT_MENU, self._on_context_menu)
+        self.list_ctrl.Bind(wx.EVT_LIST_COL_END_DRAG, self._on_column_resize)
+        self.Bind(wx.EVT_SIZE, self._on_size)
 
     # --- Data --------------------------------------------------------------
     def set_label(self, text: str) -> None:
@@ -100,6 +129,7 @@ class BaseListPanel(wx.Panel):
         if self.heading is not None:
             self.heading.SetLabel(text)
         self.list_ctrl.SetName(text)
+        self.columns_button.SetName(_("Columns: %s") % text)
 
     @property
     def label(self) -> str:
@@ -129,11 +159,101 @@ class BaseListPanel(wx.Panel):
 
     def set_rows(self, rows: list[list[str]], payloads: list) -> None:
         """Generic variant with arbitrary column values (authors, series, ...)."""
+        selected_index = self.list_ctrl.GetFirstSelected()
+        selected_key = self._item_key(self.selected())
+        top = max(0, self.list_ctrl.GetTopItem())
+        top_key = self._item_key(self._items[top]) if top < len(self._items) else None
+        if selected_index >= 0:
+            self.list_ctrl.Select(selected_index, False)
         self._items = payloads
         self.list_ctrl.set_rows(rows)
         if rows:
-            self.list_ctrl.Select(0)
-            self.list_ctrl.Focus(0)
+            keys = [self._item_key(item) for item in payloads]
+            index = keys.index(selected_key) if selected_key in keys else max(0, min(selected_index, len(rows) - 1))
+            self.list_ctrl.Select(index)
+            self.list_ctrl.Focus(index)
+            target_top = keys.index(top_key) if top_key in keys else min(top, len(rows) - 1)
+            if self.list_ctrl.IsShownOnScreen():
+                current_top = max(0, min(self.list_ctrl.GetTopItem(), len(rows) - 1))
+                height = self.list_ctrl.GetItemRect(current_top).height
+                self.list_ctrl.ScrollList(0, (target_top - current_top) * height)
+        self.set_message("" if rows else _("No items in this list."))
+
+    @staticmethod
+    def _item_key(item):
+        if isinstance(item, tuple):
+            return tuple(BaseListPanel._item_key(part) for part in item)
+        return getattr(item, "id", item) if item is not None else None
+
+    def set_message(self, message: str, retry: Callable | None = None) -> None:
+        self._message_text = message
+        self.message.SetLabel(message)
+        self.message.Wrap(max(200, self.GetClientSize().width - self.FromDIP(8)))
+        self.message.Show(bool(message))
+        self._retry = retry
+        self.retry_button.Show(retry is not None)
+        self.Layout()
+
+    def _on_size(self, event: wx.SizeEvent) -> None:
+        self.message.SetLabel(self._message_text)
+        self.message.Wrap(max(200, self.GetClientSize().width - self.FromDIP(8)))
+        event.Skip()
+
+    def _on_retry(self, event: wx.CommandEvent) -> None:
+        if self._retry:
+            self._retry()
+
+    def load_async(self, ctx, fetch: Callable, show: Callable, key: str, retry: Callable) -> None:
+        """Share loading/error states and protect each view from stale replies."""
+        self.set_message(_("Loading..."))
+
+        def done(result):
+            if not self or self.IsBeingDeleted():
+                return
+            self.set_message("")
+            show(result)
+
+        def failed(exc):
+            if not self or self.IsBeingDeleted():
+                return
+            self.set_message(_("Loading failed: %s") % exc, retry=retry)
+
+        ctx.run_async(fetch, on_done=done, on_error=failed, description=key, request_key=f"view:{key}")
+
+    def save_layout(self) -> None:
+        if self._settings is None or not self._settings_key:
+            return
+        for index in range(len(self._columns)):
+            if index not in self._hidden:
+                self._widths[index] = self.ToDIP(self.list_ctrl.GetColumnWidth(index))
+        layouts = dict(self._settings.get("list_columns", {}) or {})
+        layouts[self._settings_key] = {"widths": self._widths[:], "hidden": sorted(self._hidden)}
+        self._settings["list_columns"] = layouts
+
+    def _on_column_resize(self, event: wx.ListEvent) -> None:
+        event.Skip()
+        # Native resizing finishes after this event has been processed.
+        wx.CallAfter(self._save_if_alive)
+
+    def _save_if_alive(self) -> None:
+        if self and not self.IsBeingDeleted():
+            self.save_layout()
+
+    def _choose_columns(self, event: wx.CommandEvent) -> None:
+        dlg = wx.MultiChoiceDialog(self, _("Choose additional columns. The first column stays visible."),
+                                   _("Visible columns"), self._columns[1:])
+        dlg.SetSelections([i - 1 for i in range(1, len(self._columns)) if i not in self._hidden])
+        try:
+            if dlg.ShowModal() != wx.ID_OK:
+                return
+            self.save_layout()
+            visible = {i + 1 for i in dlg.GetSelections()}
+            self._hidden = set(range(1, len(self._columns))) - visible
+            for i in range(1, len(self._columns)):
+                self.list_ctrl.SetColumnWidth(i, 0 if i in self._hidden else self.FromDIP(self._widths[i]))
+            self.save_layout()
+        finally:
+            dlg.Destroy()
 
     def is_empty(self) -> bool:
         return not self._items

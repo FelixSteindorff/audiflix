@@ -30,7 +30,7 @@ def context_actions(frame, item: LibraryItem) -> list[tuple[str, Callable[[], No
     entries = [
         (_("Add to collection..."), lambda: add_to_collection(frame, item)),
         (_("Mark as finished"), lambda: mark_finished(frame, item)),
-        (_("Item details"), lambda: show_info(frame, item)),
+        (_("Title information"), lambda: show_info(frame, item)),
         (_("Go to author"), lambda: go_to_author(frame, item)),
         (_("Edit media details..."), lambda: edit_metadata(frame, item)),
     ]
@@ -129,7 +129,7 @@ def show_info(frame, item: LibraryItem) -> None:
         position, duration = ctx.player.position, ctx.player.duration
 
     def show(full: LibraryItem):
-        dlg = MediaInfoDialog(frame, full, position, duration)
+        dlg = MediaInfoDialog(frame, full, position, duration, ctx.settings.get("time_format", "clock"))
         try:
             dlg.ShowModal()
         finally:

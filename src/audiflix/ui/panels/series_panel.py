@@ -48,10 +48,12 @@ class SeriesPanel(wx.Panel):
 
         self.series_list = BaseListPanel(
             self, label=_("Series"), columns=[_("Series"), _("Books")],
+            settings_key="series",
             on_open=self._open_series,
         )
         self.books_list = BaseListPanel(
             self, label=_("Books in this series"),
+            settings_key="series-books",
             on_open=lambda item: self.ctx.play_item(item),
             on_back=self._back_to_series,
             context_builder=lambda item: context_actions(self.frame, item),
@@ -85,9 +87,7 @@ class SeriesPanel(wx.Panel):
             self._series = series
             self._render_series()
 
-        ctx.run_async(
-            lambda: ctx.client.series_all(lib_ids), on_done=show, description="series"
-        )
+        self.series_list.load_async(ctx, lambda: ctx.client.series_all(lib_ids), show, "series", self.load)
 
     def _render_series(self):
         term = self.search.GetValue().strip().lower()
@@ -99,6 +99,8 @@ class SeriesPanel(wx.Panel):
         rows = [[entry.name, str(entry.num_books)] for entry in series]
         self.series_list.set_rows(rows, series)
         self.series_list.set_label(_("Series (%d)") % len(series))
+        if not series and term:
+            self.series_list.set_message(_("No matches. Change the search or filter."))
 
     # --- Drill-down ---------------------------------------------------------
     def _open_series(self, series):

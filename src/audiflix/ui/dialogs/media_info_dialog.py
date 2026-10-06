@@ -22,10 +22,11 @@ class MediaInfoDialog(wx.Dialog):
         item: LibraryItem,
         position: float | None = None,
         duration: float | None = None,
+        time_format: str = "clock",
     ):
         super().__init__(
             parent,
-            title=_("Media details - %s") % item.title,
+            title=_("Title information - %s") % item.title,
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         panel = wx.Panel(self)
@@ -34,10 +35,10 @@ class MediaInfoDialog(wx.Dialog):
         lines = [f"{label}: {value}" for label, value in item.to_info_lines()]
         if item.duration:
             lines.append(
-                _("Total duration: %s") % formatting.format_duration(item.duration)
+                _("Total duration: %s") % formatting.format_time(item.duration, time_format)
             )
         if position is not None and duration:
-            lines.append(formatting.announce_position(position, duration))
+            lines.append(formatting.announce_position(position, duration, compact=time_format != "words"))
         if item.description:
             lines.append("")
             lines.append(_("Description:"))
@@ -48,7 +49,7 @@ class MediaInfoDialog(wx.Dialog):
         self.text = wx.TextCtrl(
             panel, value=text, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2
         )
-        self.text.SetName(_("Media details"))
+        self.text.SetName(_("Title information"))
 
         sizer.Add(label, 0, wx.ALL, 8)
         sizer.Add(self.text, 1, wx.EXPAND | wx.ALL, 8)

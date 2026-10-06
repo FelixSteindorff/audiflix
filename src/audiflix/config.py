@@ -80,6 +80,7 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "download_dir": str(default_download_dir()),
     "announce_on_seek": True,
     "announce_chapter_change": True,
+    "time_format": "clock",
     "progress_sync_seconds": 15,
     "allow_insecure_http": False,
     #: Play/pause and track keys on a keyboard or headset, even when Audiflix
@@ -92,18 +93,23 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     # Shortcuts are stored as strings in wx accelerator syntax and can be
     # overridden in the settings dialog. An empty value disables the shortcut.
     "shortcuts": {
+        "refresh": "F5",
+        "scan_library": "",
+        "logout": "",
         "play_pause": "Ctrl+Space",
         "skip_back": "Ctrl+Left",
         "skip_forward": "Ctrl+Right",
         "prev_chapter": "Ctrl+Shift+Left",
         "next_chapter": "Ctrl+Shift+Right",
         "chapter_list": "Ctrl+Shift+C",
+        "announce_chapter": "",
         "prev_track": "Ctrl+Alt+Left",
         "next_track": "Ctrl+Alt+Right",
         "jump_to_time": "Ctrl+G",
         "speed_down": "Ctrl+-",
         "speed_up": "Ctrl++",
         "speed_reset": "Ctrl+0",
+        "set_speed": "",
         "volume_up": "Ctrl+Up",
         "volume_down": "Ctrl+Down",
         "announce_time": "Ctrl+T",
@@ -116,6 +122,22 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "settings": "Ctrl+,",
         "search": "Ctrl+F",
         "quit": "Ctrl+Q",
+        "tab_overview": "Ctrl+1",
+        "tab_library": "Ctrl+2",
+        "tab_authors": "Ctrl+3",
+        "tab_series": "Ctrl+4",
+        "tab_collections": "Ctrl+5",
+        "ctx_collection": "",
+        "ctx_finished": "",
+        "ctx_author": "",
+        "ctx_edit": "",
+        "ctx_download": "",
+        "ctx_remove_download": "",
+        "shortcuts": "F1",
+        "log_folder": "",
+        "check_updates": "",
+        "diagnostics": "",
+        "about": "",
     },
 }
 
@@ -139,6 +161,11 @@ class Settings:
 
     def _migrate(self) -> None:
         shortcuts = self._data.get("shortcuts", {})
+        # The former selected-item command now shares the main info action.
+        # Keep its custom binding unless the main action was also customised.
+        old_info = shortcuts.pop("ctx_info", "")
+        if old_info and shortcuts.get("media_info") == DEFAULT_SHORTCUTS["media_info"]:
+            shortcuts["media_info"] = old_info
         for key, (old, new) in _LEGACY_SHORTCUTS.items():
             if shortcuts.get(key) == old:
                 shortcuts[key] = new

@@ -23,10 +23,12 @@ class CollectionsPanel(wx.Panel):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.collections_list = BaseListPanel(
             self, label=_("Collections"), columns=[_("Collection"), _("Books")],
+            settings_key="collections",
             on_open=self._open_collection,
         )
         self.books_list = BaseListPanel(
             self, label=_("Books in this collection"),
+            settings_key="collection-books",
             on_open=lambda item: self.ctx.play_item(item),
             on_back=self._back_to_collections,
             context_builder=lambda item: context_actions(self.frame, item),
@@ -56,11 +58,8 @@ class CollectionsPanel(wx.Panel):
             self.collections_list.set_rows(rows, collections)
             self.collections_list.set_label(_("Collections (%d)") % len(collections))
 
-        ctx.run_async(
-            lambda: ctx.client.collections_all(lib_ids),
-            on_done=show,
-            description="collections",
-        )
+        self.collections_list.load_async(ctx, lambda: ctx.client.collections_all(lib_ids), show,
+                                         "collections", self.load)
 
     def _open_collection(self, collection):
         ctx = self.ctx

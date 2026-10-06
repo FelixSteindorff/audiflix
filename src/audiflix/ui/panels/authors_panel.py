@@ -47,11 +47,13 @@ class AuthorsPanel(wx.Panel):
 
         self.authors_list = BaseListPanel(
             self, label=_("Authors"), columns=[_("Author"), _("Books")],
+            settings_key="authors",
             on_open=self._open_author,
             context_builder=lambda author: author_context_actions(self.frame, author),
         )
         self.books_list = BaseListPanel(
             self, label=_("Books by this author"),
+            settings_key="author-books",
             on_open=lambda item: self.ctx.play_item(item),
             on_back=self._back_to_authors,
             context_builder=lambda item: context_actions(self.frame, item),
@@ -85,9 +87,7 @@ class AuthorsPanel(wx.Panel):
             self._authors = authors
             self._render_authors()
 
-        ctx.run_async(
-            lambda: ctx.client.authors_all(lib_ids), on_done=show, description="authors"
-        )
+        self.authors_list.load_async(ctx, lambda: ctx.client.authors_all(lib_ids), show, "authors", self.load)
 
     def _render_authors(self):
         term = self.search.GetValue().strip().lower()
@@ -99,6 +99,8 @@ class AuthorsPanel(wx.Panel):
         rows = [[author.name, str(author.num_books)] for author in authors]
         self.authors_list.set_rows(rows, authors)
         self.authors_list.set_label(_("Authors (%d)") % len(authors))
+        if not authors and term:
+            self.authors_list.set_message(_("No matches. Change the search or filter."))
 
     # --- Drill-down ---------------------------------------------------------
     def _open_author(self, author):
@@ -116,15 +118,14 @@ class AuthorsPanel(wx.Panel):
             self.authors_list.Hide()
             self.books_list.Show()
             self.Layout()
-            self.books_list.focus_list()
+            if self.IsShownOnScreen():
+                self.books_list.focus_list()
 
-        ctx.run_async(
-            lambda: ctx.client.author_items(author_id),
-            on_done=show,
-            description="author-items",
-        )
+        self.authors_list.load_async(ctx, lambda: ctx.client.author_items(author_id), show,
+                                     "author-items", lambda: self.show_author(author_id, author_name))
 
     def _back_to_authors(self):
+        self.ctx.requests.invalidate("view:author-items")
         self.books_list.Hide()
         self.authors_list.Show()
         self.Layout()

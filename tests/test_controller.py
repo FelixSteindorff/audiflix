@@ -6,6 +6,7 @@ reached. Those are tested here with a stub client and settings that are never
 written to disk.
 """
 
+import threading
 from pathlib import Path
 
 import pytest
@@ -86,12 +87,174 @@ def _book(item_id="li_1", title="A Book", duration=7200.0):
 
 @pytest.fixture
 def ctx(tmp_path, monkeypatch):
+    monkeypatch.setenv("AUDIFLIX_CONFIG_DIR", str(tmp_path))
     monkeypatch.setattr(status_module, "config_dir", lambda: tmp_path)
     context = AppContext(_StubClient(), _settings(tmp_path))
     context.player = _StubPlayer()
-    context.notify = lambda text, interrupt=True, speak=True: context.messages.append(text)
+    context.notify = lambda text, **kwargs: context.messages.append(text)
     context.messages = []
     return context
+
+
+def test_old_async_success_and_error_are_dropped_at_delivery(ctx, monkeypatch):
+    import audiflix.ui.controller as controller
+
+    workers, callbacks, results = [], [], []
+
+    class Worker:
+        def __init__(self, target, **kwargs):
+            self.target = target
+
+        def start(self):
+            workers.append(self.target)
+
+    monkeypatch.setattr(controller.threading, "Thread", Worker)
+    monkeypatch.setattr(controller.wx, "CallAfter", lambda fn, *args: callbacks.append((fn, args)))
+    ctx.run_async(lambda: "old", on_done=results.append, request_key="view:books")
+    workers.pop()()
+    ctx.run_async(lambda: "new", on_done=results.append, request_key="view:books")
+    workers.pop()()
+    for fn, args in callbacks:
+        fn(*args)
+    assert results == ["new"]
+    callbacks.clear()
+
+    def fail():
+        raise ApiError("obsolete failure")
+
+    ctx.run_async(fail, request_key="view:books")
+    ctx.requests.invalidate("view:")
+    workers.pop()()
+    for fn, args in callbacks:
+        fn(*args)
+    assert ctx.messages == []
+
+
+def test_stop_media_action_never_resumes_paused_playback(ctx):
+    from types import SimpleNamespace
+
+    calls = []
+    ctx.player = SimpleNamespace(has_media=True, is_playing=False, pause=lambda: calls.append("pause"))
+    ctx.pause_playback()
+    assert calls == []
+    ctx.player.is_playing = True
+    ctx.pause_playback()
+    assert calls == ["pause"]
+
+
+@pytest.mark.parametrize("style, expected", [
+    ("clock", "Position 01:01, 1:00:02 remaining"),
+    ("words", "Position 1 minute 1 second, 1 hour 2 seconds remaining"),
+])
+def test_time_announcement_uses_one_format_for_all_outputs(ctx, monkeypatch, style, expected):
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+
+    from audiflix import speech
+
+    announce = Mock()
+    monkeypatch.setattr(speech, "announce", announce)
+    ctx.player = SimpleNamespace(has_media=True, position=61, duration=3663)
+    ctx.settings["time_format"] = style
+    statuses = []
+    ctx.status_cb = statuses.append
+    ctx.announce_time()
+    assert statuses == [expected]
+    announce.assert_called_once_with(expected, interrupt=True, force=True)
+
+
+def test_volume_and_speed_reach_braille_via_notifications(ctx, monkeypatch):
+    from unittest.mock import Mock
+
+    from audiflix import speech
+
+    announce = Mock()
+    monkeypatch.setattr(speech, "announce", announce)
+    monkeypatch.setattr(wx, "IsMainThread", lambda: True)
+    ctx.notify = AppContext.notify.__get__(ctx)
+    statuses = []
+    ctx.status_cb = statuses.append
+    ctx._announce_volume(65)
+    assert statuses == ["Volume 65%"]
+    announce.assert_called_with("Volume 65 percent", interrupt=True, braille_text="Volume 65%")
+    ctx.set_speed(1.5)
+    assert "1.5" in statuses[-1]
+    assert announce.call_args.args[0] == statuses[-1]
+
+
+def test_failed_podcast_sync_is_durable_and_keeps_episode_identity(ctx):
+    class Failing(_StubClient):
+        def sync_progress(self, *args, **kwargs):
+            raise ApiError("offline")
+
+    ctx.client = Failing()
+    ctx._on_player_progress(20, 100, False, item_id="podcast", episode_id="episode-one")
+    ctx._on_player_progress(100, 100, True, item_id="podcast", episode_id="episode-two")
+    pending = ctx.outbox.pending()
+    assert {(e.episode_id, e.position, e.finished) for e in pending} == {
+        ("episode-one", 20, False), ("episode-two", 100, True),
+    }
+
+
+def test_replay_preserves_newer_remote_position_and_retries_other_episode(ctx):
+    class Client(_StubClient):
+        def fetch_me(self):
+            return {"mediaProgress": [{"libraryItemId": "podcast", "episodeId": "one",
+                                      "currentTime": 5, "lastUpdate": 2000}]}
+
+        def sync_progress(self, item_id, position, duration, is_finished=False, episode_id=None):
+            self.progress_calls.append((item_id, episode_id, position))
+
+    ctx.client = Client()
+    ctx.outbox.record("podcast", "one", 80, 100, updated_at=1000)
+    ctx.outbox.record("podcast", "two", 40, 100, updated_at=1000)
+
+    def immediate(func, on_done=None, **kwargs):
+        result = func()
+        if on_done:
+            on_done(result)
+
+    ctx.run_async = immediate
+    ctx.flush_offline_progress()
+    assert ctx.outbox.pending() == []
+    assert ctx.client.progress_calls == [("podcast", "two", 40)]
+
+
+def test_replay_does_not_import_another_accounts_download_position(ctx, tmp_path):
+    _downloaded(ctx, tmp_path)
+    ctx.registry.record_offline_position("li_1", 40, scope="different-account")
+    assert ctx._flush_pending_progress() == 0
+    assert ctx.outbox.pending() == []
+    assert ctx.client.progress_calls == []
+
+
+def test_real_workers_finishing_in_reverse_order_keep_newest_view(ctx, monkeypatch):
+    import audiflix.ui.controller as controller
+
+    release = threading.Event()
+    finished = threading.Event()
+    callbacks, results = [], []
+    monkeypatch.setattr(controller.wx, "CallAfter", lambda fn, *args: callbacks.append((fn, args)))
+
+    def slow():
+        assert release.wait(2)
+        return "old"
+
+    def fast():
+        finished.set()
+        return "new"
+
+    ctx.run_async(slow, on_done=results.append, request_key="view:books")
+    ctx.run_async(fast, on_done=results.append, request_key="view:books")
+    assert finished.wait(2)
+    release.set()
+    # Join only this test's workers; delivery still happens later on the UI thread.
+    for thread in threading.enumerate():
+        if thread.name == "audiflix-worker":
+            thread.join(2)
+    for fn, args in callbacks:
+        fn(*args)
+    assert results == ["new"]
 
 
 # --- speed ------------------------------------------------------------------
@@ -220,6 +383,30 @@ def test_an_unreachable_server_plays_the_download(ctx, tmp_path):
     assert loaded["chapters"][0]["title"] == "One"
     assert ctx.current_session_id is None
     assert any("offline" in message.lower() for message in ctx.messages)
+
+
+def test_offline_rewind_to_zero_does_not_resume_at_old_server_position(ctx, tmp_path):
+    folder = _downloaded(ctx, tmp_path)
+    ctx.progress.update({"mediaProgress": [{"libraryItemId": "li_1", "currentTime": 120}]})
+    downloads.update_position(folder, 0, synced=False, scope=ctx.outbox.scope)
+    assert downloads.pending_position(folder) == 0
+    ctx._play_offline(_book(), ctx.registry.local_tracks("li_1"))
+    assert ctx.player.loaded["start_time"] == 0
+
+
+def test_expired_captured_session_is_not_retried_for_each_report(ctx):
+    calls = []
+
+    def sync_session(*args):
+        calls.append(args)
+        raise ApiError("expired session", status=404)
+
+    ctx.client.sync_session = sync_session
+    ctx.current_session_id = "new-session"
+    ctx._sync_session(10, 100, 5, session_id="old-session")
+    ctx._sync_session(15, 100, 5, session_id="old-session")
+    assert len(calls) == 1
+    assert ctx.current_session_id == "new-session"
 
 
 def test_a_failed_sync_keeps_the_position_for_later(ctx, tmp_path):

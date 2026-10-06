@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A playback time format setting (digits or words), shared by display, speech
+  and braille, including position, remaining time and sleep timer feedback.
+- Configurable shortcuts for every menu command, including downloads, item
+  actions, chapter announcements and help. F1, F5 and the five tab shortcuts
+  can also be changed or disabled; the shortcut overview reflects these settings.
+- Persistent playback controls showing the title, chapter, position, remaining
+  time, playback speed and sleep timer, independently of status messages.
+- Per-list column widths and visible columns, plus remembered window size.
+- A durable progress queue for books and individual podcast episodes, isolated
+  by server and account. Failed reports survive a restart and are retried every
+  minute and before opening another playback session. During replay, a newer
+  server timestamp wins over an older local position, including rewinds.
+- A Windows CI job that installs wxPython and runs the native GUI tests.
+
+### Changed
+
+- A single Title information shortcut shows the selected title, or the playing
+  title when none is selected, replacing the duplicate media/item info commands.
+- The main window title shows only the app name; the About dialog presents the
+  application version on a separate line.
+- Overview lists can be switched using a choice control, leaving room for the
+  selected list and player even in small windows.
+- Settings are split into scrollable General, Playback, Downloads,
+  Accessibility and Keyboard shortcuts pages.
+- Lists show loading, empty and error states with a retry button. Search warns
+  when the 50-results-per-library limit may have been reached.
+
+### Fixed
+
+- The saved volume is supplied when Windows audio output is first created.
+  Volume changes rejected while VLC is starting are retried once output is ready.
+- Status announcements now reach the braille display as well as speech,
+  including volume, speed and chapter messages.
+- Older background responses no longer replace newer searches or library
+  selections; results arriving after shutdown are ignored.
+- Refreshing and sorting preserve the selected media ID and scroll position.
+- The Stop media key pauses playback without ever resuming it.
+- Queued playback reports keep the identity of their original title/session
+  when another title starts playing.
+- Clearing saved title speeds in Settings now takes effect only after OK.
+
 ## [0.3.0] - 2026-09-03
 
 A book you downloaded now really is yours to listen to: it plays from disk and

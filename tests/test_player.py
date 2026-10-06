@@ -116,6 +116,7 @@ class _FakeVlcPlayer:
 
     def audio_set_volume(self, volume):
         self.volume_set = volume
+        return 0
 
     def get_length(self):
         return 1000
@@ -151,6 +152,53 @@ def _prepared_player(monkeypatch):
     monkeypatch.setattr(player, "_start_thread", lambda: None)
     monkeypatch.setattr(player, "_seek_when_ready", lambda offset, generation: None)
     return player, instance
+
+
+def test_volume_retries_when_audio_output_is_not_ready(monkeypatch):
+    player, _instance = _prepared_player(monkeypatch)
+    engine = player._player
+    ready = False
+    applied = []
+
+    def set_volume(value):
+        if not ready:
+            return -1
+        applied.append(value)
+        return 0
+
+    monkeypatch.setattr(engine, "audio_set_volume", set_volume)
+    player.set_volume(60)
+    player.load([{"content_url": "/first"}], total_duration=100)
+    assert player._pending_volume == 60
+    assert applied == []
+    # Changing the setting while opening must replace the pending value.
+    assert player.change_volume(5) == 65
+    ready = True
+    player._tick()
+    assert applied == [65]
+    assert player._pending_volume is None
+    player._tick()
+    assert applied == [65]
+
+
+@pytest.mark.parametrize("volume", [0, 60, 100])
+def test_windows_audio_output_starts_with_configured_volume(monkeypatch, volume):
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+
+    from audiflix.audio import player as player_module
+
+    engine = _FakeVlcPlayer()
+    instance = SimpleNamespace(media_player_new=lambda: engine)
+    vlc = SimpleNamespace(Instance=Mock(return_value=instance))
+    monkeypatch.setattr(player_module.sys, "platform", "win32")
+    monkeypatch.setattr(player_module.vlc_runtime, "load_vlc", lambda: vlc)
+    monkeypatch.setattr(player_module.vlc_runtime, "configure", lambda: SimpleNamespace(describe=lambda: "test"))
+    player = VlcPlayer(default_volume=volume)
+    player._ensure_vlc()
+    args = vlc.Instance.call_args.args
+    assert "--no-volume-save" in args
+    assert f"--mmdevice-volume={volume / 100:.2f}" in args
 
 
 def test_loading_a_second_title_replaces_the_media(monkeypatch):
@@ -299,6 +347,21 @@ def test_a_newer_report_keeps_what_the_queued_one_carried(monkeypatch):
     assert isinstance(pending, ProgressReport)
     assert pending.is_finished is True
     assert pending.listened == pytest.approx(6.0)
+
+
+def test_queued_reports_keep_their_original_title_callback(monkeypatch):
+    reports = []
+    player = VlcPlayer(on_progress=lambda *args: reports.append(("old", args)))
+    player._tracks = [Track(content_url="/a", start_offset=0.0, duration=10.0)]
+    player._total_duration = 10.0
+    monkeypatch.setattr(player, "_ensure_sync_thread", lambda: None)
+    player._sync_now(is_finished=True)
+    player.on_progress = lambda *args: reports.append(("new", args))
+    player._sync_now()
+    player._drain_sync()
+    assert [title for title, _args in reports] == ["old", "new"]
+    assert reports[0][1][2] is True
+    assert reports[1][1][2] is False
 
 
 def test_listening_time_counts_only_what_was_played(monkeypatch):
